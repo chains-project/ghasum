@@ -15,7 +15,7 @@ require (
 	github.com/go-git/go-git/v5 v5.12.0
 	github.com/gordonklaus/ineffassign v0.1.0
 	github.com/jgautheron/goconst v1.7.0
-	github.com/kisielk/errcheck v1.7.0
+	github.com/kisielk/errcheck v1.8.0
 	github.com/kunwardeep/paralleltest v1.0.10
 	github.com/liamg/memoryfs v1.6.0
 	github.com/mdempsky/unconvert v0.0.0-20230907125504-415706980c06
