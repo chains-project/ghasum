@@ -5,7 +5,7 @@ go 1.23.0
 require (
 	4d63.com/gochecknoinits v0.0.0-20210416043744-25bb07f6e4e3
 	github.com/alexkohler/dogsled v0.0.0-20240130174141-bb1f9c4c0c98
-	github.com/alexkohler/nakedret/v2 v2.0.2
+	github.com/alexkohler/nakedret/v2 v2.0.5
 	github.com/alexkohler/prealloc v1.0.0
 	github.com/alexkohler/unimport v0.0.0-20171106223308-e6f2b2e2d406
 	github.com/butuzov/ireturn v0.3.0
