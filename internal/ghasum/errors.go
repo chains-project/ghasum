@@ -25,35 +25,35 @@ var (
 	// initialized but is not.
 	ErrNotInitialized = errors.New("ghasum has not yet been initialized")
 
-	// ErrNotInitialized is the error used when the ghasum checksum file could not
+	// ErrSumfileCreate is the error used when the ghasum checksum file could not
 	// be created.
 	ErrSumfileCreate = errors.New("could not create a checksum file")
 
-	// ErrNotInitialized is the error used when the ghasum checksum file could not
+	// ErrSumfileEncode is the error used when the ghasum checksum file could not
 	// be encoded.
 	ErrSumfileEncode = errors.New("could not encode the checksum file")
 
-	// ErrNotInitialized is the error used when the ghasum checksum file could not
+	// ErrSumfileOpen is the error used when the ghasum checksum file could not
 	// be opened.
 	ErrSumfileOpen = errors.New("could not open the checksum file")
 
-	// ErrNotInitialized is the error used when a ghasum checksum file could not
+	// ErrSumfileDecode is the error used when a ghasum checksum file could not
 	// be decoded.
 	ErrSumfileDecode = errors.New("could not decode the checksum file")
 
-	// ErrNotInitialized is the error used when the ghasum checksum file could not
+	// ErrSumfileRead is the error used when the ghasum checksum file could not
 	// be read.
 	ErrSumfileRead = errors.New("could not read from the checksum file")
 
-	// ErrNotInitialized is the error used when the ghasum checksum file could not
+	// ErrSumfileRemove is the error used when the ghasum checksum file could not
 	// be removed.
 	ErrSumfileRemove = errors.New("could not remove the checksum file")
 
-	// ErrNotInitialized is the error used when the ghasum checksum file could not
+	// ErrSumfileUnlock is the error used when the ghasum checksum file could not
 	// be unlocked after usage.
 	ErrSumfileUnlock = errors.New("could not unlock the checksum file")
 
-	// ErrNotInitialized is the error used when the ghasum checksum file could not
+	// ErrSumfileWrite is the error used when the ghasum checksum file could not
 	// be written to.
 	ErrSumfileWrite = errors.New("could not write to the checksum file")
 )
