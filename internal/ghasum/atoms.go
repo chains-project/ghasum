@@ -125,7 +125,6 @@ func compute(cfg *Config, actions []gha.GitHubAction, algo checksum.Algo) ([]sum
 			}
 		}
 
-		// checksum, err := dirhash.HashDir(actionDir, "", hashes[algo])
 		checksum, err := checksum.Compute(actionDir, algo)
 		if err != nil {
 			return nil, fmt.Errorf("could not compute checksum for %q: %v", action, err)
