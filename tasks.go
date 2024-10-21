@@ -35,8 +35,35 @@ import (
 	"strings"
 )
 
-// Audit for known vulnerabilities.
+// Audit the codebase.
 func TaskAudit(t *T) error {
+	tasks := []Task{
+		TaskAuditCapabilities,
+		TaskAuditVulnerabilities,
+	}
+
+	for _, task := range tasks {
+		if err := task(t); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Audit for capabilities.
+func TaskAuditCapabilities(t *T) error {
+	t.Log("Checking capabilities...")
+	return t.Exec(`
+		go run github.com/google/capslock/cmd/capslock
+			-packages ./...
+			-noisy
+			-output=compare capabilities.json
+	`)
+}
+
+// Audit for known vulnerabilities.
+func TaskAuditVulnerabilities(t *T) error {
 	t.Log("Checking for vulnerabilities...")
 	return t.Exec(`go run golang.org/x/vuln/cmd/govulncheck ./...`)
 }
@@ -252,6 +279,22 @@ func TaskTest(t *T) error {
 func TaskTestRandomized(t *T) error {
 	t.Log("Testing (random order)...")
 	return t.Exec(`go test -shuffle=on ./...`)
+}
+
+// Update the capability snapshot to the project's current capabilities.
+func TaskUpdateCapabilities(t *T) error {
+	t.Log("Updating capabilities...")
+	stdout, err := t.ExecS(`
+		go run github.com/google/capslock/cmd/capslock
+			-packages ./...
+			-noisy
+			-output json
+	`)
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile("./capabilities.json", []byte(stdout), 0o664)
 }
 
 // Verify the project is in a good state.
