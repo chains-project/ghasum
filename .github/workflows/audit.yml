@@ -4,6 +4,7 @@ on:
     paths:
     - '**/*.go'
     - .github/workflows/audit.yml
+    - capabilities.json
     - go.mod
     - go.sum
   push:
@@ -16,6 +17,25 @@ on:
 permissions: read-all
 
 jobs:
+  capabilities:
+    name: Capabilities
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4.2.0
+    - name: Install Go
+      uses: actions/setup-go@v5.0.2
+      with:
+        go-version-file: go.mod
+    - name: Verify action checksums
+      env:
+        JOB: ${{ github.job }}
+        WORKFLOW: ${{ github.workflow_ref }}
+      run: |
+        WORKFLOW=$(echo "$WORKFLOW" | cut -d '@' -f 1 | cut -d '/' -f 3-5)
+        go run ./cmd/ghasum verify -cache /home/runner/work/_actions -no-evict -offline "$WORKFLOW:$JOB"
+    - name: Audit
+      run: go run tasks.go audit-capabilities
   vulnerabilities:
     name: Vulnerabilities
     runs-on: ubuntu-24.04
@@ -34,4 +54,4 @@ jobs:
         WORKFLOW=$(echo "$WORKFLOW" | cut -d '@' -f 1 | cut -d '/' -f 3-5)
         go run ./cmd/ghasum verify -cache /home/runner/work/_actions -no-evict -offline "$WORKFLOW:$JOB"
     - name: Audit
-      run: go run tasks.go audit
+      run: go run tasks.go audit-vulnerabilities
