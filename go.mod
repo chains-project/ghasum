@@ -25,7 +25,7 @@ require (
 	github.com/remyoudompheng/go-misc v0.0.0-20190427085024-2d6ac652a50e
 	github.com/rogpeppe/go-internal v1.13.1
 	github.com/tetafro/godot v1.4.16
-	github.com/tomarrell/wrapcheck/v2 v2.9.0
+	github.com/tomarrell/wrapcheck/v2 v2.10.0
 	github.com/ultraware/whitespace v0.1.0
 	gitlab.com/bosi/decorder v0.4.1
 	go.uber.org/nilaway v0.0.0-20240216175439-fb8b98c43554
