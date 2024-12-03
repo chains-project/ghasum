@@ -8,7 +8,7 @@ require (
 	github.com/alexkohler/nakedret/v2 v2.0.2
 	github.com/alexkohler/prealloc v1.0.0
 	github.com/alexkohler/unimport v0.0.0-20171106223308-e6f2b2e2d406
-	github.com/butuzov/ireturn v0.3.0
+	github.com/butuzov/ireturn v0.3.1
 	github.com/catenacyber/perfsprint v0.7.0
 	github.com/dkorunic/betteralign v0.5.1
 	github.com/go-critic/go-critic v0.11.4
