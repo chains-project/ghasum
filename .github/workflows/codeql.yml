@@ -16,6 +16,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4.2.0
+      with:
+        persist-credentials: false
     - name: Install Go
       uses: actions/setup-go@v5.1.0
       with:
