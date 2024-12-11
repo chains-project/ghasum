@@ -24,7 +24,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4.2.0
     - name: Install Go
-      uses: actions/setup-go@v5.1.0
+      uses: actions/setup-go@v5.2.0
       with:
         go-version-file: go.mod
     - name: Verify action checksums
@@ -43,7 +43,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4.2.0
     - name: Install Go
-      uses: actions/setup-go@v5.1.0
+      uses: actions/setup-go@v5.2.0
       with:
         go-version-file: go.mod
     - name: Verify action checksums
