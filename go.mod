@@ -99,7 +99,7 @@ require (
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	go.uber.org/automaxprocs v1.5.3 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/crypto v0.30.0 // indirect
+	golang.org/x/crypto v0.31.0 // indirect
 	golang.org/x/exp v0.0.0-20240808152545-0cdaa3abc0fa // indirect
 	golang.org/x/exp/typeparams v0.0.0-20240213143201-ec583247a57a // indirect
 	golang.org/x/net v0.32.0 // indirect
