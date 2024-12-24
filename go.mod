@@ -24,7 +24,7 @@ require (
 	github.com/polyfloyd/go-errorlint v1.7.0
 	github.com/remyoudompheng/go-misc v0.0.0-20190427085024-2d6ac652a50e
 	github.com/rogpeppe/go-internal v1.13.1
-	github.com/tetafro/godot v1.4.16
+	github.com/tetafro/godot v1.4.19
 	github.com/tomarrell/wrapcheck/v2 v2.9.0
 	github.com/ultraware/whitespace v0.1.0
 	gitlab.com/bosi/decorder v0.4.1
