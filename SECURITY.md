@@ -7,7 +7,7 @@ appreciate your efforts to responsibly disclose your findings. Due to the
 non-funded and open-source nature of the project, we take a best-efforts
 approach when it comes to engaging with security reports.
 
-This document should be considered expired after 2024-12-31. If you are reading
+This document should be considered expired after 2025-06-01. If you are reading
 this after that date, try to find an up-to-date version in the official source
 repository.
 
