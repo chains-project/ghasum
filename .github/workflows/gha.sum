@@ -3,6 +3,6 @@ version 1
 actions/checkout@v4.2.0 e6ng7MJDyAPkTZ/6d/plZK2YhZRzJZvxhYAPUPpNAzc=
 actions/setup-go@v5.1.0 xZ5Eqn4PhIM9fkIYTdQcpWTWTL9bOWFluIDZLD48RTA=
 github/codeql-action@v3.28.0 A2sR2g8bqRuptJPYM7kyyui/HlhhgVhp6bFvZF0LlpE=
-ncipollo/release-action@v1.14.0 +JAIlT/RB99JgfxlDrAcAdBnaKX4y8hyFWnHc4j7tfM=
+ncipollo/release-action@v1.15.0 4vkT9ENDRb/d8UYy0p878U4LRCcnasx8PeGPmXdtO5E=
 stefanzweifel/git-auto-commit-action@v5.0.0 t2VeG9180CmZ5/cmxvkFkN6iWoWsOjlaJ2V8rp1HDqY=
 tibdex/github-app-token@v2.1.0 ZNSBo6XSE0yxs8IkHEkVtUC9MkEeXTclXpMLl6zAmCs=
