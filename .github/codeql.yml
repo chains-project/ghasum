@@ -1,0 +1,10 @@
+# Configuration file for CodeQL (https://codeql.github.com/)
+
+name: ghasum CodeQL config
+
+packs:
+  - githubsecuritylab/codeql-go-libs@0.2.0
+  - githubsecuritylab/codeql-go-queries@0.2.0
+
+queries:
+  - uses: security-extended
