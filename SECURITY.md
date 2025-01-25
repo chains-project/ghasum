@@ -29,7 +29,7 @@ To report a security issue in an older version - i.e. the latest release isn't
 affected - please report it publicly. For example, as a regular issue in the
 public repository. If in doubt, report the issue privately.
 
-[new github advisory]: https://github.com/ericcornelissen/ghasum/security/advisories/new
+[new github advisory]: https://github.com/chains-project/ghasum/security/advisories/new
 [security@ericcornelissen.dev]: mailto:security@ericcornelissen.dev?subject=SECURITY%20%28ghasum%29
 
 ### What to Include in a Report

@@ -15,7 +15,7 @@ v1.2.3 as an example):
    Or clone:
 
    ```shell
-   git clone git@github.com:ericcornelissen/ghasum.git
+   git clone git@github.com:chains-project/ghasum.git
    ```
 
 1. Update the version number following to the current year-month pair in the

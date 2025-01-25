@@ -1,4 +1,4 @@
-// Copyright 2024 Eric Cornelissen
+// Copyright 2024-2025 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,10 +41,10 @@ func TestToUrl(t *testing.T) {
 			},
 			{
 				in: Repository{
-					Owner:   "ericcornelissen",
+					Owner:   "chains-project",
 					Project: "ghasum",
 				},
-				want: "https://github.com/ericcornelissen/ghasum",
+				want: "https://github.com/chains-project/ghasum",
 			},
 		}
 
