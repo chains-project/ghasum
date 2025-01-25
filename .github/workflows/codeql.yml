@@ -8,11 +8,17 @@ on:
 permissions: read-all
 
 jobs:
-  go:
-    name: Go
+  codeql:
+    name: ${{ matrix.what }}
     runs-on: ubuntu-24.04
     permissions:
       security-events: write # To upload CodeQL results
+    strategy:
+      fail-fast: false
+      matrix:
+        what:
+          - actions
+          - go
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4.2.0
@@ -30,9 +36,9 @@ jobs:
         WORKFLOW=$(echo "$WORKFLOW" | cut -d '@' -f 1 | cut -d '/' -f 3-5)
         go run ./cmd/ghasum verify -cache /home/runner/work/_actions -no-evict -offline "$WORKFLOW:$JOB"
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3.28.0
+      uses: github/codeql-action/init@v3.28.5
       with:
         config-file: ./.github/codeql.yml
-        languages: go
+        languages: ${{ matrix.what }}
     - name: Perform CodeQL analysis
-      uses: github/codeql-action/analyze@v3.28.0
+      uses: github/codeql-action/analyze@v3.28.5

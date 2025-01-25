@@ -8,3 +8,7 @@ packs:
 
 queries:
   - uses: security-extended
+
+query-filters:
+  - exclude:
+      id: actions/unpinned-tag
