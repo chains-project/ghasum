@@ -1,4 +1,4 @@
-// Copyright 2024 Eric Cornelissen
+// Copyright 2024-2025 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ericcornelissen/ghasum/internal/cache"
+	"github.com/chains-project/ghasum/internal/cache"
 )
 
 func cmdCache(argv []string) error {

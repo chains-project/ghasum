@@ -1,4 +1,4 @@
-module github.com/ericcornelissen/ghasum
+module github.com/chains-project/ghasum
 
 go 1.23.5
 
