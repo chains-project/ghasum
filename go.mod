@@ -1,6 +1,6 @@
 module github.com/chains-project/ghasum
 
-go 1.23.5
+go 1.23.6
 
 require (
 	4d63.com/gochecknoinits v0.0.0-20210416043744-25bb07f6e4e3
