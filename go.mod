@@ -1,6 +1,7 @@
 module github.com/chains-project/ghasum
 
 go 1.23.6
+toolchain go1.24.0
 
 require (
 	4d63.com/gochecknoinits v0.0.0-20210416043744-25bb07f6e4e3
@@ -10,7 +11,7 @@ require (
 	github.com/alexkohler/unimport v0.0.0-20171106223308-e6f2b2e2d406
 	github.com/butuzov/ireturn v0.3.0
 	github.com/catenacyber/perfsprint v0.8.0
-	github.com/dkorunic/betteralign v0.6.2
+	github.com/dkorunic/betteralign v0.6.3
 	github.com/go-critic/go-critic v0.11.4
 	github.com/go-git/go-git/v5 v5.13.0
 	github.com/google/capslock v0.2.7
@@ -29,8 +30,8 @@ require (
 	github.com/ultraware/whitespace v0.1.0
 	gitlab.com/bosi/decorder v0.4.1
 	go.uber.org/nilaway v0.0.0-20240216175439-fb8b98c43554
-	golang.org/x/mod v0.22.0
-	golang.org/x/tools v0.29.0
+	golang.org/x/mod v0.23.0
+	golang.org/x/tools v0.30.0
 	golang.org/x/vuln v1.1.4
 	gopkg.in/yaml.v2 v2.4.0
 	honnef.co/go/tools v0.5.0
@@ -92,14 +93,14 @@ require (
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/crypto v0.32.0 // indirect
+	golang.org/x/crypto v0.33.0 // indirect
 	golang.org/x/exp v0.0.0-20240808152545-0cdaa3abc0fa // indirect
 	golang.org/x/exp/typeparams v0.0.0-20240213143201-ec583247a57a // indirect
-	golang.org/x/net v0.34.0 // indirect
-	golang.org/x/sync v0.10.0 // indirect
-	golang.org/x/sys v0.29.0 // indirect
+	golang.org/x/net v0.35.0 // indirect
+	golang.org/x/sync v0.11.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/telemetry v0.0.0-20240522233618-39ace7a40ae7 // indirect
-	golang.org/x/text v0.21.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 	google.golang.org/protobuf v1.36.3 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
