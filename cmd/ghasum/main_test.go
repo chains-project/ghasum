@@ -1,4 +1,4 @@
-// Copyright 2024 Eric Cornelissen
+// Copyright 2024-2025 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 package main
 
 import (
-	"os"
 	"strings"
 	"testing"
 
@@ -23,11 +22,11 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	commands := map[string]func() int{
-		"ghasum": run,
+	commands := map[string]func(){
+		"ghasum": main,
 	}
 
-	os.Exit(testscript.RunMain(m, commands))
+	testscript.Main(m, commands)
 }
 
 func TestCli(t *testing.T) {
