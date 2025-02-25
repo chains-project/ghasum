@@ -18,35 +18,6 @@ v1.2.3 as an example):
    git clone git@github.com:chains-project/ghasum.git
    ```
 
-1. Update the version number following to the current year-month pair in the
-  `cmd/ghasum/version.go` file:
-
-   ```diff
-   - const version = "1.2.2"
-   + const version = "1.2.3"
-   ```
-
-1. Commit the changes to a new branch and push using:
-
-   ```shell
-   git checkout -b 'version-bump'
-   git add 'cmd/ghasum/version.go'
-   git commit --message 'version bump'
-   git push origin 'version-bump'
-   ```
-
-1. Create a Pull Request to merge the new branch into `main`.
-
-1. Merge the Pull Request if the changes look OK and all continuous integration
-   checks are passing.
-
-1. Immediately after the Pull Request is merged, sync the `main` branch:
-
-   ```shell
-   git checkout main
-   git pull origin main
-   ```
-
 1. Create a [git tag] for the new version and push it:
 
    ```shell
@@ -66,8 +37,9 @@ v1.2.3 as an example):
 
 1. Create a [GitHub Release] for the [git tag] of the new release. The release
    title should be "Release {_version_}" (e.g. "Release v1.2.3"). The release
-   text should be "{_version_}" (e.g. "v1.2.3"). The release artifact should be
-   the pre-compiled binaries, including checksums, from the previous step.
+   text should be a description of the changes since the previous release. The
+   release artifact should be the pre-compiled binaries, including checksums,
+   from the previous step.
 
 [git tag]: https://git-scm.com/book/en/v2/Git-Basics-Tagging
 [github release]: https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository

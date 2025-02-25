@@ -18,9 +18,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"runtime/debug"
 )
-
-const version = "0.3.0"
 
 func cmdVersion(argv []string) error {
 	var (
@@ -37,7 +36,12 @@ func cmdVersion(argv []string) error {
 		return errUsage
 	}
 
-	fmt.Printf("v%s\n", version)
+	if info, ok := debug.ReadBuildInfo(); ok {
+		fmt.Println(info.Main.Version)
+	} else {
+		fmt.Println("no version information available")
+	}
+
 	return nil
 }
 
