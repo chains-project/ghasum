@@ -133,7 +133,7 @@ func TaskBuildAll(t *T) error {
 
 		var (
 			compile = fmt.Sprintf(
-				"env GOOS=%s GOARCH=%s go build -o %s ./cmd/ghasum",
+				"env GOOS=%s GOARCH=%s go build -trimpath -o %s ./cmd/ghasum",
 				target.os,
 				target.arch,
 				executable,
