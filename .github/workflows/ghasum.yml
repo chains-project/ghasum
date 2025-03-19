@@ -25,7 +25,7 @@ jobs:
       with:
         token: ${{ steps.automation-token.outputs.token }}
     - name: Install Go
-      uses: actions/setup-go@v5.3.0
+      uses: actions/setup-go@v5.4.0
       with:
         go-version-file: go.mod
     # NOTE: skip "Verify action checksums" because they might not be up-to-date
