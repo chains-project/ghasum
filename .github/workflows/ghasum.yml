@@ -32,7 +32,7 @@ jobs:
     - name: Update gha.sum
       run: go run ./cmd/ghasum update -force
     - name: Commit gha.sum
-      uses: stefanzweifel/git-auto-commit-action@v5.0.0
+      uses: stefanzweifel/git-auto-commit-action@v5.2.0
       with:
         commit_message: Update ghasum checksums
         file_pattern: .github/workflows/gha.sum
