@@ -20,6 +20,7 @@ import (
 	"path"
 
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
 )
 
@@ -79,14 +80,34 @@ func cloneAtBranch(dir string, repo *Repository) error {
 }
 
 func cloneAtCommit(dir string, repo *Repository) error {
-	cloneOpts := git.CloneOptions{
-		URL:  toUrl(repo),
-		Tags: git.NoTags,
+	repository, err := git.PlainInit(dir, false)
+	if err != nil {
+		return fmt.Errorf("could not initialize a repository for %s/%s: %v", repo.Owner, repo.Project, err)
 	}
 
-	repository, err := git.PlainClone(dir, false, &cloneOpts)
-	if err != nil {
-		return fmt.Errorf("could not clone from %q: %v", cloneOpts.URL, err)
+	remote := "origin"
+	url := toUrl(repo)
+
+	remoteCfg := config.RemoteConfig{
+		Name: remote,
+		URLs: []string{url},
+	}
+	if _, err = repository.CreateRemote(&remoteCfg); err != nil {
+		return fmt.Errorf("could not set remote of the repository to %q: %v", url, err)
+	}
+
+	remoteRef := repo.Ref
+	localRef := "refs/heads/tmp"
+
+	fetchOpts := git.FetchOptions{
+		Depth:      1,
+		RemoteName: remote,
+		RefSpecs: []config.RefSpec{
+			config.RefSpec(fmt.Sprintf("%s:%s", remoteRef, localRef)),
+		},
+	}
+	if err = repository.Fetch(&fetchOpts); err != nil {
+		return fmt.Errorf("could not fetch commits from %q: %v", url, err)
 	}
 
 	worktree, err := repository.Worktree()
@@ -97,11 +118,11 @@ func cloneAtCommit(dir string, repo *Repository) error {
 	checkoutOpts := git.CheckoutOptions{
 		Hash: plumbing.NewHash(repo.Ref),
 	}
-	if err = worktree.Checkout(&checkoutOpts); err == nil {
-		return nil
+	if err = worktree.Checkout(&checkoutOpts); err != nil {
+		return fmt.Errorf("could not checkout ref %q for %s/%s: %v", repo.Ref, repo.Owner, repo.Project, err)
 	}
 
-	return fmt.Errorf("could not checkout ref %q for %s/%s: %v", repo.Ref, repo.Owner, repo.Project, err)
+	return nil
 }
 
 func cloneAtTag(dir string, repo *Repository) error {
