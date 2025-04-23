@@ -11,27 +11,27 @@ stderr 'an unexpected error occurred'
 stderr 'ghasum has not yet been initialized'
 
 # Sumfile with syntax error in headers
-! exec ghasum verify sumfile-syntax-headers/
+! exec ghasum update sumfile-syntax-headers/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'sumfile headers are invalid'
 stderr 'invalid header on line 2'
 
 # Sumfile with syntax error in entries
-! exec ghasum verify sumfile-syntax-entries/
+! exec ghasum update sumfile-syntax-entries/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'syntax error on line 3'
 
 # Sumfile with duplicate headers
-! exec ghasum verify sumfile-duplicate-headers/
+! exec ghasum update sumfile-duplicate-headers/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'sumfile headers are invalid'
 stderr 'duplicate header "foo" on line 3'
 
 # Sumfile with duplicate entries
-! exec ghasum verify sumfile-duplicate-entries/
+! exec ghasum update sumfile-duplicate-entries/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'checksums are corrupted'

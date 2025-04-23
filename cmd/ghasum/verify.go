@@ -75,13 +75,18 @@ func cmdVerify(argv []string) error {
 	}
 
 	if !*flagNoEvict {
-		if evictErr := c.Evict(); evictErr != nil {
-			return errors.Join(errUnexpected, evictErr)
+		if err = c.Evict(); err != nil {
+			return errors.Join(errCache, err)
 		}
 	}
 
+	repo, err := os.OpenRoot(target)
+	if err != nil {
+		return errors.Join(errUnexpected, err)
+	}
+
 	cfg := ghasum.Config{
-		Repo:     os.DirFS(target),
+		Repo:     repo.FS(),
 		Path:     target,
 		Workflow: workflow,
 		Job:      job,

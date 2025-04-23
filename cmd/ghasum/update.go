@@ -48,23 +48,24 @@ func cmdUpdate(argv []string) error {
 		return err
 	}
 
-	if _, err = os.Stat(target); err != nil {
-		return errors.Join(errUnexpected, err)
-	}
-
 	c, err := cache.New(*flagCache, *flagNoCache)
 	if err != nil {
 		return errors.Join(errCache, err)
 	}
 
 	if !*flagNoEvict {
-		if err := c.Evict(); err != nil {
-			return errors.Join(errUnexpected, err)
+		if err = c.Evict(); err != nil {
+			return errors.Join(errCache, err)
 		}
 	}
 
+	repo, err := os.OpenRoot(target)
+	if err != nil {
+		return errors.Join(errUnexpected, err)
+	}
+
 	cfg := ghasum.Config{
-		Repo:  os.DirFS(target),
+		Repo:  repo.FS(),
 		Path:  target,
 		Cache: c,
 	}

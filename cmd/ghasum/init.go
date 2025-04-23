@@ -51,8 +51,13 @@ func cmdInit(argv []string) error {
 		return errors.Join(errCache, err)
 	}
 
+	repo, err := os.OpenRoot(target)
+	if err != nil {
+		return errors.Join(errUnexpected, err)
+	}
+
 	cfg := ghasum.Config{
-		Repo:  os.DirFS(target),
+		Repo:  repo.FS(),
 		Path:  target,
 		Cache: c,
 	}
