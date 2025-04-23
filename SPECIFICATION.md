@@ -6,6 +6,42 @@ The specification aims to clarify how `ghasum` operates. Any discrepancy with
 the implementation or ambiguity in the specification can be reported as a bug.
 There is no guarantee on whether the specification or implementation is correct.
 
+## Scope
+
+The scope of `ghasum` are reusable GitHub Actions used in the GitHub Actions
+Workflow of a repository. This excludes
+
+- Actions in the same repository as the workflow ("local actions"). Example:
+
+  ```yaml
+  steps:
+  - uses: ./.github/actions/hello-world-action
+  ```
+
+- Docker Hub Actions ([#216]). Examples:
+
+  ```yaml
+  steps:
+  - uses: docker://alpine:3.8
+  - uses: docker://ghcr.io/OWNER/IMAGE_NAME
+  - uses: docker://gcr.io/cloud-builders/gradle
+  ```
+
+- Reusable workflows ([#215]). Examples:
+
+  ```yaml
+  jobs:
+    call-workflow-1-in-local-repo:
+      uses: octo-org/this-repo/.github/workflows/workflow-1.yml@172239021f7ba04fe7327647b213799853a9eb89
+    call-workflow-2-in-local-repo:
+      uses: ./.github/workflows/workflow-2.yml
+    call-workflow-in-another-repo:
+      uses: octo-org/another-repo/.github/workflows/workflow.yml@v1
+  ```
+
+[#215]: https://github.com/chains-project/ghasum/issues/215
+[#216]: https://github.com/chains-project/ghasum/issues/216
+
 ## Actions
 
 ### `ghasum init`

@@ -1,4 +1,4 @@
-// Copyright 2024 Eric Cornelissen
+// Copyright 2024-2025 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 package gha
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"testing"
@@ -28,45 +29,53 @@ func TestParseUses(t *testing.T) {
 		t.Parallel()
 
 		type TestCase struct {
-			in   string
+			uses string
 			want GitHubAction
 		}
 
-		testCases := []TestCase{
-			{
-				in: "foo/bar@v1",
+		testCases := map[string]TestCase{
+			"versioned action, branch ref": {
+				uses: "foo/bar@main",
+				want: GitHubAction{
+					Owner:   "foo",
+					Project: "bar",
+					Ref:     "main",
+				},
+			},
+			"versioned action, moving tag ref": {
+				uses: "foo/bar@v1",
 				want: GitHubAction{
 					Owner:   "foo",
 					Project: "bar",
 					Ref:     "v1",
 				},
 			},
-			{
-				in: "foo/baz@v3.1.4",
+			"versioned action, specific version tag": {
+				uses: "foo/baz@v3.1.4",
 				want: GitHubAction{
 					Owner:   "foo",
 					Project: "baz",
 					Ref:     "v3.1.4",
 				},
 			},
-			{
-				in: "hello/world@random-ref",
+			"versioned action, non-standard ref": {
+				uses: "hello/world@random-ref",
 				want: GitHubAction{
 					Owner:   "hello",
 					Project: "world",
 					Ref:     "random-ref",
 				},
 			},
-			{
-				in: "hallo/wereld@35dd46a3b3dfbb14198f8d19fb083ce0832dce4a",
+			"versioned action, commit ref": {
+				uses: "hallo/wereld@35dd46a3b3dfbb14198f8d19fb083ce0832dce4a",
 				want: GitHubAction{
 					Owner:   "hallo",
 					Project: "wereld",
 					Ref:     "35dd46a3b3dfbb14198f8d19fb083ce0832dce4a",
 				},
 			},
-			{
-				in: "foo/bar/baz@v2",
+			"versioned action, subdirectory": {
+				uses: "foo/bar/baz@v2",
 				want: GitHubAction{
 					Owner:   "foo",
 					Project: "bar",
@@ -75,24 +84,24 @@ func TestParseUses(t *testing.T) {
 			},
 		}
 
-		for _, tc := range testCases {
-			t.Run(tc.in, func(t *testing.T) {
+		for name, tt := range testCases {
+			t.Run(name, func(t *testing.T) {
 				t.Parallel()
 
-				got, err := parseUses(tc.in)
+				got, err := parseUses(tt.uses)
 				if err != nil {
 					t.Fatalf("Unexpected error: %+v", err)
 				}
 
-				if got, want := got.Owner, tc.want.Owner; got != want {
+				if got, want := got.Owner, tt.want.Owner; got != want {
 					t.Errorf("Incorrect owner (got %q, want %q)", got, want)
 				}
 
-				if got, want := got.Project, tc.want.Project; got != want {
+				if got, want := got.Project, tt.want.Project; got != want {
 					t.Errorf("Incorrect project (got %q, want %q)", got, want)
 				}
 
-				if got, want := got.Ref, tc.want.Ref; got != want {
+				if got, want := got.Ref, tt.want.Ref; got != want {
 					t.Errorf("Incorrect ref (got %q, want %q)", got, want)
 				}
 			})
@@ -103,64 +112,76 @@ func TestParseUses(t *testing.T) {
 		t.Parallel()
 
 		type TestCase struct {
-			in   string
-			want string
+			uses string
+			want error
 		}
 
-		testCases := []TestCase{
-			{
-				in:   "foobar",
-				want: "invalid uses value",
+		testCases := map[string]TestCase{
+			"an action in the same repository as the workflow": {
+				uses: "./.github/actions/hello-world-action",
+				want: ErrLocalAction,
 			},
-			{
-				in:   "foo/bar",
-				want: "invalid uses value",
+			"a Docker Hub action": {
+				uses: "docker://alpine:3.8",
+				want: ErrDockerUses,
 			},
-			{
-				in:   "f@o/bar@baz",
-				want: "invalid uses value",
+			"a GitHub Package Container registry action": {
+				uses: "docker://ghcr.io/OWNER/IMAGE_NAME",
+				want: ErrDockerUses,
 			},
-			{
-				in:   "foo/b@r@baz",
-				want: "invalid uses value",
+			"plain string": {
+				uses: "foobar",
+				want: ErrInvalidUses,
 			},
-			{
-				in:   "foo/bar/b@z@ref",
-				want: "invalid uses value",
+			"only a /, no @": {
+				uses: "foo/bar",
+				want: ErrInvalidUses,
 			},
-			{
-				in:   "foo@bar",
-				want: "invalid repository in uses",
+			"one extra @ before /": {
+				uses: "f@o/bar@baz",
+				want: ErrInvalidUses,
 			},
-			{
-				in:   "foo/@bar",
-				want: "invalid repository in uses",
+			"one extra @ after /": {
+				uses: "foo/b@r@baz",
+				want: ErrInvalidUses,
 			},
-			{
-				in:   "foo/bar/@baz",
-				want: "invalid repository path in uses",
+			"one extra @ in path": {
+				uses: "foo/bar/b@z@ref",
+				want: ErrInvalidUses,
 			},
-			{
-				in:   "foo//@bar",
-				want: "invalid repository path in uses",
+			"only a @, no /": {
+				uses: "foo@bar",
+				want: ErrInvalidUsesRepo,
 			},
-			{
-				in:   "foo//bar@baz",
-				want: "invalid repository path in uses",
+			"empty repository name (no path)": {
+				uses: "foo/@bar",
+				want: ErrInvalidUsesRepo,
+			},
+			"empty path": {
+				uses: "foo/bar/@baz",
+				want: ErrInvalidUsesPath,
+			},
+			"empty repository name and path": {
+				uses: "foo//@bar",
+				want: ErrInvalidUsesPath,
+			},
+			"empty repository name with path": {
+				uses: "foo//bar@baz",
+				want: ErrInvalidUsesPath,
 			},
 		}
 
-		for _, tc := range testCases {
-			t.Run(tc.in, func(t *testing.T) {
+		for name, tt := range testCases {
+			t.Run(name, func(t *testing.T) {
 				t.Parallel()
 
-				_, err := parseUses(tc.in)
+				_, err := parseUses(tt.uses)
 				if err == nil {
 					t.Fatal("Unexpected success")
 				}
 
-				if got, want := err.Error(), tc.want; got != want {
-					t.Errorf("Incorrect error message (got %q, want %q)", got, want)
+				if got, want := err, tt.want; !errors.Is(got, want) {
+					t.Errorf("Incorrect error (got %q, want %q)", got, want)
 				}
 			})
 		}

@@ -65,6 +65,10 @@ jobs:
         go-version-file: go.mod
     - name: golangci-lint
       uses: golangci/golangci-lint-action@3a91952
+    - name: This step uses a local action
+      uses: ./.github/actions/hello-world-action
+    - name: This step uses a Docker Hub action
+      uses: docker://alpine:3.8
     - name: This step does not use an action
       run: Echo 'hello world!'
 -- changed/.github/workflows/gha.sum --
@@ -90,6 +94,10 @@ jobs:
         go-version-file: go.mod
     - name: golangci-lint
       uses: golangci/golangci-lint-action@3a91952
+    - name: This step uses a local action
+      uses: ./.github/actions/hello-world-action
+    - name: This step uses a Docker Hub action
+      uses: docker://alpine:3.8
     - name: This step does not use an action
       run: Echo 'hello world!'
 -- remove/.github/workflows/gha.sum --
@@ -116,6 +124,10 @@ jobs:
         go-version-file: go.mod
     - name: golangci-lint
       uses: golangci/golangci-lint-action@3a91952
+    - name: This step uses a local action
+      uses: ./.github/actions/hello-world-action
+    - name: This step uses a Docker Hub action
+      uses: docker://alpine:3.8
     - name: This step does not use an action
       run: Echo 'hello world!'
 -- preserve/.github/workflows/gha.sum --
@@ -141,6 +153,10 @@ jobs:
         go-version-file: go.mod
     - name: golangci-lint
       uses: golangci/golangci-lint-action@3a91952
+    - name: This step uses a local action
+      uses: ./.github/actions/hello-world-action
+    - name: This step uses a Docker Hub action
+      uses: docker://alpine:3.8
     - name: This step does not use an action
       run: Echo 'hello world!'
 -- .cache/actions/checkout/main/.keep --

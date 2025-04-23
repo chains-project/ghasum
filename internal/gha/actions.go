@@ -1,4 +1,4 @@
-// Copyright 2024 Eric Cornelissen
+// Copyright 2024-2025 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 package gha
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -37,7 +38,9 @@ func actionsInWorkflows(workflows []workflow) ([]GitHubAction, error) {
 				}
 
 				action, err := parseUses(uses)
-				if err != nil {
+				if errors.Is(err, ErrLocalAction) || errors.Is(err, ErrDockerUses) {
+					continue
+				} else if err != nil {
 					return nil, err
 				}
 

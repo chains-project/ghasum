@@ -66,6 +66,10 @@ jobs:
         go-version-file: go.mod
     - name: golangci-lint
       uses: golangci/golangci-lint-action@3a91952
+    - name: This step uses a local action
+      uses: ./.github/actions/hello-world-action
+    - name: This step uses a Docker Hub action
+      uses: docker://alpine:3.8
     - name: This step does not use an action
       run: Echo 'hello world!'
 -- redundant/.github/workflows/gha.sum --
@@ -89,6 +93,10 @@ jobs:
       uses: actions/setup-go@v5.0.0
       with:
         go-version-file: go.mod
+    - name: This step uses a local action
+      uses: ./.github/actions/hello-world-action
+    - name: This step uses a Docker Hub action
+      uses: docker://alpine:3.8
     - name: This step does not use an action
       run: Echo 'hello world!'
 -- partial/.github/workflows/gha.sum --
