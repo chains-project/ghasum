@@ -22,6 +22,14 @@ import (
 )
 
 type (
+	manifest struct {
+		Runs runs `yaml:"runs"`
+	}
+
+	runs struct {
+		Steps []step `yaml:"steps"`
+	}
+
 	workflow struct {
 		Jobs map[string]job `yaml:"jobs"`
 	}
@@ -34,6 +42,15 @@ type (
 		Uses string `yaml:"uses"`
 	}
 )
+
+func parseManifest(data []byte) (manifest, error) {
+	var m manifest
+	if err := yaml.Unmarshal(data, &m); err != nil {
+		return m, fmt.Errorf("could not parse manifest: %v", err)
+	}
+
+	return m, nil
+}
 
 func parseWorkflow(data []byte) (workflow, error) {
 	var w workflow
@@ -78,6 +95,7 @@ func parseUses(uses string) (GitHubAction, error) {
 	if i == 0 || i == len(project)-1 {
 		return a, ErrInvalidUsesPath
 	} else if i > 0 && i < len(project)-1 {
+		a.Path = project[i+1:]
 		project = project[:i]
 	}
 

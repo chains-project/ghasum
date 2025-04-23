@@ -305,21 +305,21 @@ func TestParseWorkflow(t *testing.T) {
 			},
 		}
 
-		for _, tc := range testCases {
-			t.Run(strings.Split(tc.in, "\n")[0], func(t *testing.T) {
+		for _, tt := range testCases {
+			t.Run(strings.Split(tt.in, "\n")[0], func(t *testing.T) {
 				t.Parallel()
 
-				got, err := parseWorkflow([]byte(tc.in))
+				got, err := parseWorkflow([]byte(tt.in))
 				if err != nil {
 					t.Fatalf("Unexpected error: %+v", err)
 				}
 
-				if got, want := len(got.Jobs), len(tc.want.Jobs); got != want {
+				if got, want := len(got.Jobs), len(tt.want.Jobs); got != want {
 					t.Fatalf("Incorrect jobs length (got %d, want %d)", got, want)
 				}
 
 				for name, job := range got.Jobs {
-					want, ok := tc.want.Jobs[name]
+					want, ok := tt.want.Jobs[name]
 					if !ok {
 						t.Errorf("Got unwanted job %q", name)
 						continue
@@ -346,14 +346,14 @@ func TestParseWorkflow(t *testing.T) {
 		t.Parallel()
 
 		cases := []string{
-			workflowWithSyntaxError,
+			yamlWithSyntaxError,
 		}
 
-		for _, tc := range cases {
-			t.Run(tc, func(t *testing.T) {
+		for _, tt := range cases {
+			t.Run(tt, func(t *testing.T) {
 				t.Parallel()
 
-				if _, err := parseWorkflow([]byte(tc)); err == nil {
+				if _, err := parseWorkflow([]byte(tt)); err == nil {
 					t.Fatal("Unexpected success")
 				}
 			})
@@ -365,6 +365,112 @@ func TestParseWorkflow(t *testing.T) {
 
 		noPanic := func(w []byte) bool {
 			_, _ = parseWorkflow(w)
+			return true
+		}
+
+		if err := quick.Check(noPanic, nil); err != nil {
+			t.Errorf("Parsing failed for: %v", err)
+		}
+	})
+}
+
+func TestParseManifest(t *testing.T) {
+	t.Parallel()
+
+	t.Run("Valid examples", func(t *testing.T) {
+		t.Parallel()
+
+		type TestCase struct {
+			in   string
+			want manifest
+		}
+
+		testCases := []TestCase{
+			{
+				in:   manifestWithNoSteps,
+				want: manifest{},
+			},
+			{
+				in: manifestWithStep,
+				want: manifest{
+					Runs: runs{
+						Steps: []step{
+							{Uses: "foo/bar@v1"},
+							{Uses: ""},
+							{Uses: "foo/baz@v2"},
+						},
+					},
+				},
+			},
+			{
+				in: manifestWithNestedActions,
+				want: manifest{
+					Runs: runs{
+						Steps: []step{
+							{Uses: "nested/action/1@v1"},
+							{Uses: "nested/action/2@v1"},
+						},
+					},
+				},
+			},
+			{
+				in: manifestWithInvalidUses,
+				want: manifest{
+					Runs: runs{
+						Steps: []step{
+							{Uses: "this-is-not-an-action"},
+						},
+					},
+				},
+			},
+		}
+
+		for _, tt := range testCases {
+			t.Run(strings.Split(tt.in, "\n")[0], func(t *testing.T) {
+				t.Parallel()
+
+				got, err := parseManifest([]byte(tt.in))
+				if err != nil {
+					t.Fatalf("Unexpected error: %+v", err)
+				}
+
+				if got, want := len(got.Runs.Steps), len(tt.want.Runs.Steps); got != want {
+					t.Fatalf("Incorrect steps length (got %d, want %d)", got, want)
+				}
+
+				for i, got := range got.Runs.Steps {
+					want := tt.want.Runs.Steps[i]
+					if got, want := got.Uses, want.Uses; got != want {
+						t.Errorf("Incorrect uses for step %d (got %q, want %q)", i, got, want)
+					}
+				}
+			})
+		}
+	})
+
+	t.Run("Invalid examples", func(t *testing.T) {
+		t.Parallel()
+
+		cases := []string{
+			yamlWithSyntaxError,
+		}
+
+		for _, tt := range cases {
+			t.Run(tt, func(t *testing.T) {
+				t.Parallel()
+
+				if _, err := parseManifest([]byte(tt)); err == nil {
+					t.Fatal("Unexpected success")
+				}
+			})
+		}
+	})
+
+	t.Run("Arbitrary values", func(t *testing.T) {
+		t.Parallel()
+
+		noPanic := func(w []byte) bool {
+			_, _ = parseManifest(w)
 			return true
 		}
 

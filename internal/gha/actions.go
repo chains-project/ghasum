@@ -19,7 +19,10 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"maps"
 	"path"
+	"path/filepath"
+	"slices"
 )
 
 type workflowFile struct {
@@ -27,37 +30,49 @@ type workflowFile struct {
 	content []byte
 }
 
+func actionsInManifest(manifest manifest) ([]GitHubAction, error) {
+	unique := make(map[string]GitHubAction, 0)
+	err := actionsInSteps(manifest.Runs.Steps, unique)
+	if err != nil {
+		return nil, err
+	}
+
+	return slices.Collect(maps.Values(unique)), nil
+}
+
 func actionsInWorkflows(workflows []workflow) ([]GitHubAction, error) {
 	unique := make(map[string]GitHubAction, 0)
 	for _, workflow := range workflows {
 		for _, job := range workflow.Jobs {
-			for _, step := range job.Steps {
-				uses := step.Uses
-				if uses == "" {
-					continue
-				}
-
-				action, err := parseUses(uses)
-				if errors.Is(err, ErrLocalAction) || errors.Is(err, ErrDockerUses) {
-					continue
-				} else if err != nil {
-					return nil, err
-				}
-
-				id := fmt.Sprintf("%s%s%s", action.Owner, action.Project, action.Ref)
-				unique[id] = action
+			err := actionsInSteps(job.Steps, unique)
+			if err != nil {
+				return nil, err
 			}
 		}
 	}
 
-	i := 0
-	actions := make([]GitHubAction, len(unique))
-	for _, action := range unique {
-		actions[i] = action
-		i++
+	return slices.Collect(maps.Values(unique)), nil
+}
+
+func actionsInSteps(steps []step, m map[string]GitHubAction) error {
+	for _, step := range steps {
+		uses := step.Uses
+		if uses == "" {
+			continue
+		}
+
+		action, err := parseUses(uses)
+		if errors.Is(err, ErrLocalAction) || errors.Is(err, ErrDockerUses) {
+			continue
+		} else if err != nil {
+			return err
+		}
+
+		id := fmt.Sprintf("%s%s%s%s", action.Owner, action.Project, action.Path, action.Ref)
+		m[id] = action
 	}
 
-	return actions, nil
+	return nil
 }
 
 func workflowsInRepo(repo fs.FS) ([]workflowFile, error) {
@@ -103,6 +118,20 @@ func workflowInRepo(repo fs.FS, path string) ([]byte, error) {
 	file, err := repo.Open(path)
 	if err != nil {
 		return nil, fmt.Errorf("could not open workflow at %q: %v", path, err)
+	}
+
+	data, _ := io.ReadAll(file)
+	return data, nil
+}
+
+func manifestInRepo(repo fs.FS, dir string) ([]byte, error) {
+	path := filepath.Join(dir, "action.yml")
+	file, err := repo.Open(path)
+	if err != nil {
+		path = filepath.Join(dir, "action.yaml")
+		if file, err = repo.Open(path); err != nil {
+			return nil, fmt.Errorf("could not open manifest (action.yml or action.yaml) at %s: %v", dir, err)
+		}
 	}
 
 	data, _ := io.ReadAll(file)

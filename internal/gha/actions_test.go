@@ -1,4 +1,4 @@
-// Copyright 2024 Eric Cornelissen
+// Copyright 2024-2025 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,6 +22,153 @@ import (
 	"github.com/liamg/memoryfs"
 )
 
+func TestActionsInManifest(t *testing.T) {
+	t.Parallel()
+
+	t.Run("Valid examples", func(t *testing.T) {
+		t.Parallel()
+
+		type TestCase struct {
+			manifest manifest
+			want     int
+		}
+
+		testCases := map[string]TestCase{
+			"no steps": {
+				manifest: manifest{
+					Runs: runs{
+						Steps: []step{},
+					},
+				},
+				want: 0,
+			},
+			"one step without uses": {
+				manifest: manifest{
+					Runs: runs{
+						Steps: []step{
+							{},
+						},
+					},
+				},
+				want: 0,
+			},
+			"one step with uses": {
+				manifest: manifest{
+					Runs: runs{
+						Steps: []step{
+							{
+								Uses: "foo/bar@v1",
+							},
+						},
+					},
+				},
+				want: 1,
+			},
+			"multiple step with unique uses": {
+				manifest: manifest{
+					Runs: runs{
+						Steps: []step{
+							{
+								Uses: "foo/bar@v1",
+							},
+							{
+								Uses: "foo/baz@v2",
+							},
+						},
+					},
+				},
+				want: 2,
+			},
+			"multiple steps with duplicate uses": {
+				manifest: manifest{
+					Runs: runs{
+						Steps: []step{
+							{
+								Uses: "foo/bar@v1",
+							},
+							{
+								Uses: "foo/bar@v1",
+							},
+						},
+					},
+				},
+				want: 1,
+			},
+		}
+
+		for name, tt := range testCases {
+			t.Run(name, func(t *testing.T) {
+				t.Parallel()
+
+				got, err := actionsInManifest(tt.manifest)
+				if err != nil {
+					t.Fatalf("Unexpected error: %+v", err)
+				}
+
+				if got, want := len(got), tt.want; got != want {
+					t.Errorf("Incorrect result length (got %d, want %d)", got, want)
+				}
+			})
+		}
+	})
+
+	t.Run("Invalid examples", func(t *testing.T) {
+		t.Parallel()
+
+		type TestCase struct {
+			manifest manifest
+		}
+
+		testCases := map[string]TestCase{
+			"invalid uses value": {
+				manifest: manifest{
+					Runs: runs{
+						Steps: []step{
+							{
+								Uses: "this isn't an action",
+							},
+						},
+					},
+				},
+			},
+		}
+
+		for name, tt := range testCases {
+			t.Run(name, func(t *testing.T) {
+				if _, err := actionsInManifest(tt.manifest); err == nil {
+					t.Fatal("Unexpected success")
+				}
+			})
+		}
+	})
+
+	t.Run("Arbitrary", func(t *testing.T) {
+		t.Parallel()
+
+		unique := func(m manifest) bool {
+			actions, err := actionsInManifest(m)
+			if err != nil {
+				return true
+			}
+
+			seen := make(map[GitHubAction]struct{}, 0)
+			for _, action := range actions {
+				if _, ok := seen[action]; ok {
+					return false
+				}
+
+				seen[action] = struct{}{}
+			}
+
+			return true
+		}
+
+		if err := quick.Check(unique, nil); err != nil {
+			t.Errorf("Duplicate value detected for: %v", err)
+		}
+	})
+}
+
 func TestActionsInWorkflows(t *testing.T) {
 	t.Parallel()
 
@@ -29,14 +176,12 @@ func TestActionsInWorkflows(t *testing.T) {
 		t.Parallel()
 
 		type TestCase struct {
-			name string
 			in   []workflow
 			want int
 		}
 
-		testCases := []TestCase{
-			{
-				name: "no jobs",
+		testCases := map[string]TestCase{
+			"no jobs": {
 				in: []workflow{
 					{
 						Jobs: map[string]job{},
@@ -44,8 +189,7 @@ func TestActionsInWorkflows(t *testing.T) {
 				},
 				want: 0,
 			},
-			{
-				name: "one job without steps",
+			"one job without steps": {
 				in: []workflow{
 					{
 						Jobs: map[string]job{
@@ -57,8 +201,7 @@ func TestActionsInWorkflows(t *testing.T) {
 				},
 				want: 0,
 			},
-			{
-				name: "multiple jobs without steps",
+			"multiple jobs without steps": {
 				in: []workflow{
 					{
 						Jobs: map[string]job{
@@ -73,8 +216,7 @@ func TestActionsInWorkflows(t *testing.T) {
 				},
 				want: 0,
 			},
-			{
-				name: "one job with a step without uses",
+			"one job with a step without uses": {
 				in: []workflow{
 					{
 						Jobs: map[string]job{
@@ -88,8 +230,7 @@ func TestActionsInWorkflows(t *testing.T) {
 				},
 				want: 0,
 			},
-			{
-				name: "one job with one step",
+			"one job with one step": {
 				in: []workflow{
 					{
 						Jobs: map[string]job{
@@ -105,8 +246,7 @@ func TestActionsInWorkflows(t *testing.T) {
 				},
 				want: 1,
 			},
-			{
-				name: "multiple jobs with one unique step each",
+			"multiple jobs with one unique step each": {
 				in: []workflow{
 					{
 						Jobs: map[string]job{
@@ -129,8 +269,7 @@ func TestActionsInWorkflows(t *testing.T) {
 				},
 				want: 2,
 			},
-			{
-				name: "one job with multiple unique steps",
+			"one job with multiple unique steps": {
 				in: []workflow{
 					{
 						Jobs: map[string]job{
@@ -149,8 +288,7 @@ func TestActionsInWorkflows(t *testing.T) {
 				},
 				want: 2,
 			},
-			{
-				name: "multiple jobs with multiple unique steps",
+			"multiple jobs with multiple unique steps": {
 				in: []workflow{
 					{
 						Jobs: map[string]job{
@@ -179,8 +317,7 @@ func TestActionsInWorkflows(t *testing.T) {
 				},
 				want: 4,
 			},
-			{
-				name: "one jobs with duplicate steps",
+			"one jobs with duplicate steps": {
 				in: []workflow{
 					{
 						Jobs: map[string]job{
@@ -199,8 +336,7 @@ func TestActionsInWorkflows(t *testing.T) {
 				},
 				want: 1,
 			},
-			{
-				name: "multiple jobs with duplicate step between them",
+			"multiple jobs with duplicate step between them": {
 				in: []workflow{
 					{
 
@@ -226,16 +362,16 @@ func TestActionsInWorkflows(t *testing.T) {
 			},
 		}
 
-		for _, tc := range testCases {
-			t.Run(tc.name, func(t *testing.T) {
+		for name, tt := range testCases {
+			t.Run(name, func(t *testing.T) {
 				t.Parallel()
 
-				got, err := actionsInWorkflows(tc.in)
+				got, err := actionsInWorkflows(tt.in)
 				if err != nil {
 					t.Fatalf("Unexpected error: %+v", err)
 				}
 
-				if got, want := len(got), tc.want; got != want {
+				if got, want := len(got), tt.want; got != want {
 					t.Errorf("Incorrect result length (got %d, want %d)", got, want)
 				}
 			})
@@ -246,13 +382,11 @@ func TestActionsInWorkflows(t *testing.T) {
 		t.Parallel()
 
 		type TestCase struct {
-			name string
-			in   []workflow
+			in []workflow
 		}
 
-		testCases := []TestCase{
-			{
-				name: "invalid uses value",
+		testCases := map[string]TestCase{
+			"invalid uses value": {
 				in: []workflow{
 					{
 						Jobs: map[string]job{
@@ -269,9 +403,9 @@ func TestActionsInWorkflows(t *testing.T) {
 			},
 		}
 
-		for _, tc := range testCases {
-			t.Run(tc.name, func(t *testing.T) {
-				if _, err := actionsInWorkflows(tc.in); err == nil {
+		for name, tt := range testCases {
+			t.Run(name, func(t *testing.T) {
+				if _, err := actionsInWorkflows(tt.in); err == nil {
 					t.Fatal("Unexpected success")
 				}
 			})
@@ -312,17 +446,25 @@ func TestWorkflowsInRepo(t *testing.T) {
 		t.Parallel()
 
 		type TestCase struct {
-			name      string
-			workflows map[string]mockFsEntry
-			want      []workflowFile
+			fs   map[string]mockFsEntry
+			want []workflowFile
 		}
 
-		testCases := []TestCase{
-			{
-				name: ".yml workflow",
-				workflows: map[string]mockFsEntry{
-					"example.yml": {
-						Content: []byte(workflowWithJobsWithSteps),
+		testCases := map[string]TestCase{
+			".yml workflow": {
+				fs: map[string]mockFsEntry{
+					".github": {
+						Dir: true,
+						Children: map[string]mockFsEntry{
+							"workflows": {
+								Dir: true,
+								Children: map[string]mockFsEntry{
+									"example.yml": {
+										Content: []byte(workflowWithJobsWithSteps),
+									},
+								},
+							},
+						},
 					},
 				},
 				want: []workflowFile{
@@ -332,11 +474,20 @@ func TestWorkflowsInRepo(t *testing.T) {
 					},
 				},
 			},
-			{
-				name: ".yaml workflow",
-				workflows: map[string]mockFsEntry{
-					"example.yaml": {
-						Content: []byte(workflowWithJobsWithSteps),
+			".yaml workflow": {
+				fs: map[string]mockFsEntry{
+					".github": {
+						Dir: true,
+						Children: map[string]mockFsEntry{
+							"workflows": {
+								Dir: true,
+								Children: map[string]mockFsEntry{
+									"example.yaml": {
+										Content: []byte(workflowWithJobsWithSteps),
+									},
+								},
+							},
+						},
 					},
 				},
 				want: []workflowFile{
@@ -346,22 +497,40 @@ func TestWorkflowsInRepo(t *testing.T) {
 					},
 				},
 			},
-			{
-				name: "non-workflow file",
-				workflows: map[string]mockFsEntry{
-					"greeting.txt": {
-						Content: []byte("Hello world!"),
+			"non-workflow file": {
+				fs: map[string]mockFsEntry{
+					".github": {
+						Dir: true,
+						Children: map[string]mockFsEntry{
+							"workflows": {
+								Dir: true,
+								Children: map[string]mockFsEntry{
+									"greeting.txt": {
+										Content: []byte("Hello world!"),
+									},
+								},
+							},
+						},
 					},
 				},
 				want: []workflowFile{},
 			},
-			{
-				name: "nested directory",
-				workflows: map[string]mockFsEntry{
-					"greeting.txt": {
+			"nested directory": {
+				fs: map[string]mockFsEntry{
+					".github": {
 						Dir: true,
 						Children: map[string]mockFsEntry{
-							"workflow.yml": {},
+							"workflows": {
+								Dir: true,
+								Children: map[string]mockFsEntry{
+									"nested": {
+										Dir: true,
+										Children: map[string]mockFsEntry{
+											"workflow.yml": {},
+										},
+									},
+								},
+							},
 						},
 					},
 				},
@@ -369,11 +538,11 @@ func TestWorkflowsInRepo(t *testing.T) {
 			},
 		}
 
-		for _, tc := range testCases {
-			t.Run(tc.name, func(t *testing.T) {
+		for name, tt := range testCases {
+			t.Run(name, func(t *testing.T) {
 				t.Parallel()
 
-				repo, err := mockRepo(tc.workflows)
+				repo, err := mockRepo(tt.fs)
 				if err != nil {
 					t.Fatalf("Could not initialize file system: %+v", err)
 				}
@@ -383,16 +552,16 @@ func TestWorkflowsInRepo(t *testing.T) {
 					t.Fatalf("Unexpected error: %+v", err)
 				}
 
-				if got, want := len(got), len(tc.want); got != want {
+				if got, want := len(got), len(tt.want); got != want {
 					t.Fatalf("Incorrect result length (got %d, want %d)", got, want)
 				}
 
 				for i, got := range got {
-					if got, want := got.content, tc.want[i].content; !bytes.Equal(got, want) {
+					if got, want := got.content, tt.want[i].content; !bytes.Equal(got, want) {
 						t.Errorf("Incorrect content for workflow %d (got %s, want %s)", i, got, want)
 					}
 
-					if got, want := got.path, tc.want[i].path; got != want {
+					if got, want := got.path, tt.want[i].path; got != want {
 						t.Errorf("Incorrect path for workflow %d (got %s, want %s)", i, got, want)
 					}
 				}
@@ -406,6 +575,130 @@ func TestWorkflowsInRepo(t *testing.T) {
 		repo := memoryfs.New()
 		if _, err := workflowsInRepo(repo); err == nil {
 			t.Fatal("Unexpected success")
+		}
+	})
+}
+
+func TestManifestInRepo(t *testing.T) {
+	t.Parallel()
+
+	t.Run("Valid examples", func(t *testing.T) {
+		t.Parallel()
+
+		type TestCase struct {
+			fs   map[string]mockFsEntry
+			dir  string
+			want []byte
+		}
+
+		testCases := map[string]TestCase{
+			".yml manifest in root": {
+				fs: map[string]mockFsEntry{
+					"action.yml": {
+						Content: []byte(manifestWithStep),
+					},
+				},
+				dir:  "",
+				want: []byte(manifestWithStep),
+			},
+			".yaml manifest in root": {
+				fs: map[string]mockFsEntry{
+					"action.yaml": {
+						Content: []byte(manifestWithStep),
+					},
+				},
+				dir:  "",
+				want: []byte(manifestWithStep),
+			},
+			".yml manifest, nested": {
+				fs: map[string]mockFsEntry{
+					"nested": {
+						Dir: true,
+						Children: map[string]mockFsEntry{
+							"action.yml": {
+								Content: []byte(manifestWithStep),
+							},
+						},
+					},
+				},
+				dir:  "nested",
+				want: []byte(manifestWithStep),
+			},
+			".yaml manifest, nested": {
+				fs: map[string]mockFsEntry{
+					"nested": {
+						Dir: true,
+						Children: map[string]mockFsEntry{
+							"action.yaml": {
+								Content: []byte(manifestWithStep),
+							},
+						},
+					},
+				},
+				dir:  "nested",
+				want: []byte(manifestWithStep),
+			},
+		}
+
+		for name, tt := range testCases {
+			t.Run(name, func(t *testing.T) {
+				t.Parallel()
+
+				repo, err := mockRepo(tt.fs)
+				if err != nil {
+					t.Fatalf("Could not initialize file system: %+v", err)
+				}
+
+				got, err := manifestInRepo(repo, tt.dir)
+				if err != nil {
+					t.Fatalf("Unexpected error: %+v", err)
+				}
+
+				if want := tt.want; !bytes.Equal(got, want) {
+					t.Errorf("Incorrect content for the manifest (got %s, want %s)", got, want)
+				}
+			})
+		}
+	})
+
+	t.Run("Invalid examples", func(t *testing.T) {
+		t.Parallel()
+
+		type TestCase struct {
+			fs   map[string]mockFsEntry
+			dir  string
+			want []byte
+		}
+
+		testCases := map[string]TestCase{
+			".yml manifest in different dir": {
+				fs: map[string]mockFsEntry{
+					"action.yml": {
+						Content: []byte(manifestWithStep),
+					},
+				},
+				dir:  "nested",
+				want: []byte(manifestWithStep),
+			},
+			".yaml manifest in different dir": {
+				fs: map[string]mockFsEntry{
+					"action.yaml": {
+						Content: []byte(manifestWithStep),
+					},
+				},
+				dir:  "nested",
+				want: []byte(manifestWithStep),
+			},
+		}
+
+		for name, tt := range testCases {
+			t.Run(name, func(t *testing.T) {
+				t.Parallel()
+
+				if _, err := mockRepo(tt.fs); err != nil {
+					t.Fatal("Unexpected success")
+				}
+			})
 		}
 	})
 }

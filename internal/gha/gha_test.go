@@ -1,4 +1,4 @@
-// Copyright 2024 Eric Cornelissen
+// Copyright 2024-2025 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,16 +34,26 @@ func TestNoWorkflows(t *testing.T) {
 func TestFaultyWorkflow(t *testing.T) {
 	t.Parallel()
 
-	workflows := map[string]mockFsEntry{
-		"workflow.yaml": {
-			Content: []byte(workflowWithJobWithSteps),
-		},
-		"syntax-error.yml": {
-			Content: []byte(workflowWithSyntaxError),
+	fs := map[string]mockFsEntry{
+		".github": {
+			Dir: true,
+			Children: map[string]mockFsEntry{
+				"workflows": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"workflow.yaml": {
+							Content: []byte(workflowWithJobWithSteps),
+						},
+						"syntax-error.yml": {
+							Content: []byte(yamlWithSyntaxError),
+						},
+					},
+				},
+			},
 		},
 	}
 
-	repo, err := mockRepo(workflows)
+	repo, err := mockRepo(fs)
 	if err != nil {
 		t.Fatalf("Could not initialize file system: %+v", err)
 	}
@@ -56,16 +66,26 @@ func TestFaultyWorkflow(t *testing.T) {
 func TestFaultyUses(t *testing.T) {
 	t.Parallel()
 
-	workflows := map[string]mockFsEntry{
-		"workflow.yaml": {
-			Content: []byte(workflowWithJobWithSteps),
-		},
-		"invalid-uses.yml": {
-			Content: []byte(workflowWithInvalidUses),
+	fs := map[string]mockFsEntry{
+		".github": {
+			Dir: true,
+			Children: map[string]mockFsEntry{
+				"workflows": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"workflow.yaml": {
+							Content: []byte(workflowWithJobWithSteps),
+						},
+						"invalid-uses.yml": {
+							Content: []byte(workflowWithInvalidUses),
+						},
+					},
+				},
+			},
 		},
 	}
 
-	repo, err := mockRepo(workflows)
+	repo, err := mockRepo(fs)
 	if err != nil {
 		t.Fatalf("Could not initialize file system: %+v", err)
 	}
@@ -79,25 +99,35 @@ func TestRealisticRepository(t *testing.T) {
 	t.Parallel()
 
 	workflows := map[string]mockFsEntry{
-		"nested": {
+		".github": {
 			Dir: true,
 			Children: map[string]mockFsEntry{
-				"foo.bar": {
-					Content: []byte("foobar"),
+				"workflows": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"nested": {
+							Dir: true,
+							Children: map[string]mockFsEntry{
+								"foo.bar": {
+									Content: []byte("foobar"),
+								},
+							},
+						},
+						"not-a-workflow.txt": {
+							Content: []byte("Hello world!"),
+						},
+						"one-job.yaml": {
+							Content: []byte(workflowWithJobWithSteps),
+						},
+						"multiple-jobs.yml": {
+							Content: []byte(workflowWithJobsWithSteps),
+						},
+						"nested-action.yml": {
+							Content: []byte(workflowWithNestedActions),
+						},
+					},
 				},
 			},
-		},
-		"not-a-workflow.txt": {
-			Content: []byte("Hello world!"),
-		},
-		"one-job.yaml": {
-			Content: []byte(workflowWithJobWithSteps),
-		},
-		"multiple-jobs.yml": {
-			Content: []byte(workflowWithJobsWithSteps),
-		},
-		"nested-action.yml": {
-			Content: []byte(workflowWithNestedActions),
 		},
 	}
 
@@ -125,6 +155,13 @@ func TestRealisticRepository(t *testing.T) {
 		{
 			Owner:   "nested",
 			Project: "action",
+			Path:    "1",
+			Ref:     "v1",
+		},
+		{
+			Owner:   "nested",
+			Project: "action",
+			Path:    "2",
 			Ref:     "v1",
 		},
 	}
@@ -150,95 +187,165 @@ func TestWorkflowActions(t *testing.T) {
 	t.Parallel()
 
 	type TestCase struct {
-		workflows map[string]mockFsEntry
-		workflow  string
-		wantErr   bool
+		fs       map[string]mockFsEntry
+		workflow string
+		wantErr  bool
 	}
 
 	testCases := []TestCase{
 		{
-			workflows: map[string]mockFsEntry{
-				"workflow.yml": {
-					Content: []byte(workflowWithNoJobs),
+			fs: map[string]mockFsEntry{
+				".github": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"workflows": {
+							Dir: true,
+							Children: map[string]mockFsEntry{
+								"workflow.yml": {
+									Content: []byte(workflowWithNoJobs),
+								},
+							},
+						},
+					},
 				},
 			},
 			workflow: ".github/workflows/workflow.yml",
 			wantErr:  false,
 		},
 		{
-			workflows: map[string]mockFsEntry{
-				"workflow.yml": {
-					Content: []byte(workflowWithJobNoSteps),
+			fs: map[string]mockFsEntry{
+				".github": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"workflows": {
+							Dir: true,
+							Children: map[string]mockFsEntry{
+								"workflow.yml": {
+									Content: []byte(workflowWithJobNoSteps),
+								},
+							},
+						},
+					},
 				},
 			},
 			workflow: ".github/workflows/workflow.yml",
 			wantErr:  false,
 		},
 		{
-			workflows: map[string]mockFsEntry{
-				"workflow.yml": {
-					Content: []byte(workflowWithJobWithSteps),
+			fs: map[string]mockFsEntry{
+				".github": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"workflows": {
+							Dir: true,
+							Children: map[string]mockFsEntry{
+								"workflow.yml": {
+									Content: []byte(workflowWithJobWithSteps),
+								},
+							},
+						},
+					},
 				},
 			},
 			workflow: ".github/workflows/workflow.yml",
 			wantErr:  false,
 		},
 		{
-			workflows: map[string]mockFsEntry{
-				"workflow.yml": {
-					Content: []byte(workflowWithJobsWithSteps),
+			fs: map[string]mockFsEntry{
+				".github": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"workflows": {
+							Dir: true,
+							Children: map[string]mockFsEntry{
+								"workflow.yml": {
+									Content: []byte(workflowWithJobsWithSteps),
+								},
+							},
+						},
+					},
 				},
 			},
 			workflow: ".github/workflows/workflow.yml",
 			wantErr:  false,
 		},
 		{
-			workflows: map[string]mockFsEntry{
-				"workflow.yml": {
-					Content: []byte(workflowWithNestedActions),
+			fs: map[string]mockFsEntry{
+				".github": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"workflows": {
+							Dir: true,
+							Children: map[string]mockFsEntry{
+								"workflow.yml": {
+									Content: []byte(workflowWithNestedActions),
+								},
+							},
+						},
+					},
 				},
 			},
 			workflow: ".github/workflows/workflow.yml",
 			wantErr:  false,
 		},
 		{
-			workflows: map[string]mockFsEntry{
-				"workflow.yml": {
-					Content: []byte(workflowWithSyntaxError),
+			fs: map[string]mockFsEntry{
+				".github": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"workflows": {
+							Dir: true,
+							Children: map[string]mockFsEntry{
+								"workflow.yml": {
+									Content: []byte(yamlWithSyntaxError),
+								},
+							},
+						},
+					},
 				},
 			},
 			workflow: ".github/workflows/workflow.yml",
 			wantErr:  true,
 		},
 		{
-			workflows: map[string]mockFsEntry{
-				"workflow.yml": {
-					Content: []byte(workflowWithInvalidUses),
+			fs: map[string]mockFsEntry{
+				".github": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"workflows": {
+							Dir: true,
+							Children: map[string]mockFsEntry{
+								"workflow.yml": {
+									Content: []byte(workflowWithInvalidUses),
+								},
+							},
+						},
+					},
 				},
 			},
 			workflow: ".github/workflows/workflow.yml",
 			wantErr:  true,
 		},
 		{
-			workflows: map[string]mockFsEntry{},
-			workflow:  ".github/workflows/workflow.yml",
-			wantErr:   true,
+			fs:       map[string]mockFsEntry{},
+			workflow: ".github/workflows/workflow.yml",
+			wantErr:  true,
 		},
 	}
 
-	for i, tc := range testCases {
+	for i, tt := range testCases {
 		t.Run(fmt.Sprintf("#%d", i), func(t *testing.T) {
 			t.Parallel()
 
-			repo, err := mockRepo(tc.workflows)
+			repo, err := mockRepo(tt.fs)
 			if err != nil {
 				t.Fatalf("Could not initialize file system: %+v", err)
 			}
 
-			_, err = WorkflowActions(repo, tc.workflow)
-			if err == nil && tc.wantErr {
+			_, err = WorkflowActions(repo, tt.workflow)
+			if err == nil && tt.wantErr {
 				t.Error("Unexpected success")
-			} else if err != nil && !tc.wantErr {
+			} else if err != nil && !tt.wantErr {
 				t.Errorf("Unexpected failure (got %v)", err)
 			}
 		})
@@ -249,17 +356,27 @@ func TestJobActions(t *testing.T) {
 	t.Parallel()
 
 	type TestCase struct {
-		workflows map[string]mockFsEntry
-		workflow  string
-		job       string
-		wantErr   bool
+		fs       map[string]mockFsEntry
+		workflow string
+		job      string
+		wantErr  bool
 	}
 
 	testCases := []TestCase{
 		{
-			workflows: map[string]mockFsEntry{
-				"workflow.yml": {
-					Content: []byte(workflowWithJobNoSteps),
+			fs: map[string]mockFsEntry{
+				".github": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"workflows": {
+							Dir: true,
+							Children: map[string]mockFsEntry{
+								"workflow.yml": {
+									Content: []byte(workflowWithJobNoSteps),
+								},
+							},
+						},
+					},
 				},
 			},
 			workflow: ".github/workflows/workflow.yml",
@@ -267,9 +384,19 @@ func TestJobActions(t *testing.T) {
 			wantErr:  false,
 		},
 		{
-			workflows: map[string]mockFsEntry{
-				"workflow.yml": {
-					Content: []byte(workflowWithJobWithSteps),
+			fs: map[string]mockFsEntry{
+				".github": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"workflows": {
+							Dir: true,
+							Children: map[string]mockFsEntry{
+								"workflow.yml": {
+									Content: []byte(workflowWithJobWithSteps),
+								},
+							},
+						},
+					},
 				},
 			},
 			workflow: ".github/workflows/workflow.yml",
@@ -277,9 +404,19 @@ func TestJobActions(t *testing.T) {
 			wantErr:  false,
 		},
 		{
-			workflows: map[string]mockFsEntry{
-				"workflow.yml": {
-					Content: []byte(workflowWithJobsWithSteps),
+			fs: map[string]mockFsEntry{
+				".github": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"workflows": {
+							Dir: true,
+							Children: map[string]mockFsEntry{
+								"workflow.yml": {
+									Content: []byte(workflowWithJobsWithSteps),
+								},
+							},
+						},
+					},
 				},
 			},
 			workflow: ".github/workflows/workflow.yml",
@@ -287,9 +424,19 @@ func TestJobActions(t *testing.T) {
 			wantErr:  false,
 		},
 		{
-			workflows: map[string]mockFsEntry{
-				"workflow.yml": {
-					Content: []byte(workflowWithJobsWithSteps),
+			fs: map[string]mockFsEntry{
+				".github": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"workflows": {
+							Dir: true,
+							Children: map[string]mockFsEntry{
+								"workflow.yml": {
+									Content: []byte(workflowWithJobsWithSteps),
+								},
+							},
+						},
+					},
 				},
 			},
 			workflow: ".github/workflows/workflow.yml",
@@ -297,9 +444,19 @@ func TestJobActions(t *testing.T) {
 			wantErr:  false,
 		},
 		{
-			workflows: map[string]mockFsEntry{
-				"workflow.yml": {
-					Content: []byte(workflowWithNestedActions),
+			fs: map[string]mockFsEntry{
+				".github": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"workflows": {
+							Dir: true,
+							Children: map[string]mockFsEntry{
+								"workflow.yml": {
+									Content: []byte(workflowWithNestedActions),
+								},
+							},
+						},
+					},
 				},
 			},
 			workflow: ".github/workflows/workflow.yml",
@@ -307,9 +464,19 @@ func TestJobActions(t *testing.T) {
 			wantErr:  false,
 		},
 		{
-			workflows: map[string]mockFsEntry{
-				"workflow.yml": {
-					Content: []byte(workflowWithNoJobs),
+			fs: map[string]mockFsEntry{
+				".github": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"workflows": {
+							Dir: true,
+							Children: map[string]mockFsEntry{
+								"workflow.yml": {
+									Content: []byte(workflowWithNoJobs),
+								},
+							},
+						},
+					},
 				},
 			},
 			workflow: ".github/workflows/workflow.yml",
@@ -317,9 +484,19 @@ func TestJobActions(t *testing.T) {
 			wantErr:  true,
 		},
 		{
-			workflows: map[string]mockFsEntry{
-				"workflow.yml": {
-					Content: []byte(workflowWithJobWithSteps),
+			fs: map[string]mockFsEntry{
+				".github": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"workflows": {
+							Dir: true,
+							Children: map[string]mockFsEntry{
+								"workflow.yml": {
+									Content: []byte(workflowWithJobWithSteps),
+								},
+							},
+						},
+					},
 				},
 			},
 			workflow: ".github/workflows/workflow.yml",
@@ -327,9 +504,19 @@ func TestJobActions(t *testing.T) {
 			wantErr:  true,
 		},
 		{
-			workflows: map[string]mockFsEntry{
-				"workflow.yml": {
-					Content: []byte(workflowWithSyntaxError),
+			fs: map[string]mockFsEntry{
+				".github": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"workflows": {
+							Dir: true,
+							Children: map[string]mockFsEntry{
+								"workflow.yml": {
+									Content: []byte(yamlWithSyntaxError),
+								},
+							},
+						},
+					},
 				},
 			},
 			workflow: ".github/workflows/workflow.yml",
@@ -337,9 +524,19 @@ func TestJobActions(t *testing.T) {
 			wantErr:  true,
 		},
 		{
-			workflows: map[string]mockFsEntry{
-				"workflow.yml": {
-					Content: []byte(workflowWithInvalidUses),
+			fs: map[string]mockFsEntry{
+				".github": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"workflows": {
+							Dir: true,
+							Children: map[string]mockFsEntry{
+								"workflow.yml": {
+									Content: []byte(workflowWithInvalidUses),
+								},
+							},
+						},
+					},
 				},
 			},
 			workflow: ".github/workflows/workflow.yml",
@@ -347,26 +544,144 @@ func TestJobActions(t *testing.T) {
 			wantErr:  true,
 		},
 		{
-			workflows: map[string]mockFsEntry{},
-			workflow:  ".github/workflows/workflow.yml",
-			job:       "anything",
-			wantErr:   true,
+			fs:       map[string]mockFsEntry{},
+			workflow: ".github/workflows/workflow.yml",
+			job:      "anything",
+			wantErr:  true,
 		},
 	}
 
-	for i, tc := range testCases {
+	for i, tt := range testCases {
 		t.Run(fmt.Sprintf("#%d", i), func(t *testing.T) {
 			t.Parallel()
 
-			repo, err := mockRepo(tc.workflows)
+			repo, err := mockRepo(tt.fs)
 			if err != nil {
 				t.Fatalf("Could not initialize file system: %+v", err)
 			}
 
-			_, err = JobActions(repo, tc.workflow, tc.job)
-			if err == nil && tc.wantErr {
+			_, err = JobActions(repo, tt.workflow, tt.job)
+			if err == nil && tt.wantErr {
 				t.Error("Unexpected success")
-			} else if err != nil && !tc.wantErr {
+			} else if err != nil && !tt.wantErr {
+				t.Errorf("Unexpected failure (got %v)", err)
+			}
+		})
+	}
+}
+
+func TestManifestActions(t *testing.T) {
+	t.Parallel()
+
+	type TestCase struct {
+		fs      map[string]mockFsEntry
+		path    string
+		wantErr bool
+	}
+
+	testCases := []TestCase{
+		{
+			fs: map[string]mockFsEntry{
+				"action.yml": {
+					Content: []byte(manifestWithNoSteps),
+				},
+			},
+			path:    "",
+			wantErr: false,
+		},
+		{
+			fs: map[string]mockFsEntry{
+				"action.yml": {
+					Content: []byte(manifestWithStep),
+				},
+			},
+			path:    "",
+			wantErr: false,
+		},
+		{
+			fs: map[string]mockFsEntry{
+				"action.yml": {
+					Content: []byte(manifestWithNestedActions),
+				},
+			},
+			path:    "",
+			wantErr: false,
+		},
+		{
+			fs: map[string]mockFsEntry{
+				"nested": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"action.yml": {
+							Content: []byte(manifestWithStep),
+						},
+					},
+				},
+			},
+			path:    "nested",
+			wantErr: false,
+		},
+		{
+			fs: map[string]mockFsEntry{
+				"action.yaml": {
+					Content: []byte(manifestWithStep),
+				},
+			},
+			path:    "",
+			wantErr: false,
+		},
+		{
+			fs: map[string]mockFsEntry{
+				"nested": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"action.yaml": {
+							Content: []byte(manifestWithStep),
+						},
+					},
+				},
+			},
+			path:    "nested",
+			wantErr: false,
+		},
+		{
+			fs: map[string]mockFsEntry{
+				"action.yml": {
+					Content: []byte(yamlWithSyntaxError),
+				},
+			},
+			path:    "",
+			wantErr: true,
+		},
+		{
+			fs: map[string]mockFsEntry{
+				"action.yml": {
+					Content: []byte(manifestWithInvalidUses),
+				},
+			},
+			path:    "",
+			wantErr: true,
+		},
+		{
+			fs:      map[string]mockFsEntry{},
+			path:    "",
+			wantErr: true,
+		},
+	}
+
+	for i, tt := range testCases {
+		t.Run(fmt.Sprintf("#%d", i), func(t *testing.T) {
+			t.Parallel()
+
+			repo, err := mockRepo(tt.fs)
+			if err != nil {
+				t.Fatalf("Could not initialize file system: %+v", err)
+			}
+
+			_, err = ManifestActions(repo, tt.path)
+			if err == nil && tt.wantErr {
+				t.Error("Unexpected success")
+			} else if err != nil && !tt.wantErr {
 				t.Errorf("Unexpected failure (got %v)", err)
 			}
 		})
