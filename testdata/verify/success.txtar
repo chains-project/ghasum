@@ -46,9 +46,11 @@ stdout 'Ok'
 -- up-to-date/.github/workflows/gha.sum --
 version 1
 
-actions/checkout@main PKruFKnotZi8RQ196H3R7c5bgw9+mfI7BN/h0A7XiV8=
-actions/setup-go@v5.0.0 7lPZupz84sSI3T+PiaMr/ML3XPqJaEo7dMaPsQUnM6c=
-golangci/golangci-lint-action@3a91952 CVRgC7gGqkOiujfm0VMRKppg/Ztv8FW9GYmyJzcwlCI=
+actions/checkout@main JHipZi1UCvybC3fwi9RFLTK8vpI/gURTga/ColyHI4k=
+actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
+actions/setup-node@v4.4.0 Gdoys4h+gIN02lzrWZW0uxjBQ8Rk5YSE6+q1SOrw/+o=
+golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
 -- up-to-date/.github/workflows/workflow.yml --
 name: Example workflow
 on: [push]
@@ -66,6 +68,8 @@ jobs:
         go-version-file: go.mod
     - name: golangci-lint
       uses: golangci/golangci-lint-action@3a91952
+    - name: This step uses transitive actions
+      uses: actions/composite@v1
     - name: This step uses a local action
       uses: ./.github/actions/hello-world-action
     - name: This step uses a Docker Hub action
@@ -75,8 +79,10 @@ jobs:
 -- redundant/.github/workflows/gha.sum --
 version 1
 
-actions/checkout@main PKruFKnotZi8RQ196H3R7c5bgw9+mfI7BN/h0A7XiV8=
-actions/setup-go@v5.0.0 7lPZupz84sSI3T+PiaMr/ML3XPqJaEo7dMaPsQUnM6c=
+actions/checkout@main JHipZi1UCvybC3fwi9RFLTK8vpI/gURTga/ColyHI4k=
+actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
+actions/setup-node@v4.4.0 Gdoys4h+gIN02lzrWZW0uxjBQ8Rk5YSE6+q1SOrw/+o=
 golangci/golangci-lint-action@3a91952 this-action-is-not-used-in-the-repo
 -- redundant/.github/workflows/workflow.yml --
 name: Example workflow
@@ -93,6 +99,8 @@ jobs:
       uses: actions/setup-go@v5.0.0
       with:
         go-version-file: go.mod
+    - name: This step uses transitive actions
+      uses: actions/composite@v1
     - name: This step uses a local action
       uses: ./.github/actions/hello-world-action
     - name: This step uses a Docker Hub action
@@ -102,8 +110,10 @@ jobs:
 -- partial/.github/workflows/gha.sum --
 version 1
 
-actions/checkout@main PKruFKnotZi8RQ196H3R7c5bgw9+mfI7BN/h0A7XiV8=
-actions/setup-go@v5.0.0 7lPZupz84sSI3T+PiaMr/ML3XPqJaEo7dMaPsQUnM7c=
+actions/checkout@main JHipZi1UCvybC3fwi9RFLTK8vpI/gURTga/ColyHI4k=
+actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/setup-go@v5.0.0 this-is-intentionally-invalid
+actions/setup-node@v4.4.0 Gdoys4h+gIN02lzrWZW0uxjBQ8Rk5YSE6+q1SOrw/+o=
 -- partial/.github/workflows/valid.yml --
 name: Example workflow
 on: [push]
@@ -140,12 +150,21 @@ jobs:
       uses: actions/setup-go@v5.0.0
       with:
         go-version-file: go.mod
--- .cache/actions/checkout/main/.keep --
-This file exist to avoid fetching "actions/checkout@main" and give the Action a
-unique checksum.
--- .cache/actions/setup-go/v5.0.0/.keep --
-This file exists to avoid fetching "actions/setup-go@v5.0.0" and give the Action
-a unique checksum.
--- .cache/golangci/golangci-lint-action/3a91952/.keep --
-This file exist to avoid fetching "golangci/golangci-lint-action@3a91952" and
-give the Action a unique checksum.
+    - name: This step uses transitive actions
+      uses: actions/composite@v1
+-- .cache/actions/checkout/main/action.yml --
+name: actions/checkout@main
+-- .cache/actions/composite/v1/action.yml --
+name: actions/composite@v1
+runs:
+  steps:
+  - name: Also a direct dependency
+    uses: actions/setup-go@v5.0.0
+  - name: Unique transitive dependency
+    uses: actions/setup-node@v4.4.0
+-- .cache/actions/setup-go/v5.0.0/action.yml --
+name: actions/setup-go@v5.0.0
+-- .cache/actions/setup-node/v4.4.0/action.yml --
+name: actions/setup-node@v4.4.0
+-- .cache/golangci/golangci-lint-action/3a91952/action.yml --
+name: golangci/golangci-lint-action@3a91952

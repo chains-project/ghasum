@@ -16,6 +16,12 @@ stdout .
 ! stdout 'Ok'
 ! stderr .
 
+# Checksum mismatch - Transitive
+! exec ghasum verify -cache .cache/ mismatch/.github/workflows/workflow.yml:transitive
+stdout .
+! stdout 'Ok'
+! stderr .
+
 # Checksum missing - Repo
 ! exec ghasum verify -cache .cache/ missing/
 stdout .
@@ -34,11 +40,18 @@ stdout .
 ! stdout 'Ok'
 ! stderr .
 
+# Checksum missing - Transitive
+! exec ghasum verify -cache .cache/ missing/.github/workflows/workflow.yml:transitive
+stdout .
+! stdout 'Ok'
+! stderr .
+
 -- mismatch/.github/workflows/gha.sum --
 version 1
 
 actions/checkout@v4 oJp2lqI5zRjHTtu2vQ9/rfcqiYqRAnhqMjwnw/ss4x0=
-actions/setup-go@v5 /ChzMZC1jsCd/aTotskAS7hl1cX9/M5XsV7mJHCMuME=
+actions/composite@v1 VHsmCNCNfU2qFyTntn14sMoZL1UOOyne/omuQUvzQfA=
+actions/setup-go@v5 this-is-intentionally-invalid
 -- mismatch/.github/workflows/workflow.yml --
 name: Example workflow
 on: [push]
@@ -56,10 +69,17 @@ jobs:
         go-version-file: go.mod
     - name: This step does not use an action
       run: Echo 'hello world!'
+  transitive:
+    name: example
+    runs-on: ubuntu-24.04
+    steps:
+    - name: This step uses transitive actions
+      uses: actions/composite@v1
 -- missing/.github/workflows/gha.sum --
 version 1
 
 actions/checkout@v4 oJp2lqI5zRjHTtu2vQ9/rfcqiYqRAnhqMjwnw/ss4x0=
+actions/composite@v1 VHsmCNCNfU2qFyTntn14sMoZL1UOOyne/omuQUvzQfA=
 -- missing/.github/workflows/workflow.yml --
 name: Example workflow
 on: [push]
@@ -77,9 +97,18 @@ jobs:
         go-version-file: go.mod
     - name: This step does not use an action
       run: Echo 'hello world!'
--- .cache/actions/checkout/v4/.keep --
-This file exist to avoid fetching "actions/checkout@v4" and give the Action a
-unique checksum.
--- .cache/actions/setup-go/v5/.keep --
-This file exists to avoid fetching "actions/setup-go@v5" and give the Action a
-unique checksum.
+  transitive:
+    name: example
+    runs-on: ubuntu-24.04
+    steps:
+    - name: This step uses transitive actions
+      uses: actions/composite@v1
+-- .cache/actions/checkout/v4/action.yml --
+name: actions/checkout@v4
+-- .cache/actions/composite/v1/action.yml --
+name: actions/composite@v1
+runs:
+  steps:
+  - uses: actions/setup-go@v5
+-- .cache/actions/setup-go/v5/action.yml --
+name: actions/setup-go@v5

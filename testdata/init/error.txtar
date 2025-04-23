@@ -26,9 +26,9 @@ stderr 'no such file or directory'
 -- initialized/.github/workflows/gha.sum --
 version 1
 
-actions/checkout@main PKruFKnotZi8RQ196H3R7c5bgw9+mfI7BN/h0A7XiV8=
-actions/setup-go@v5.0.0 7lPZupz84sSI3T+PiaMr/ML3XPqJaEo7dMaPsQUnM6c=
-golangci/golangci-lint-action@3a91952 CVRgC7gGqkOiujfm0VMRKppg/Ztv8FW9GYmyJzcwlCI=
+actions/checkout@main JHipZi1UCvybC3fwi9RFLTK8vpI/gURTga/ColyHI4k=
+actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
+golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
 -- initialized/.github/workflows/workflow.yml --
 name: Example workflow
 on: [push]

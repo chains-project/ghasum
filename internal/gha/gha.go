@@ -1,4 +1,4 @@
-// Copyright 2024 Eric Cornelissen
+// Copyright 2024-2025 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ package gha
 import (
 	"fmt"
 	"io/fs"
-	"path"
+	"path/filepath"
 )
 
 // A GitHubAction identifies a specific version of a GitHub Action.
@@ -30,13 +30,16 @@ type GitHubAction struct {
 	// houses the GitHub Action.
 	Project string
 
+	// Path is the path of the action inside the GitHub repository.
+	Path string
+
 	// Ref is the git ref (branch, tag, commit SHA), also known as version, of the
 	// GitHub Action.
 	Ref string
 }
 
 // WorkflowsPath is the relative path to the GitHub Actions workflow directory.
-var WorkflowsPath = path.Join(".github", "workflows")
+var WorkflowsPath = filepath.Join(".github", "workflows")
 
 // RepoActions extracts the GitHub Actions used in the repository at the given
 // file system hierarchy.
@@ -111,6 +114,27 @@ func JobActions(repo fs.FS, path, name string) ([]GitHubAction, error) {
 	actions, err := actionsInWorkflows([]workflow{w})
 	if err != nil {
 		return nil, err
+	}
+
+	return actions, nil
+}
+
+// ManifestActions extracts the GitHub Actions used in the manifest in the
+// specified directory in the given file system hierarchy.
+func ManifestActions(repo fs.FS, path string) ([]GitHubAction, error) {
+	data, err := manifestInRepo(repo, path)
+	if err != nil {
+		return nil, err
+	}
+
+	m, err := parseManifest(data)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse manifest at: %v", err)
+	}
+
+	actions, err := actionsInManifest(m)
+	if err != nil {
+		return nil, fmt.Errorf("could not extract actions from manifest at: %v", err)
 	}
 
 	return actions, nil

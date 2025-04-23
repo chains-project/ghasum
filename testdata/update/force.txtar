@@ -40,10 +40,16 @@ stdout 'Ok'
 ! stderr .
 cmp invalid-sum/.github/workflows/gha.sum .want/gha.sum
 
+# Invalid existing transitive sum
+exec ghasum update -cache .cache/ -force transitive/
+stdout 'Ok'
+! stderr .
+cmp transitive/.github/workflows/gha.sum .want/gha-transitive.sum
+
 -- duplicate/.github/workflows/gha.sum --
 version 1
 
-actions/checkout@v4.1.1 KsR9XQGH7ydTl01vlD8pIZrXhkzXyjcnzhmP+/KaJZI=
+actions/checkout@v4.1.1 TTVf+dWEJueFyMoZnvuqlW5lX4aXYXxGWaFaV8lO910=
 actions/checkout@v4.1.1 KaJZI=/KsR9XQGH7ydTl01vlD8pIZrXhkzXyjcnzhmP+
 -- duplicate/.github/workflows/workflow.yml --
 name: Example workflow
@@ -134,7 +140,7 @@ jobs:
 -- invalid-sum/.github/workflows/gha.sum --
 version 1
 
-actions/checkout@v4.1.1 GGAV+/JnlPt41B9iINyvcX5z6a4ue+NblmwiDNVORz0=
+actions/checkout@v4.1.1 this-is-intentionally-invalid
 -- invalid-sum/.github/workflows/workflow.yml --
 name: Example workflow
 on: [push]
@@ -146,10 +152,38 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4.1.1
--- .cache/actions/checkout/v4.1.1/.keep --
-This file exist to avoid fetching "actions/checkout@v4.1.1" and give the Action
-a unique checksum.
+-- transitive/.github/workflows/gha.sum --
+version 1
+
+actions/composite@v1 uc9AaN29Y4B/7UgwrQoYDYDlbJhua//0wr8eMLHqen8=
+actions/setup-node@v4.4.0 this-is-intentionally-invalid
+-- transitive/.github/workflows/workflow.yml --
+name: Example workflow
+on: [push]
+
+jobs:
+  example:
+    name: example
+    runs-on: ubuntu-24.04
+    steps:
+    - name: This step uses transitive actions
+      uses: actions/composite@v1
+-- .cache/actions/checkout/v4.1.1/action.yml --
+name: actions/checkout@v4.1.1
+-- .cache/actions/composite/v1/action.yml --
+name: actions/composite@v1
+runs:
+  steps:
+  - name: Unique transitive dependency
+    uses: actions/setup-node@v4.4.0
+-- .cache/actions/setup-node/v4.4.0/action.yml --
+name: actions/setup-node@v4.4.0
 -- .want/gha.sum --
 version 1
 
-actions/checkout@v4.1.1 KsR9XQGH7ydTl01vlD8pIZrXhkzXyjcnzhmP+/KaJZI=
+actions/checkout@v4.1.1 TTVf+dWEJueFyMoZnvuqlW5lX4aXYXxGWaFaV8lO910=
+-- .want/gha-transitive.sum --
+version 1
+
+actions/composite@v1 uc9AaN29Y4B/7UgwrQoYDYDlbJhua//0wr8eMLHqen8=
+actions/setup-node@v4.4.0 Gdoys4h+gIN02lzrWZW0uxjBQ8Rk5YSE6+q1SOrw/+o=

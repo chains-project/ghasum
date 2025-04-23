@@ -44,6 +44,12 @@ stderr 'an unexpected error occurred'
 stderr 'could not parse workflow'
 stderr '.github/workflows/workflow.yml'
 
+# Invalid manifest
+! exec ghasum verify -cache .cache/ invalid-manifest/
+! stdout 'Ok'
+stderr 'an unexpected error occurred'
+stderr 'could not parse manifest'
+
 # Directory not found
 ! exec ghasum verify directory-not-found/
 ! stdout 'Ok'
@@ -83,6 +89,22 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+-- invalid-manifest/.github/workflows/gha.sum --
+version 1
+
+actions/composite@v1 sD5wRDv4rn1UBi0Mzs9jHAB++jiJuAVuggdh437FKHE=
+actions/setup-go@v5 Vi4XogAGoojozgoXrRN/OBL93QIcbsxLJEOOAwlx+e8=
+-- invalid-manifest/.github/workflows/workflow.yml --
+name: Faulty workflow
+on: [push]
+
+jobs:
+  example:
+    name: example
+    runs-on: ubuntu-24.04
+    steps:
+    - name: This step uses transitive actions
+      uses: actions/composite@v1
 -- invalid-workflow/.github/workflows/gha.sum --
 version 1
 
@@ -148,3 +170,11 @@ jobs:
         go-version-file: go.mod
     - name: This step does not use an action
       run: Echo 'hello world!'
+-- .cache/actions/composite/v1/action.yml --
+name: actions/composite@v1
+runs:
+  steps:
+- name: Also a direct dependency
+  uses: actions/setup-go@v5
+-- .cache/actions/setup-go/v5/action.yml --
+name: actions/setup-go@v5

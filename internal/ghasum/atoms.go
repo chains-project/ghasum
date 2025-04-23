@@ -18,8 +18,10 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"maps"
 	"os"
 	"path"
+	"slices"
 	"strings"
 
 	"github.com/chains-project/ghasum/internal/checksum"
@@ -105,8 +107,9 @@ func compute(cfg *Config, actions []gha.GitHubAction, algo checksum.Algo) ([]sum
 		defer cfg.Cache.Cleanup()
 	}
 
-	entries := make([]sumfile.Entry, len(actions))
-	for i, action := range actions {
+	entries := make(map[string]sumfile.Entry, len(actions))
+	for i := 0; i < len(actions); i++ {
+		action := actions[i]
 		repo := github.Repository{
 			Owner:   action.Owner,
 			Project: action.Project,
@@ -125,18 +128,27 @@ func compute(cfg *Config, actions []gha.GitHubAction, algo checksum.Algo) ([]sum
 			}
 		}
 
-		checksum, err := checksum.Compute(actionDir, algo)
+		transitiveActions, err := gha.ManifestActions(os.DirFS(actionDir), action.Path)
 		if err != nil {
-			return nil, fmt.Errorf("could not compute checksum for %q: %v", action, err)
+			return nil, fmt.Errorf("action manifest parsing failed: %v", err)
 		}
+		actions = append(actions, transitiveActions...)
 
-		entries[i] = sumfile.Entry{
-			ID:       []string{fmt.Sprintf("%s/%s", repo.Owner, repo.Project), action.Ref},
-			Checksum: strings.Replace(checksum, "h1:", "", 1),
+		id := fmt.Sprintf("%s%s%s", action.Owner, action.Project, action.Ref)
+		if _, ok := entries[id]; !ok {
+			checksum, err := checksum.Compute(actionDir, algo)
+			if err != nil {
+				return nil, fmt.Errorf("could not compute checksum for %q: %v", action, err)
+			}
+
+			entries[id] = sumfile.Entry{
+				ID:       []string{fmt.Sprintf("%s/%s", repo.Owner, repo.Project), action.Ref},
+				Checksum: strings.Replace(checksum, "h1:", "", 1),
+			}
 		}
 	}
 
-	return entries, nil
+	return slices.Collect(maps.Values(entries)), nil
 }
 
 func create(base string) (*os.File, error) {
