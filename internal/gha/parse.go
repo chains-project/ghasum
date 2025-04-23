@@ -1,4 +1,4 @@
-// Copyright 2024 Eric Cornelissen
+// Copyright 2024-2025 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 package gha
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -48,10 +47,18 @@ func parseWorkflow(data []byte) (workflow, error) {
 func parseUses(uses string) (GitHubAction, error) {
 	var a GitHubAction
 
+	// uses values that don't fit the [GitHubAction] model
+	switch {
+	case strings.HasPrefix(uses, "./"):
+		return a, ErrLocalAction
+	case strings.HasPrefix(uses, "docker://"):
+		return a, ErrDockerUses
+	}
+
 	// split "uses" into "repo"@"ref"
 	i := strings.IndexRune(uses, '@')
 	if strings.Count(uses, "@") != 1 {
-		return a, errors.New("invalid uses value")
+		return a, ErrInvalidUses
 	}
 
 	repo := uses[:i]
@@ -60,7 +67,7 @@ func parseUses(uses string) (GitHubAction, error) {
 	// split "repo" into "owner"/"project[/path]"
 	i = strings.IndexRune(repo, '/')
 	if i <= 0 || i == len(repo)-1 {
-		return a, errors.New("invalid repository in uses")
+		return a, ErrInvalidUsesRepo
 	}
 
 	a.Owner = repo[:i]
@@ -69,7 +76,7 @@ func parseUses(uses string) (GitHubAction, error) {
 	// split "project" into "project"[/"path"]
 	i = strings.IndexRune(project, '/')
 	if i == 0 || i == len(project)-1 {
-		return a, errors.New("invalid repository path in uses")
+		return a, ErrInvalidUsesPath
 	} else if i > 0 && i < len(project)-1 {
 		project = project[:i]
 	}
