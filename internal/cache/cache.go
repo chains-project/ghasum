@@ -1,4 +1,4 @@
-// Copyright 2024 Eric Cornelissen
+// Copyright 2024-2025 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 package cache
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
 	"os"
@@ -71,8 +72,14 @@ func (c *Cache) Evict() error {
 		return fs.SkipDir
 	}
 
-	fsys := os.DirFS(c.path)
-	if err := fs.WalkDir(fsys, ".", walk); err != nil {
+	fsys, err := os.OpenRoot(c.path)
+	if errors.Is(err, fs.ErrNotExist) {
+		return nil
+	} else if err != nil {
+		return fmt.Errorf("could not open cache directory: %v", err)
+	}
+
+	if err := fs.WalkDir(fsys.FS(), ".", walk); err != nil {
 		return fmt.Errorf("cache eviction failed: %v", err)
 	}
 
