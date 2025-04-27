@@ -203,17 +203,6 @@ func open(base string) (*os.File, error) {
 	return file, nil
 }
 
-func read(repo fs.FS) ([]byte, error) {
-	raw, err := fs.ReadFile(repo, ghasumPath)
-	if errors.Is(err, fs.ErrNotExist) {
-		return nil, ErrNotInitialized
-	} else if err != nil {
-		return nil, errors.Join(ErrSumfileRead, err)
-	}
-
-	return raw, nil
-}
-
 func remove(base string) error {
 	fullGhasumPath := path.Join(base, ghasumPath)
 	if err := os.Remove(fullGhasumPath); err != nil {

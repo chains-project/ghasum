@@ -187,9 +187,19 @@ func Update(cfg *Config, force bool) error {
 // Verification report checksums that do not match and checksums that are
 // missing. It does not report checksums that are not used.
 func Verify(cfg *Config) ([]Problem, error) {
-	raw, err := read(cfg.Repo)
+	file, err := open(cfg.Path)
 	if err != nil {
 		return nil, err
+	}
+
+	defer func() {
+		_ = unlock(cfg.Path)
+		_ = file.Close()
+	}()
+
+	raw, err := io.ReadAll(file)
+	if err != nil {
+		return nil, errors.Join(ErrSumfileRead, err)
 	}
 
 	stored, err := decode(raw)
@@ -208,5 +218,9 @@ func Verify(cfg *Config) ([]Problem, error) {
 	}
 
 	result := compare(fresh, stored)
+	if err := unlock(cfg.Path); err != nil {
+		return nil, err
+	}
+
 	return result, nil
 }
