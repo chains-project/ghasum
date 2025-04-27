@@ -45,11 +45,12 @@ const (
 )
 
 const (
-	flagNameCache   = "cache"
-	flagNameForce   = "force"
-	flagNameNoCache = "no-cache"
-	flagNameNoEvict = "no-evict"
-	flagNameOffline = "offline"
+	flagNameCache        = "cache"
+	flagNameForce        = "force"
+	flagNameNoCache      = "no-cache"
+	flagNameNoEvict      = "no-evict"
+	flagNameNoTransitive = "no-transitive"
+	flagNameOffline      = "offline"
 )
 
 var (

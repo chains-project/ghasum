@@ -26,11 +26,12 @@ import (
 
 func cmdUpdate(argv []string) error {
 	var (
-		flags       = flag.NewFlagSet(cmdNameUpdate, flag.ContinueOnError)
-		flagCache   = flags.String(flagNameCache, "", "")
-		flagForce   = flags.Bool(flagNameForce, false, "")
-		flagNoCache = flags.Bool(flagNameNoCache, false, "")
-		flagNoEvict = flags.Bool(flagNameNoEvict, false, "")
+		flags            = flag.NewFlagSet(cmdNameUpdate, flag.ContinueOnError)
+		flagCache        = flags.String(flagNameCache, "", "")
+		flagForce        = flags.Bool(flagNameForce, false, "")
+		flagNoCache      = flags.Bool(flagNameNoCache, false, "")
+		flagNoEvict      = flags.Bool(flagNameNoEvict, false, "")
+		flagNoTransitive = flags.Bool(flagNameNoTransitive, false, "")
 	)
 
 	flags.Usage = func() { fmt.Fprintln(os.Stderr) }
@@ -65,9 +66,10 @@ func cmdUpdate(argv []string) error {
 	}
 
 	cfg := ghasum.Config{
-		Repo:  repo.FS(),
-		Path:  target,
-		Cache: c,
+		Repo:       repo.FS(),
+		Path:       target,
+		Cache:      c,
+		Transitive: !(*flagNoTransitive),
 	}
 
 	if err := ghasum.Update(&cfg, *flagForce); err != nil {
@@ -98,5 +100,7 @@ The available flags are:
     -no-cache
         Disable the use of the cache. Makes the -cache flag ineffective.
     -no-evict
-        Disable cache eviction.`
+        Disable cache eviction.
+    -no-transitive
+        Do not compute checksums for transitive actions.`
 }

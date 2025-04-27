@@ -28,36 +28,41 @@ import (
 type (
 	// Config is the configuration for a ghasum operation.
 	Config struct {
-		// Repo is a pointer to the file system hierarchy of the target repository
-		// for the operation.
+		// Repo is a pointer to the file system hierarchy of the target
+		// repository for the operation.
 		Repo fs.FS
 
 		// Path is the absolute or relate path to the target repository for the
 		// operation.
 		//
-		// This must be provided in addition to Repo because that does not allow for
-		// non-read file system operation.
+		// This must be provided in addition to Repo because that does not allow
+		// for non-read file system operation.
 		Path string
 
-		// Workflow is the file path (relative to Path) of the workflow that is the
-		// subject of the operation. If this has the zero value all workflows in the
-		// Repo will collectively be the subject of the operation instead.
+		// Workflow is the file path (relative to Path) of the workflow that is
+		// the subject of the operation. If this has the zero value all of the
+		// workflows in the Repo will collectively be the subject of the
+		// operation instead.
 		Workflow string
 
-		// Job is the id (also known as key) of the job that is the subject of the
-		// operation. If this has the zero value all jobs in the Workflow will
-		// collectively be the subject of the operation instead. (If Workflow has
-		// the zero value this value is ignored.)
+		// Job is the id (also known as key) of the job that is the subject of
+		// the operation. If this has the zero value all jobs in the Workflow
+		// will collectively be the subject of the operation instead. (If
+		// Workflow has the zero value this value is ignored.)
 		Job string
 
 		// Cache is the cache that should be used for the operation.
 		Cache cache.Cache
 
-		// Offline sets whether to rely exclusively on the cache or fetch missing
-		// repositories from the internet.
+		// Offline sets whether to rely exclusively on the cache or fetch
+		// missing repositories from the internet.
 		//
 		// Only applies to verification.
 		Offline bool
+
+		// Transitive sets whether to compute/verify checksums for transitive
+		// dependencies.
+		Transitive bool
 	}
 
 	// Problem represents an issue detected when verifying ghasum checksums.

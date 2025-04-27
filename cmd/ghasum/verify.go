@@ -29,11 +29,12 @@ import (
 
 func cmdVerify(argv []string) error {
 	var (
-		flags       = flag.NewFlagSet(cmdNameVerify, flag.ContinueOnError)
-		flagCache   = flags.String(flagNameCache, "", "")
-		flagNoCache = flags.Bool(flagNameNoCache, false, "")
-		flagNoEvict = flags.Bool(flagNameNoEvict, false, "")
-		flagOffline = flags.Bool(flagNameOffline, false, "")
+		flags            = flag.NewFlagSet(cmdNameVerify, flag.ContinueOnError)
+		flagCache        = flags.String(flagNameCache, "", "")
+		flagNoCache      = flags.Bool(flagNameNoCache, false, "")
+		flagNoEvict      = flags.Bool(flagNameNoEvict, false, "")
+		flagOffline      = flags.Bool(flagNameOffline, false, "")
+		flagNoTransitive = flags.Bool(flagNameNoTransitive, false, "")
 	)
 
 	flags.Usage = func() { fmt.Fprintln(os.Stderr) }
@@ -86,12 +87,13 @@ func cmdVerify(argv []string) error {
 	}
 
 	cfg := ghasum.Config{
-		Repo:     repo.FS(),
-		Path:     target,
-		Workflow: workflow,
-		Job:      job,
-		Cache:    c,
-		Offline:  *flagOffline,
+		Repo:       repo.FS(),
+		Path:       target,
+		Workflow:   workflow,
+		Job:        job,
+		Cache:      c,
+		Offline:    *flagOffline,
+		Transitive: !(*flagNoTransitive),
 	}
 
 	problems, err := ghasum.Verify(&cfg)
@@ -151,5 +153,7 @@ The available flags are:
         Disable cache eviction.
     -offline
         Run without fetching repositories from the internet, verify exclusively
-        against the cache. If the cache is missing an entry it causes an error.`
+        against the cache. If the cache is missing an entry it causes an error.
+    -no-transitive
+        Do not compute checksums for transitive actions.`
 }

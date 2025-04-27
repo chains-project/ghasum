@@ -128,11 +128,13 @@ func compute(cfg *Config, actions []gha.GitHubAction, algo checksum.Algo) ([]sum
 			}
 		}
 
-		transitiveActions, err := gha.ManifestActions(os.DirFS(actionDir), action.Path)
-		if err != nil {
-			return nil, fmt.Errorf("action manifest parsing failed: %v", err)
+		if cfg.Transitive {
+			transitiveActions, err := gha.ManifestActions(os.DirFS(actionDir), action.Path)
+			if err != nil {
+				return nil, fmt.Errorf("action manifest parsing failed: %v", err)
+			}
+			actions = append(actions, transitiveActions...)
 		}
-		actions = append(actions, transitiveActions...)
 
 		id := fmt.Sprintf("%s%s%s", action.Owner, action.Project, action.Ref)
 		if _, ok := entries[id]; !ok {
