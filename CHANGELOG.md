@@ -12,7 +12,10 @@ Versioning].
 
 ## [Unreleased]
 
-- _No changes yet_
+### Enhancements
+
+- Correct typo in the `ghasum help verify` output.
+- Enable cache eviction on `ghasum init`.
 
 ## [v0.4.0] - 2025-04-27
 

@@ -84,5 +84,6 @@ The available flags are:
 
     -cache dir
         The location of the cache directory. Defaults to a directory named
-        .ghasum/ in the user's home directory.`
+        .ghasum/ in the user's home directory.
+`
 }

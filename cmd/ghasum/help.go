@@ -1,4 +1,4 @@
-// Copyright 2024 Eric Cornelissen
+// Copyright 2024-2025 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,18 +18,21 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"os"
 )
 
 func cmdHelp(argv []string) error {
-	flagsHelp := flag.NewFlagSet(cmdNameHelp, flag.ContinueOnError)
-	if err := flagsHelp.Parse(argv); err != nil {
+	flags := flag.NewFlagSet(cmdNameHelp, flag.ContinueOnError)
+
+	flags.Usage = func() { fmt.Fprintln(os.Stderr) }
+	if err := flags.Parse(argv); err != nil {
 		return errUsage
 	}
 
-	args := flagsHelp.Args()
+	args := flags.Args()
 	switch len(args) {
 	case 0:
-		fmt.Println(help())
+		fmt.Print(help())
 		return nil
 	case 1:
 		return helpFor(args[0])
@@ -44,7 +47,7 @@ func helpFor(command string) error {
 		return fmt.Errorf(`unknown command %q (see "ghasum help")`, command)
 	}
 
-	fmt.Println(fn())
+	fmt.Print(fn())
 	return nil
 }
 
@@ -62,5 +65,6 @@ The available commands are:
     verify    Verify the checksums for a repository.
     version   Print the ghasum version.
 
-Use "ghasum help <command>" for more information about a command.`
+Use "ghasum help <command>" for more information about a command.
+`
 }

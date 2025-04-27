@@ -84,14 +84,14 @@ func main() {
 
 func run() int {
 	if len(os.Args) < 2 {
-		fmt.Println(help())
+		fmt.Print(help())
 		return exitCodeSuccess
 	}
 
 	command := os.Args[1]
 	fn, ok := commands[command]
 	if !ok {
-		fmt.Println(help())
+		fmt.Print(help())
 		return exitCodeUsage
 	}
 
@@ -101,7 +101,7 @@ func run() int {
 		return exitCodeSuccess
 	case errors.Is(err, errUsage):
 		helpFn := helpers[command]
-		fmt.Println(helpFn())
+		fmt.Print(helpFn())
 		return exitCodeUsage
 	case errors.Is(err, errFailure):
 		fmt.Println(err)
