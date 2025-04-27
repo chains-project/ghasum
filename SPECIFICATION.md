@@ -33,8 +33,8 @@ If the checksum file does not exist the process shall exit immediately with an
 error.
 
 If the checksum file exists the process shall obtain a lock on it, if this is
-not possible to process shall exit immediately (it means the file may be edited
-by another process leading to an inconsistent state).
+not possible the process shall exit immediately. Otherwise the file could be
+changed by another process potentially leading to an inconsistent sumfile.
 
 If the file lock is obtained, the process shall first read it and parse it
 completely to extract the sumfile version. If this fails the process shall exit
@@ -61,6 +61,11 @@ This process does not verify any of the checksums currently in the sumfile.
 
 If the checksum file does not exist the process shall exit immediately with an
 error.
+
+If the checksum file exists the process shall obtain a lock on it, if this is
+not possible the process shall exit immediately. Otherwise the file could be
+changed during the verification process resulting in a potential mismatch
+between verification outcome and sumfile content.
 
 If the checksum file exists the process shall read and parse it fully. If this
 fails the process shall exit immediately. Else it shall recompute the checksums

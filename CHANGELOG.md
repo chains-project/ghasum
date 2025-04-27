@@ -16,6 +16,7 @@ Versioning].
 
 - Correct typo in the `ghasum help verify` output.
 - Enable cache eviction on `ghasum init`.
+- Ensure `ghasum verify` outcome is linked to `gha.sum` content.
 
 ## [v0.4.0] - 2025-04-27
 
