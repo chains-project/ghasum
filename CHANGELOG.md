@@ -1,0 +1,77 @@
+<!-- SPDX-License-Identifier: CC0-1.0 -->
+
+# Changelog
+
+All notable changes to `ghasum` will be documented in this file.
+
+The format is based on [Keep a Changelog], and this project adheres to [Semantic
+Versioning].
+
+[keep a changelog]: https://keepachangelog.com/en/1.0.0/
+[semantic versioning]: https://semver.org/spec/v2.0.0.html
+
+## [Unreleased]
+
+- _No changes yet_
+
+## [v0.4.0] - 2025-04-27
+
+### Enhancements
+
+- Include transitive actions in `gha.sum` (opt-out available).
+- Improve performance of cloning repositories at a commit.
+
+### Bugs
+
+- Fix errors for `uses:` values with local actions.
+- Fix errors for `uses:` values with Docker Hub actions.
+
+### Security
+
+- Upgrade Go to `v1.24.2`.
+
+### Miscellaneous
+
+- Improve reproducibility by using `-trimpath` for release builds.
+
+## [v0.3.0] - 2025-01-25
+
+### Enhancements
+
+- Improve behavior for sumfiles with duplicate entries.
+- Add `-offline` verification support
+- Add cache eviction support.
+- Make `ghasum update` preserve existing checksums by default.
+
+### Bugs
+
+- Fix behavior for sumfiles with duplicate entries.
+
+### Security
+
+- Upgrade Go to `v1.23.5`.
+
+### Miscellaneous
+
+- Improve reproducibility by using `-trimpath`.
+
+## [v0.2.0] - 2024-03-21
+
+### Enhancements
+
+- Support validating a single workflow.
+- Support validating a single job in a workflow.
+- Make `ghasum update` error if the `gha.sum` file is corrupted.
+
+### Bugs
+
+- Unlock `gha.sum` if an error occurs during updating.
+- Correct parsing uses values with multiple `@` characters.
+
+### Security
+
+- Upgrade Go to `v1.22.1`.
+
+## [v0.1.0] - 2024-02-17
+
+Initial release.
