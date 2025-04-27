@@ -48,5 +48,6 @@ func cmdVersion(argv []string) error {
 func helpVersion() string {
 	return `usage: ghasum version
 
-Prints the version of ghasum.`
+Prints the version of ghasum.
+`
 }

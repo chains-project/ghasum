@@ -97,5 +97,6 @@ The available flags are:
     -no-evict
         Disable cache eviction.
     -no-transitive
-        Do not compute checksums for transitive actions.`
+        Do not compute checksums for transitive actions.
+`
 }

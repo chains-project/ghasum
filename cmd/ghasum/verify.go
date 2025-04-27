@@ -155,5 +155,6 @@ The available flags are:
         Run without fetching repositories from the internet, verify exclusively
         against the cache. If the cache is missing an entry it causes an error.
     -no-transitive
-        Do not compute checksums for transitive actions.`
+        Do not verify checksums for transitive actions.
+`
 }

@@ -94,8 +94,8 @@ func TestHelpers(t *testing.T) {
 				t.Errorf("Help is missing substring %q", want)
 			}
 
-			if strings.TrimSpace(got) != got {
-				t.Errorf("Help should not have leading nor trailing whitespace")
+			if !strings.HasSuffix(got, "\n") {
+				t.Errorf("Help should end with a trailing newline")
 			}
 
 			if strings.Contains(got, "<command>") {
