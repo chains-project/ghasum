@@ -4,6 +4,14 @@ stdout 'Ok'
 ! stderr .
 cmp target/.github/workflows/gha.sum want/gha.sum
 
+rm target/.github/workflows/gha.sum
+
+# Without transitive actions
+exec ghasum init -cache .cache/ -no-transitive target/
+stdout 'Ok'
+! stderr .
+cmp target/.github/workflows/gha.sum want/gha-no-transitive.sum
+
 -- want/gha.sum --
 version 1
 
@@ -11,6 +19,13 @@ actions/checkout@main JHipZi1UCvybC3fwi9RFLTK8vpI/gURTga/ColyHI4k=
 actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
 actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
 actions/setup-node@v4.4.0 Gdoys4h+gIN02lzrWZW0uxjBQ8Rk5YSE6+q1SOrw/+o=
+golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
+-- want/gha-no-transitive.sum --
+version 1
+
+actions/checkout@main JHipZi1UCvybC3fwi9RFLTK8vpI/gURTga/ColyHI4k=
+actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
 golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
 -- target/.github/workflows/workflow.yml --
 name: Example workflow

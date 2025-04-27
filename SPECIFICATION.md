@@ -88,10 +88,11 @@ To determine the set of actions a target depends on, first find all `uses:`
 entries in the target. For a repository this covers all workflows in the
 workflows directory, otherwise it covers only the target.
 
-For each `uses:` value, excluding the list below, it is added to the set and the
-repository declared by the `uses:` value is fetched. The action manifest at the
-path specified in the `uses:` value is parsed for additional `uses:` values. For
-each of these transitive `uses:` values, this process is repeated.
+For each `uses:` value, excluding the list below, it is added to the set. If the
+`-no-transitive` option is NOT set the repository declared by the `uses:` value
+is fetched. The action manifest at the path specified in the `uses:` value is
+parsed for additional `uses:` values. For each of these transitive `uses:`
+values, this process is repeated.
 
 The following `uses:` values are to be excluded from the set of actions a
 repository depends on.

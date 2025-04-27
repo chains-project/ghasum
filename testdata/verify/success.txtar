@@ -28,6 +28,11 @@ exec ghasum verify -cache .cache/ redundant/.github/workflows/workflow.yml:examp
 stdout 'Ok'
 ! stderr .
 
+# Redundant checksum stored - Transitive
+exec ghasum verify -cache .cache/ -no-transitive no-transitive/
+stdout 'Ok'
+! stderr .
+
 # Checksums match partially - Workflow
 exec ghasum verify -cache .cache/ partial/.github/workflows/valid.yml
 stdout 'Ok'
@@ -152,6 +157,29 @@ jobs:
         go-version-file: go.mod
     - name: This step uses transitive actions
       uses: actions/composite@v1
+-- no-transitive/.github/workflows/gha.sum --
+version 1
+
+actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
+actions/setup-node@v4.4.0 this-action-is-only-used-transitively
+-- no-transitive/.github/workflows/workflow.yml --
+name: Example workflow
+on: [push]
+
+jobs:
+  example:
+    name: example
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v5.0.0
+      with:
+        go-version-file: go.mod
+    - name: This step uses transitive actions
+      uses: actions/composite@v1
+    - name: This step does not use an action
+      run: Echo 'hello world!'
 -- .cache/actions/checkout/main/action.yml --
 name: actions/checkout@main
 -- .cache/actions/composite/v1/action.yml --

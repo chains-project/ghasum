@@ -26,9 +26,10 @@ import (
 
 func cmdInit(argv []string) error {
 	var (
-		flags       = flag.NewFlagSet(cmdNameInit, flag.ContinueOnError)
-		flagCache   = flags.String(flagNameCache, "", "")
-		flagNoCache = flags.Bool(flagNameNoCache, false, "")
+		flags            = flag.NewFlagSet(cmdNameInit, flag.ContinueOnError)
+		flagCache        = flags.String(flagNameCache, "", "")
+		flagNoCache      = flags.Bool(flagNameNoCache, false, "")
+		flagNoTransitive = flags.Bool(flagNameNoTransitive, false, "")
 	)
 
 	flags.Usage = func() { fmt.Fprintln(os.Stderr) }
@@ -57,9 +58,10 @@ func cmdInit(argv []string) error {
 	}
 
 	cfg := ghasum.Config{
-		Repo:  repo.FS(),
-		Path:  target,
-		Cache: c,
+		Repo:       repo.FS(),
+		Path:       target,
+		Cache:      c,
+		Transitive: !(*flagNoTransitive),
 	}
 
 	if err := ghasum.Initialize(&cfg); err != nil {
@@ -84,5 +86,7 @@ The available flags are:
         looks up repositories it needs.
         Defaults to a directory named .ghasum in the user's home directory.
     -no-cache
-        Disable the use of the cache. Makes the -cache flag ineffective.`
+        Disable the use of the cache. Makes the -cache flag ineffective.
+    -no-transitive
+        Do not compute checksums for transitive actions.`
 }
