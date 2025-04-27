@@ -29,6 +29,7 @@ func cmdInit(argv []string) error {
 		flags            = flag.NewFlagSet(cmdNameInit, flag.ContinueOnError)
 		flagCache        = flags.String(flagNameCache, "", "")
 		flagNoCache      = flags.Bool(flagNameNoCache, false, "")
+		flagNoEvict      = flags.Bool(flagNameNoEvict, false, "")
 		flagNoTransitive = flags.Bool(flagNameNoTransitive, false, "")
 	)
 
@@ -50,6 +51,12 @@ func cmdInit(argv []string) error {
 	c, err := cache.New(*flagCache, *flagNoCache)
 	if err != nil {
 		return errors.Join(errCache, err)
+	}
+
+	if !*flagNoEvict {
+		if err = c.Evict(); err != nil {
+			return errors.Join(errCache, err)
+		}
 	}
 
 	repo, err := os.OpenRoot(target)
@@ -87,6 +94,8 @@ The available flags are:
         Defaults to a directory named .ghasum in the user's home directory.
     -no-cache
         Disable the use of the cache. Makes the -cache flag ineffective.
+    -no-evict
+        Disable cache eviction.
     -no-transitive
         Do not compute checksums for transitive actions.`
 }
