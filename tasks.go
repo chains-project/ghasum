@@ -71,7 +71,7 @@ func TaskAuditVulnerabilities(t *T) error {
 // Build the ghasum binary for the current platform.
 func TaskBuild(t *T) error {
 	t.Log("Building...")
-	return t.Exec(`go build -trimpath ./cmd/ghasum`)
+	return t.Exec(`env CGO_ENABLED=0 go build -trimpath ./cmd/ghasum`)
 }
 
 // Build the ghasum binary for all supported platforms.
@@ -133,7 +133,7 @@ func TaskBuildAll(t *T) error {
 
 		var (
 			compile = fmt.Sprintf(
-				"env GOOS=%s GOARCH=%s go build -trimpath -o %s ./cmd/ghasum",
+				"env GOOS=%s GOARCH=%s CGO_ENABLED=0 go build -trimpath -o %s ./cmd/ghasum",
 				target.os,
 				target.arch,
 				executable,
