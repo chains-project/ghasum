@@ -48,6 +48,18 @@ func actionsInWorkflows(workflows []workflow) ([]GitHubAction, error) {
 			if err != nil {
 				return nil, err
 			}
+
+			if job.Uses != "" {
+				action, err := parseUses(job.Uses)
+				if errors.Is(err, ErrLocalAction) {
+					continue
+				} else if err != nil {
+					return nil, err
+				}
+
+				action.Kind = ReusableWorkflow
+				unique[actionId(action)] = action
+			}
 		}
 	}
 
@@ -68,11 +80,15 @@ func actionsInSteps(steps []step, m map[string]GitHubAction) error {
 			return err
 		}
 
-		id := fmt.Sprintf("%s%s%s%s", action.Owner, action.Project, action.Path, action.Ref)
-		m[id] = action
+		action.Kind = Action
+		m[actionId(action)] = action
 	}
 
 	return nil
+}
+
+func actionId(action GitHubAction) string {
+	return fmt.Sprintf("%s%s%s%s", action.Owner, action.Project, action.Path, action.Ref)
 }
 
 func workflowsInRepo(repo fs.FS) ([]workflowFile, error) {

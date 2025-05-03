@@ -90,14 +90,25 @@ Redundant checksums are ignored by this process.
 ### Collecting Actions
 
 To determine the set of actions a target depends on, first find all `uses:`
-entries in the target. For a repository this covers all workflows in the
-workflows directory, otherwise it covers only the target.
+entries in the target, both at the step- and job-level. For a repository this,
+covers all workflows in the workflows directory, otherwise it covers only the
+target.
 
 For each `uses:` value, excluding the list below, it is added to the set. If the
-`-no-transitive` option is NOT set the repository declared by the `uses:` value
-is fetched. The action manifest at the path specified in the `uses:` value is
-parsed for additional `uses:` values. For each of these transitive `uses:`
-values, this process is repeated.
+`-no-transitive` option is set this constitutes the set of actions. Otherwise,
+transitive actions must be collected too.
+
+For step-level `uses:` values, the action manifest of the declared action is
+parsed for (transitive) actions. This concerns the manifest at the path declared
+in the `uses:` value. If multiple actions from the same repository are used,
+each action's manifest must be handled.
+
+For job-level `uses:` values, the workflow of the declared reusable workflow is
+parsed for (transitive) actions. This concerns only the workflow at the path
+declared in the `uses:` value. If multiple reusable workflow from the same
+repository are used, each workflow must be handled.
+
+This process is repeated or each transitive `uses:` value.
 
 The following `uses:` values are to be excluded from the set of actions a
 repository depends on.
@@ -109,6 +120,14 @@ repository depends on.
   - uses: ./.github/actions/hello-world-action
   ```
 
+- Reusable workflows in the same repository as the workflow. Example:
+
+  ```yaml
+  jobs:
+    example:
+      uses: ./.github/workflows/reusable.yml
+  ```
+
 - Docker Hub Actions ([#216]). Examples:
 
   ```yaml
@@ -118,19 +137,6 @@ repository depends on.
   - uses: docker://gcr.io/cloud-builders/gradle
   ```
 
-- Reusable workflows ([#215]). Examples:
-
-  ```yaml
-  jobs:
-    call-workflow-1-in-local-repo:
-      uses: octo-org/this-repo/.github/workflows/workflow-1.yml@172239021f7ba04fe7327647b213799853a9eb89
-    call-workflow-2-in-local-repo:
-      uses: ./.github/workflows/workflow-2.yml
-    call-workflow-in-another-repo:
-      uses: octo-org/another-repo/.github/workflows/workflow.yml@v1
-  ```
-
-[#215]: https://github.com/chains-project/ghasum/issues/215
 [#216]: https://github.com/chains-project/ghasum/issues/216
 
 ### Computing Checksums

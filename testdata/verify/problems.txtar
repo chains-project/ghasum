@@ -1,48 +1,77 @@
 # Checksum mismatch - Repo
 ! exec ghasum verify -cache .cache/ mismatch/
-stdout .
+stdout '3 problem\(s\) occurred during validation:'
+stdout 'checksum mismatch for "actions/checkout@v4"'
+stdout 'checksum mismatch for "actions/setup-go@v5"'
+stdout 'checksum mismatch for "actions/setup-java@v4"'
 ! stdout 'Ok'
 ! stderr .
 
 # Checksum mismatch - Workflow
 ! exec ghasum verify -cache .cache/ mismatch/.github/workflows/workflow.yml
-stdout .
+stdout '3 problem\(s\) occurred during validation:'
+stdout 'checksum mismatch for "actions/checkout@v4"'
+stdout 'checksum mismatch for "actions/setup-go@v5"'
+stdout 'checksum mismatch for "actions/setup-java@v4"'
 ! stdout 'Ok'
 ! stderr .
 
 # Checksum mismatch - Job
 ! exec ghasum verify -cache .cache/ mismatch/.github/workflows/workflow.yml:example
-stdout .
+stdout '2 problem\(s\) occurred during validation:'
+stdout 'checksum mismatch for "actions/checkout@v4"'
+stdout 'checksum mismatch for "actions/setup-go@v5"'
 ! stdout 'Ok'
 ! stderr .
 
-# Checksum mismatch - Transitive
-! exec ghasum verify -cache .cache/ mismatch/.github/workflows/workflow.yml:transitive
-stdout .
+# Checksum mismatch - Transitive, manifest
+! exec ghasum verify -cache .cache/ mismatch/.github/workflows/workflow.yml:transitive-manifest
+stdout '1 problem\(s\) occurred during validation:'
+stdout 'checksum mismatch for "actions/setup-go@v5"'
+! stdout 'Ok'
+! stderr .
+
+# Checksum mismatch - Transitive, reusable workflow
+! exec ghasum verify -cache .cache/ mismatch/.github/workflows/workflow.yml:transitive-reusable-workflow
+stdout '1 problem\(s\) occurred during validation:'
+stdout 'checksum mismatch for "actions/setup-java@v4"'
 ! stdout 'Ok'
 ! stderr .
 
 # Checksum missing - Repo
 ! exec ghasum verify -cache .cache/ missing/
-stdout .
+stdout '2 problem\(s\) occurred during validation:'
+stdout 'no checksum found for "actions/setup-go@v5"'
+stdout 'no checksum found for "actions/setup-java@v4"'
 ! stdout 'Ok'
 ! stderr .
 
 # Checksum missing - Workflow
 ! exec ghasum verify -cache .cache/ missing/.github/workflows/workflow.yml
-stdout .
+stdout '2 problem\(s\) occurred during validation:'
+stdout 'no checksum found for "actions/setup-go@v5"'
+stdout 'no checksum found for "actions/setup-java@v4"'
 ! stdout 'Ok'
 ! stderr .
 
 # Checksum missing - Job
 ! exec ghasum verify -cache .cache/ missing/.github/workflows/workflow.yml:example
-stdout .
+stdout '1 problem\(s\) occurred during validation:'
+stdout 'no checksum found for "actions/setup-go@v5"'
 ! stdout 'Ok'
 ! stderr .
 
-# Checksum missing - Transitive
-! exec ghasum verify -cache .cache/ missing/.github/workflows/workflow.yml:transitive
-stdout .
+# Checksum missing - Transitive, manifest
+! exec ghasum verify -cache .cache/ missing/.github/workflows/workflow.yml:transitive-manifest
+stdout '1 problem\(s\) occurred during validation:'
+stdout 'no checksum found for "actions/setup-go@v5"'
+! stdout 'Ok'
+! stderr .
+
+# Checksum missing - Transitive, reusable workflow
+! exec ghasum verify -cache .cache/ missing/.github/workflows/workflow.yml:transitive-reusable-workflow
+stdout '1 problem\(s\) occurred during validation:'
+stdout 'no checksum found for "actions/setup-java@v4"'
 ! stdout 'Ok'
 ! stderr .
 
@@ -51,7 +80,9 @@ version 1
 
 actions/checkout@v4 oJp2lqI5zRjHTtu2vQ9/rfcqiYqRAnhqMjwnw/ss4x0=
 actions/composite@v1 VHsmCNCNfU2qFyTntn14sMoZL1UOOyne/omuQUvzQfA=
+actions/reusable@v2 /PcY8RI/utekzCyLUiLOEeL3FpJ96/FJVRbb5LBLmkU=
 actions/setup-go@v5 this-is-intentionally-invalid
+actions/setup-java@v4 this-is-intentionally-invalid
 -- mismatch/.github/workflows/workflow.yml --
 name: Example workflow
 on: [push]
@@ -69,17 +100,20 @@ jobs:
         go-version-file: go.mod
     - name: This step does not use an action
       run: Echo 'hello world!'
-  transitive:
+  transitive-manifest:
     name: example
     runs-on: ubuntu-24.04
     steps:
     - name: This step uses transitive actions
       uses: actions/composite@v1
+  transitive-reusable-workflow:
+    uses: actions/reusable/.github/workflows/workflow.yml@v2
 -- missing/.github/workflows/gha.sum --
 version 1
 
-actions/checkout@v4 oJp2lqI5zRjHTtu2vQ9/rfcqiYqRAnhqMjwnw/ss4x0=
+actions/checkout@v4 +34igsJdK09ZFEkVNQ+ZoyZnIlg48X3bm4ZaGGlX5o8=
 actions/composite@v1 VHsmCNCNfU2qFyTntn14sMoZL1UOOyne/omuQUvzQfA=
+actions/reusable@v2 /PcY8RI/utekzCyLUiLOEeL3FpJ96/FJVRbb5LBLmkU=
 -- missing/.github/workflows/workflow.yml --
 name: Example workflow
 on: [push]
@@ -97,12 +131,14 @@ jobs:
         go-version-file: go.mod
     - name: This step does not use an action
       run: Echo 'hello world!'
-  transitive:
+  transitive-manifest:
     name: example
     runs-on: ubuntu-24.04
     steps:
     - name: This step uses transitive actions
       uses: actions/composite@v1
+  transitive-reusable-workflow:
+    uses: actions/reusable/.github/workflows/workflow.yml@v2
 -- .cache/actions/checkout/v4/action.yml --
 name: actions/checkout@v4
 -- .cache/actions/composite/v1/action.yml --
@@ -110,5 +146,17 @@ name: actions/composite@v1
 runs:
   steps:
   - uses: actions/setup-go@v5
+-- .cache/actions/reusable/v2/.github/workflows/workflow.yml --
+name: Example reusable workflow
+on: [workflow_dispatch]
+
+jobs:
+  example:
+    name: example
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/setup-java@v4
 -- .cache/actions/setup-go/v5/action.yml --
 name: actions/setup-go@v5
+-- .cache/actions/setup-java/v4/action.yml --
+name: actions/setup-java@v4

@@ -35,6 +35,7 @@ type (
 	}
 
 	job struct {
+		Uses  string `yaml:"uses"`
 		Steps []step `yaml:"steps"`
 	}
 

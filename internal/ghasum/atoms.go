@@ -119,7 +119,7 @@ func compute(cfg *Config, actions []gha.GitHubAction, algo checksum.Algo) ([]sum
 		actionDir := path.Join(cfg.Cache.Path(), repo.Owner, repo.Project, repo.Ref)
 		if _, err := os.Stat(actionDir); err != nil {
 			if cfg.Offline {
-				return nil, fmt.Errorf("missing %q from cache", actionDir)
+				return nil, fmt.Errorf("missing %q from cache", action)
 			}
 
 			err := github.Clone(actionDir, &repo)
@@ -129,11 +129,25 @@ func compute(cfg *Config, actions []gha.GitHubAction, algo checksum.Algo) ([]sum
 		}
 
 		if cfg.Transitive {
-			transitiveActions, err := gha.ManifestActions(os.DirFS(actionDir), action.Path)
-			if err != nil {
-				return nil, fmt.Errorf("action manifest parsing failed: %v", err)
+			var transitive []gha.GitHubAction
+			switch action.Kind {
+			case gha.Action:
+				tmp, err := gha.ManifestActions(os.DirFS(actionDir), action.Path)
+				if err != nil {
+					return nil, fmt.Errorf("action manifest parsing failed for %s: %v", action, err)
+				}
+
+				transitive = tmp
+			case gha.ReusableWorkflow:
+				tmp, err := gha.WorkflowActions(os.DirFS(actionDir), action.Path)
+				if err != nil {
+					return nil, fmt.Errorf("reusable workflow parsing failed for %s: %v", action, err)
+				}
+
+				transitive = tmp
 			}
-			actions = append(actions, transitiveActions...)
+
+			actions = append(actions, transitive...)
 		}
 
 		id := fmt.Sprintf("%s%s%s", action.Owner, action.Project, action.Ref)

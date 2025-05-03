@@ -82,6 +82,15 @@ func TestParseUses(t *testing.T) {
 					Ref:     "v2",
 				},
 			},
+			"reusable workflow": {
+				uses: "octo-org/another-repo/.github/workflows/workflow.yml@v1",
+				want: GitHubAction{
+					Owner:   "octo-org",
+					Project: "another-repo",
+					Path:    ".github/workflows/workflow.yml",
+					Ref:     "v1",
+				},
+			},
 		}
 
 		for name, tt := range testCases {
@@ -119,6 +128,10 @@ func TestParseUses(t *testing.T) {
 		testCases := map[string]TestCase{
 			"an action in the same repository as the workflow": {
 				uses: "./.github/actions/hello-world-action",
+				want: ErrLocalAction,
+			},
+			"a reusable workflow in the same repository as the workflow": {
+				uses: "./.github/workflow/reusable.yml",
 				want: ErrLocalAction,
 			},
 			"a Docker Hub action": {
@@ -260,6 +273,16 @@ func TestParseWorkflow(t *testing.T) {
 				},
 			},
 			{
+				in: workflowWithJobUses,
+				want: workflow{
+					Jobs: map[string]job{
+						"uses": {
+							Uses: "reusable/workflow/.github/workflows/workflow.yml@v1",
+						},
+					},
+				},
+			},
+			{
 				in: workflowWithJobWithSteps,
 				want: workflow{
 					Jobs: map[string]job{
@@ -299,6 +322,47 @@ func TestParseWorkflow(t *testing.T) {
 									Uses: "foo/baz@v2",
 								},
 							},
+						},
+					},
+				},
+			},
+			{
+				in: workflowWithNestedActions,
+				want: workflow{
+					Jobs: map[string]job{
+						"only-job": {
+							Steps: []step{
+								{
+									Uses: "nested/action/1@v1",
+								},
+								{
+									Uses: "nested/action/2@v1",
+								},
+							},
+						},
+					},
+				},
+			},
+			{
+				in: workflowWithInvalidStepUses,
+				want: workflow{
+					Jobs: map[string]job{
+						"job": {
+							Steps: []step{
+								{
+									Uses: "this-is-not-an-action",
+								},
+							},
+						},
+					},
+				},
+			},
+			{
+				in: workflowWithInvalidJobUses,
+				want: workflow{
+					Jobs: map[string]job{
+						"job": {
+							Uses: "this-is-not-a-reusable-workflow",
 						},
 					},
 				},

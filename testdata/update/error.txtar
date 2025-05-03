@@ -49,6 +49,14 @@ stderr '.github/workflows/workflow.yml'
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'could not parse manifest'
+stderr 'action manifest parsing failed for actions/composite@v1'
+
+# Invalid reusable manifest
+! exec ghasum verify -cache .cache/ invalid-reusable-workflow/
+! stdout 'Ok'
+stderr 'an unexpected error occurred'
+stderr 'could not parse workflow'
+stderr 'reusable workflow parsing failed for actions/reusable/.github/workflows/workflow.yml@v2'
 
 # Directory not found
 ! exec ghasum update directory-not-found/
@@ -62,7 +70,7 @@ version 1
 actions/composite@v1 sD5wRDv4rn1UBi0Mzs9jHAB++jiJuAVuggdh437FKHE=
 actions/setup-go@v5 Vi4XogAGoojozgoXrRN/OBL93QIcbsxLJEOOAwlx+e8=
 -- invalid-manifest/.github/workflows/workflow.yml --
-name: Faulty workflow
+name: Example workflow
 on: [push]
 
 jobs:
@@ -72,6 +80,18 @@ jobs:
     steps:
     - name: This step uses transitive actions
       uses: actions/composite@v1
+-- invalid-reusable-workflow/.github/workflows/gha.sum --
+version 1
+
+actions/reusable@v2 piApJ2nBrUrAxy6SjlRAsF6DpwTNQxYctpWJkhvqGN0=
+actions/setup-java@v4.7.1 ZcPr3aVvmk2yL8zkjqDUpH+YLqGwjtenFrjEk3OEZ3k=
+-- invalid-reusable-workflow/.github/workflows/workflow.yml --
+name: Example workflow
+on: [push]
+
+jobs:
+  example:
+    uses: actions/reusable/.github/workflows/workflow.yml@v2
 -- invalid-workflow/.github/workflows/gha.sum --
 version 1
 
@@ -128,5 +148,18 @@ runs:
   steps:
 - name: Also a direct dependency
   uses: actions/setup-go@v5
+-- .cache/actions/reusable/v2/.github/workflows/workflow.yml --
+name: Faulty reusable workflow
+on: [workflow_dispatch]
+
+jobs:
+  example:
+    name: example
+    runs-on: ubuntu-24.04
+    steps:
+  - name: Unique transitive dependency
+    uses: actions/setup-java@v4.7.1
 -- .cache/actions/setup-go/v5/action.yml --
 name: actions/setup-go@v5
+-- .cache/actions/setup-java/v4.7.1/action.yml --
+name: actions/setup-java@v4.7.1

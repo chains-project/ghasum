@@ -32,8 +32,9 @@ type mockFsEntry struct {
 }
 
 const (
-	manifestWithNoSteps = `name: manifest with no steps`
-	manifestWithStep    = `name: manifest with no steps
+	manifestWithNoSteps = `name: manifest with no steps
+`
+	manifestWithStep = `name: manifest with no steps
 runs:
   steps:
     - uses: foo/bar@v1
@@ -52,10 +53,16 @@ runs:
     - uses: this-is-not-an-action
 `
 
-	workflowWithNoJobs     = `name: workflow with no jobs`
+	workflowWithNoJobs = `name: workflow with no jobs
+`
 	workflowWithJobNoSteps = `name: job without steps
 jobs:
   no-steps: ~
+`
+	workflowWithJobUses = `name: job without steps
+jobs:
+  uses:
+    uses: reusable/workflow/.github/workflows/workflow.yml@v1
 `
 	workflowWithJobWithSteps = `name: job with steps
 jobs:
@@ -82,7 +89,12 @@ jobs:
       - uses: nested/action/1@v1
       - uses: nested/action/2@v1
 `
-	workflowWithInvalidUses = `name: invalid 'uses' value
+	workflowWithInvalidJobUses = `name: invalid 'uses' value
+jobs:
+  job:
+    uses: this-is-not-a-reusable-workflow
+`
+	workflowWithInvalidStepUses = `name: invalid 'uses' value
 jobs:
   job:
     steps:
