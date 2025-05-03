@@ -142,14 +142,21 @@ func workflowInRepo(repo fs.FS, path string) ([]byte, error) {
 
 func manifestInRepo(repo fs.FS, dir string) ([]byte, error) {
 	path := filepath.Join(dir, "action.yml")
-	file, err := repo.Open(path)
-	if err != nil {
-		path = filepath.Join(dir, "action.yaml")
-		if file, err = repo.Open(path); err != nil {
-			return nil, fmt.Errorf("could not open manifest (action.yml or action.yaml) at %s: %v", dir, err)
-		}
+	if file, err := repo.Open(path); err == nil {
+		data, _ := io.ReadAll(file)
+		return data, nil
 	}
 
-	data, _ := io.ReadAll(file)
-	return data, nil
+	path = filepath.Join(dir, "action.yaml")
+	if file, err := repo.Open(path); err == nil {
+		data, _ := io.ReadAll(file)
+		return data, nil
+	}
+
+	path = filepath.Join(dir, "Dockerfile")
+	if _, err := repo.Open(path); err == nil {
+		return nil, ErrDockerfileManifest
+	}
+
+	return nil, ErrNoManifest
 }

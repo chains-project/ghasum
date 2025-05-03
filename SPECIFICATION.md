@@ -203,8 +203,7 @@ version 1
 
 ## Definitions
 
-- _action manifest_ is the file `action.yml` or `action.yaml` (mutually
-  exclusive).
+- _action manifest_ is the file `action.yml`, `action.yaml`, or `Dockerfile`.
 - _checksum file_ is the file `.github/workflows/gha.sum`.
 - _workflows directory_ is the directory `.github/workflows`.
 

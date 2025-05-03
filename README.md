@@ -59,12 +59,15 @@ recommended to use commit SHAs instead to avoid failing verification by ghasum.
 
 - Requires manual intervention when an Action is updated.
 - The hashing algorithm used for checksums is not configurable.
-- Checksums do not provide protection against [unpinnable actions].[^1] 
+- `ghasum` does not (yet, [#216]) handle Docker-based [unpinnable actions].
+- Checksums do not provide protection against code-based [unpinnable actions].
 
-[^1]: See [github/roadmap#592] for work on unpinnable actions by GitHub.
+Some of these limitations may be addressed by Github's Immutable Actions
+initiative, see [github/roadmap#592] for more information.
 
-[unpinnable actions]: https://www.paloaltonetworks.com/blog/prisma-cloud/unpinnable-actions-github-security/
+[#216]: https://github.com/chains-project/ghasum/issues/216
 [github/roadmap#592]: https://github.com/github/roadmap/issues/592
+[unpinnable actions]: https://www.paloaltonetworks.com/blog/prisma-cloud/unpinnable-actions-github-security/
 
 ## Background
 

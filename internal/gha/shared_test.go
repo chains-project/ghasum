@@ -52,6 +52,9 @@ runs:
   steps:
     - uses: this-is-not-an-action
 `
+	manifestDockerfile = `FROM docker.io/alpine:3.21.3
+ENTRYPOINT ["echo", "Hello world!"]
+`
 
 	workflowWithNoJobs = `name: workflow with no jobs
 `

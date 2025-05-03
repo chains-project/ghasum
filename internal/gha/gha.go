@@ -15,6 +15,7 @@
 package gha
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
 	"path/filepath"
@@ -147,7 +148,9 @@ func JobActions(repo fs.FS, path, name string) ([]GitHubAction, error) {
 // specified directory in the given file system hierarchy.
 func ManifestActions(repo fs.FS, path string) ([]GitHubAction, error) {
 	data, err := manifestInRepo(repo, path)
-	if err != nil {
+	if errors.Is(err, ErrDockerfileManifest) {
+		return nil, nil
+	} else if err != nil {
 		return nil, err
 	}
 

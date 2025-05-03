@@ -16,6 +16,7 @@ package gha
 
 import (
 	"bytes"
+	"errors"
 	"testing"
 	"testing/quick"
 
@@ -702,7 +703,7 @@ func TestManifestInRepo(t *testing.T) {
 		type TestCase struct {
 			fs   map[string]mockFsEntry
 			dir  string
-			want []byte
+			want error
 		}
 
 		testCases := map[string]TestCase{
@@ -713,7 +714,7 @@ func TestManifestInRepo(t *testing.T) {
 					},
 				},
 				dir:  "nested",
-				want: []byte(manifestWithStep),
+				want: ErrNoManifest,
 			},
 			".yaml manifest in different dir": {
 				fs: map[string]mockFsEntry{
@@ -722,7 +723,16 @@ func TestManifestInRepo(t *testing.T) {
 					},
 				},
 				dir:  "nested",
-				want: []byte(manifestWithStep),
+				want: ErrNoManifest,
+			},
+			"Dockerfile manifest": {
+				fs: map[string]mockFsEntry{
+					"Dockerfile": {
+						Content: []byte(manifestDockerfile),
+					},
+				},
+				dir:  "",
+				want: ErrDockerfileManifest,
 			},
 		}
 
@@ -730,8 +740,18 @@ func TestManifestInRepo(t *testing.T) {
 			t.Run(name, func(t *testing.T) {
 				t.Parallel()
 
-				if _, err := mockRepo(tt.fs); err != nil {
+				repo, err := mockRepo(tt.fs)
+				if err != nil {
+					t.Fatalf("Could not initialize file system: %+v", err)
+				}
+
+				_, err = manifestInRepo(repo, tt.dir)
+				if err == nil {
 					t.Fatal("Unexpected success")
+				}
+
+				if got, want := err, tt.want; !errors.Is(got, want) {
+					t.Errorf("Unexpected error (got %q, want %q)", got, want)
 				}
 			})
 		}
