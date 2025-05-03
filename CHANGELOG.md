@@ -15,8 +15,11 @@ Versioning].
 ### Enhancements
 
 - Correct typo in the `ghasum help verify` output.
+- Correct typo in the `ghasum verify` output.
 - Enable cache eviction on `ghasum init`.
 - Ensure `ghasum verify` outcome is linked to `gha.sum` content.
+- Include reusable workflows in `gha.sum`, including transitive actions used in
+  reusable workflows.
 
 ## [v0.4.0] - 2025-04-27
 

@@ -17,7 +17,9 @@ version 1
 
 actions/checkout@main JHipZi1UCvybC3fwi9RFLTK8vpI/gURTga/ColyHI4k=
 actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
 actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
+actions/setup-java@v4.7.1 ZcPr3aVvmk2yL8zkjqDUpH+YLqGwjtenFrjEk3OEZ3k=
 actions/setup-node@v4.4.0 Gdoys4h+gIN02lzrWZW0uxjBQ8Rk5YSE6+q1SOrw/+o=
 golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
 -- want/gha-no-transitive.sum --
@@ -25,6 +27,7 @@ version 1
 
 actions/checkout@main JHipZi1UCvybC3fwi9RFLTK8vpI/gURTga/ColyHI4k=
 actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
 actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
 golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
 -- target/.github/workflows/workflow.yml --
@@ -32,7 +35,7 @@ name: Example workflow
 on: [push]
 
 jobs:
-  example:
+  example-1:
     name: example
     runs-on: ubuntu-22.04
     steps:
@@ -52,6 +55,8 @@ jobs:
       uses: docker://alpine:3.8
     - name: This step does not use an action
       run: Echo 'hello world!'
+  example-2:
+    uses: actions/reusable/.github/workflows/workflow.yml@v2
 -- .cache/actions/checkout/main/action.yml --
 name: actions/checkout@main
 -- .cache/actions/composite/v1/action.yml --
@@ -62,8 +67,21 @@ runs:
     uses: actions/setup-go@v5.0.0
   - name: Unique transitive dependency
     uses: actions/setup-node@v4.4.0
+-- .cache/actions/reusable/v2/.github/workflows/workflow.yml --
+name: Example reusable workflow
+on: [workflow_dispatch]
+
+jobs:
+  example:
+    name: example
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Unique transitive dependency
+      uses: actions/setup-java@v4.7.1
 -- .cache/actions/setup-go/v5.0.0/action.yml --
 name: actions/setup-go@v5.0.0
+-- .cache/actions/setup-java/v4.7.1/action.yml --
+name: actions/setup-java@v4.7.1
 -- .cache/actions/setup-node/v4.4.0/action.yml --
 name: actions/setup-node@v4.4.0
 -- .cache/golangci/golangci-lint-action/3a91952/action.yml --

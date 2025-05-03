@@ -360,6 +360,30 @@ func TestActionsInWorkflows(t *testing.T) {
 				},
 				want: 1,
 			},
+			"job with local reusable workflow": {
+				in: []workflow{
+					{
+						Jobs: map[string]job{
+							"example": {
+								Uses: "./.github/workflows/workflow-2.yml",
+							},
+						},
+					},
+				},
+				want: 0,
+			},
+			"job with external reusable workflow": {
+				in: []workflow{
+					{
+						Jobs: map[string]job{
+							"example": {
+								Uses: "octo-org/another-repo/.github/workflows/workflow.yml@v1",
+							},
+						},
+					},
+				},
+				want: 1,
+			},
 		}
 
 		for name, tt := range testCases {
@@ -386,7 +410,18 @@ func TestActionsInWorkflows(t *testing.T) {
 		}
 
 		testCases := map[string]TestCase{
-			"invalid uses value": {
+			"invalid job uses value": {
+				in: []workflow{
+					{
+						Jobs: map[string]job{
+							"example": {
+								Uses: "this isn't a reusable workflow",
+							},
+						},
+					},
+				},
+			},
+			"invalid step uses value": {
 				in: []workflow{
 					{
 						Jobs: map[string]job{

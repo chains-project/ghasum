@@ -43,7 +43,9 @@ version 1
 
 actions/checkout@v4.1.1 TTVf+dWEJueFyMoZnvuqlW5lX4aXYXxGWaFaV8lO910=
 actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
 actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
+actions/setup-java@v4.7.1 ZcPr3aVvmk2yL8zkjqDUpH+YLqGwjtenFrjEk3OEZ3k=
 actions/setup-node@v4.4.0 Gdoys4h+gIN02lzrWZW0uxjBQ8Rk5YSE6+q1SOrw/+o=
 golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
 -- want/gha-no-transitive.sum --
@@ -51,6 +53,7 @@ version 1
 
 actions/checkout@v4.1.1 TTVf+dWEJueFyMoZnvuqlW5lX4aXYXxGWaFaV8lO910=
 actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
 actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
 golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
 -- want/gha-preserve.sum --
@@ -58,7 +61,9 @@ version 1
 
 actions/checkout@v4.1.1 this-is-invalid-but-should-not-be-updated
 actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
 actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
+actions/setup-java@v4.7.1 ZcPr3aVvmk2yL8zkjqDUpH+YLqGwjtenFrjEk3OEZ3k=
 actions/setup-node@v4.4.0 Gdoys4h+gIN02lzrWZW0uxjBQ8Rk5YSE6+q1SOrw/+o=
 golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
 -- unchanged/.github/workflows/gha.sum --
@@ -66,7 +71,9 @@ version 1
 
 actions/checkout@v4.1.1 TTVf+dWEJueFyMoZnvuqlW5lX4aXYXxGWaFaV8lO910=
 actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
 actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
+actions/setup-java@v4.7.1 ZcPr3aVvmk2yL8zkjqDUpH+YLqGwjtenFrjEk3OEZ3k=
 actions/setup-node@v4.4.0 Gdoys4h+gIN02lzrWZW0uxjBQ8Rk5YSE6+q1SOrw/+o=
 golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
 -- unchanged/.github/workflows/workflow.yml --
@@ -74,7 +81,7 @@ name: Example workflow
 on: [push]
 
 jobs:
-  example:
+  example-1:
     name: example
     runs-on: ubuntu-22.04
     steps:
@@ -94,12 +101,16 @@ jobs:
       uses: docker://alpine:3.8
     - name: This step does not use an action
       run: Echo 'hello world!'
+  example-2:
+    uses: actions/reusable/.github/workflows/workflow.yml@v2
 -- changed/.github/workflows/gha.sum --
 version 1
 
 actions/checkout@main JHipZi1UCvybC3fwi9RFLTK8vpI/gURTga/ColyHI4k=
 actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/reusable@v1 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
 actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
+actions/setup-java@v4.7.0 240JvB7Dubp+edN0SvskXBdKdZ86Ql1cxXz9c78L9PI=
 actions/setup-node@v4.3.0 95uwSqDyUuR/AjEP6GwURLEvoyCfPVG72zlrkAMmtw8=
 golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
 -- changed/.github/workflows/workflow.yml --
@@ -107,7 +118,7 @@ name: Example workflow
 on: [push]
 
 jobs:
-  example:
+  example-1:
     name: example
     runs-on: ubuntu-22.04
     steps:
@@ -127,14 +138,19 @@ jobs:
       uses: docker://alpine:3.8
     - name: This step does not use an action
       run: Echo 'hello world!'
+  example-2:
+    uses: actions/reusable/.github/workflows/workflow.yml@v2
 -- remove/.github/workflows/gha.sum --
 version 1
 
-actions/checkout@main JHipZi1UCvybC3fwi9RFLTK8vpI/gURTga/ColyHI4k=
+actions/checkout@main this-one-should-be-removed
 actions/checkout@v4.1.1 TTVf+dWEJueFyMoZnvuqlW5lX4aXYXxGWaFaV8lO910=
 actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
 actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
-actions/setup-node@v4.3.0 95uwSqDyUuR/AjEP6GwURLEvoyCfPVG72zlrkAMmtw8=
+actions/setup-java@v4.7.0 this-one-should-be-removed
+actions/setup-java@v4.7.1 ZcPr3aVvmk2yL8zkjqDUpH+YLqGwjtenFrjEk3OEZ3k=
+actions/setup-node@v4.3.0 this-one-should-be-removed
 actions/setup-node@v4.4.0 Gdoys4h+gIN02lzrWZW0uxjBQ8Rk5YSE6+q1SOrw/+o=
 golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
 -- remove/.github/workflows/workflow.yml --
@@ -142,7 +158,7 @@ name: Example workflow
 on: [push]
 
 jobs:
-  example:
+  example-1:
     name: example
     runs-on: ubuntu-22.04
     steps:
@@ -162,12 +178,16 @@ jobs:
       uses: docker://alpine:3.8
     - name: This step does not use an action
       run: Echo 'hello world!'
+  example-2:
+    uses: actions/reusable/.github/workflows/workflow.yml@v2
 -- preserve/.github/workflows/gha.sum --
 version 1
 
 actions/checkout@v4.1.1 this-is-invalid-but-should-not-be-updated
 actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
 actions/setup-go@v4.1.0 RQ197c5MRKiujfm0VpQ19p7BN/07XFW9H3R7GH36RXi=
+actions/setup-java@v4.7.1 ZcPr3aVvmk2yL8zkjqDUpH+YLqGwjtenFrjEk3OEZ3k=
 actions/setup-node@v4.4.0 Gdoys4h+gIN02lzrWZW0uxjBQ8Rk5YSE6+q1SOrw/+o=
 golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
 -- preserve/.github/workflows/workflow.yml --
@@ -175,7 +195,7 @@ name: Example workflow
 on: [push]
 
 jobs:
-  example:
+  example-1:
     name: example
     runs-on: ubuntu-22.04
     steps:
@@ -195,6 +215,8 @@ jobs:
       uses: docker://alpine:3.8
     - name: This step does not use an action
       run: Echo 'hello world!'
+  example-2:
+    uses: actions/reusable/.github/workflows/workflow.yml@v2
 -- .cache/actions/checkout/v4.1.1/action.yml --
 name: actions/checkout@v4.1.1
 -- .cache/actions/composite/v1/action.yml --
@@ -205,8 +227,21 @@ runs:
     uses: actions/setup-go@v5.0.0
   - name: Unique transitive dependency
     uses: actions/setup-node@v4.4.0
+-- .cache/actions/reusable/v2/.github/workflows/workflow.yml --
+name: Example reusable workflow
+on: [workflow_dispatch]
+
+jobs:
+  example:
+    name: example
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Unique transitive dependency
+      uses: actions/setup-java@v4.7.1
 -- .cache/actions/setup-go/v5.0.0/action.yml --
 name: actions/setup-go@v5.0.0
+-- .cache/actions/setup-java/v4.7.1/action.yml --
+name: actions/setup-java@v4.7.1
 -- .cache/actions/setup-node/v4.4.0/action.yml --
 name: actions/setup-node@v4.4.0
 -- .cache/golangci/golangci-lint-action/3a91952/action.yml --

@@ -11,11 +11,25 @@ stderr 'an unexpected error occurred'
 stderr 'ghasum is already initialized'
 
 # Invalid workflow
-! exec ghasum init invalid/
+! exec ghasum init invalid-workflow/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'could not parse workflow'
 stderr '.github/workflows/workflow.yml'
+
+# Invalid action manifest
+! exec ghasum init -cache .cache/ invalid-manifest/
+! stdout 'Ok'
+stderr 'an unexpected error occurred'
+stderr 'could not parse manifest'
+stderr 'action manifest parsing failed for actions/composite@v1'
+
+# Invalid reusable workflow
+! exec ghasum init -cache .cache/ invalid-reusable-workflow/
+! stdout 'Ok'
+stderr 'an unexpected error occurred'
+stderr 'could not parse workflow'
+stderr 'reusable workflow parsing failed for actions/reusable/.github/workflows/workflow.yml@v2'
 
 # Directory not found
 ! exec ghasum init directory-not-found/
@@ -48,7 +62,25 @@ jobs:
       uses: golangci/golangci-lint-action@3a91952
     - name: This step does not use an action
       run: Echo 'hello world!'
--- invalid/.github/workflows/workflow.yml --
+-- invalid-manifest/.github/workflows/workflow.yml --
+name: Example workflow
+on: [push]
+
+jobs:
+  example:
+    name: example
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Checkout repository
+      uses: actions/composite@v1
+-- invalid-reusable-workflow/.github/workflows/workflow.yml --
+name: Example workflow
+on: [push]
+
+jobs:
+  example:
+    uses: actions/reusable/.github/workflows/workflow.yml@v2
+-- invalid-workflow/.github/workflows/workflow.yml --
 name: Faulty workflow
 on: [push]
 
@@ -61,3 +93,22 @@ jobs:
     uses: actions/checkout@v4
 -- no-actions/.keep --
 This file exists to create a repo that does not use Github Actions.
+-- .cache/actions/composite/v1/action.yml --
+name: actions/composite@v1
+runs:
+  steps:
+- name: Also a direct dependency
+  uses: actions/setup-go@v5
+-- .cache/actions/reusable/v2/.github/workflows/workflow.yml --
+name: Faulty reusable workflow
+on: [workflow_dispatch]
+
+jobs:
+  example:
+    name: example
+    runs-on: ubuntu-24.04
+    steps:
+  - name: Unique transitive dependency
+    uses: actions/setup-java@v4.7.1
+-- .cache/actions/setup-java/v4.7.1/action.yml --
+name: actions/setup-java@v4.7.1

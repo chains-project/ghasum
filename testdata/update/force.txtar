@@ -156,18 +156,22 @@ jobs:
 version 1
 
 actions/composite@v1 uc9AaN29Y4B/7UgwrQoYDYDlbJhua//0wr8eMLHqen8=
+actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
+actions/setup-java@v4.7.1 this-is-intentionally-invalid
 actions/setup-node@v4.4.0 this-is-intentionally-invalid
 -- transitive/.github/workflows/workflow.yml --
 name: Example workflow
 on: [push]
 
 jobs:
-  example:
+  example-1:
     name: example
     runs-on: ubuntu-24.04
     steps:
     - name: This step uses transitive actions
       uses: actions/composite@v1
+  example-2:
+    uses: actions/reusable/.github/workflows/workflow.yml@v2
 -- .cache/actions/checkout/v4.1.1/action.yml --
 name: actions/checkout@v4.1.1
 -- .cache/actions/composite/v1/action.yml --
@@ -176,6 +180,19 @@ runs:
   steps:
   - name: Unique transitive dependency
     uses: actions/setup-node@v4.4.0
+-- .cache/actions/reusable/v2/.github/workflows/workflow.yml --
+name: Example reusable workflow
+on: [workflow_dispatch]
+
+jobs:
+  example:
+    name: example
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Unique transitive dependency
+      uses: actions/setup-java@v4.7.1
+-- .cache/actions/setup-java/v4.7.1/action.yml --
+name: actions/setup-java@v4.7.1
 -- .cache/actions/setup-node/v4.4.0/action.yml --
 name: actions/setup-node@v4.4.0
 -- .want/gha.sum --
@@ -186,4 +203,6 @@ actions/checkout@v4.1.1 TTVf+dWEJueFyMoZnvuqlW5lX4aXYXxGWaFaV8lO910=
 version 1
 
 actions/composite@v1 uc9AaN29Y4B/7UgwrQoYDYDlbJhua//0wr8eMLHqen8=
+actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
+actions/setup-java@v4.7.1 ZcPr3aVvmk2yL8zkjqDUpH+YLqGwjtenFrjEk3OEZ3k=
 actions/setup-node@v4.4.0 Gdoys4h+gIN02lzrWZW0uxjBQ8Rk5YSE6+q1SOrw/+o=

@@ -36,7 +36,31 @@ type GitHubAction struct {
 	// Ref is the git ref (branch, tag, commit SHA), also known as version, of the
 	// GitHub Action.
 	Ref string
+
+	// Kind is the [ActionKind] of the GitHub Action.
+	Kind ActionKind
 }
+
+// ActionKind identifies the type of reusable component in GitHub Action.
+type ActionKind uint8
+
+const (
+	_ ActionKind = iota
+
+	// Action represent a GitHub Actions component that is an "action".
+	//
+	// An action is a path in a repository that has an Action manifest, i.e. a
+	// file named either action.yml, action.yaml, or Dockerfile. These are used
+	// in the `uses:` value of steps.
+	Action
+
+	// ReusableWorkflow represent a GitHub Actions component that is a "reusable
+	// workflow".
+	//
+	// A reusable workflow is a workflow in a repository with the appropriate
+	// workflow trigger. These are used in the `uses:` value of workflow jobs.
+	ReusableWorkflow
+)
 
 // WorkflowsPath is the relative path to the GitHub Actions workflow directory.
 var WorkflowsPath = filepath.Join(".github", "workflows")
@@ -138,4 +162,12 @@ func ManifestActions(repo fs.FS, path string) ([]GitHubAction, error) {
 	}
 
 	return actions, nil
+}
+
+func (a GitHubAction) String() string {
+	if a.Path == "" {
+		return fmt.Sprintf("%s/%s@%s", a.Owner, a.Project, a.Ref)
+	} else {
+		return fmt.Sprintf("%s/%s/%s@%s", a.Owner, a.Project, a.Path, a.Ref)
+	}
 }

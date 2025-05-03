@@ -103,7 +103,7 @@ func cmdVerify(argv []string) error {
 
 	if cnt := len(problems); cnt > 0 {
 		var sb strings.Builder
-		sb.WriteString(fmt.Sprintf("%d problems(s) occurred during validation:\n", cnt))
+		sb.WriteString(fmt.Sprintf("%d problem(s) occurred during validation:\n", cnt))
 		for _, problem := range problems {
 			sb.WriteString(fmt.Sprintf("  %s\n", problem))
 		}
