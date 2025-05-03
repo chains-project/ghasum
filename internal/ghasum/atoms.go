@@ -129,17 +129,19 @@ func compute(cfg *Config, actions []gha.GitHubAction, algo checksum.Algo) ([]sum
 		}
 
 		if cfg.Transitive {
+			repo, _ := os.OpenRoot(actionDir)
+
 			var transitive []gha.GitHubAction
 			switch action.Kind {
 			case gha.Action:
-				tmp, err := gha.ManifestActions(os.DirFS(actionDir), action.Path)
+				tmp, err := gha.ManifestActions(repo.FS(), action.Path)
 				if err != nil {
 					return nil, fmt.Errorf("action manifest parsing failed for %s: %v", action, err)
 				}
 
 				transitive = tmp
 			case gha.ReusableWorkflow:
-				tmp, err := gha.WorkflowActions(os.DirFS(actionDir), action.Path)
+				tmp, err := gha.WorkflowActions(repo.FS(), action.Path)
 				if err != nil {
 					return nil, fmt.Errorf("reusable workflow parsing failed for %s: %v", action, err)
 				}
