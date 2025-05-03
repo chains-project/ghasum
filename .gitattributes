@@ -3,4 +3,5 @@
 * text=auto
 
 # don't diff machine generated files
+capabilities.json -diff
 go.sum -diff
