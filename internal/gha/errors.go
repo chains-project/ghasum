@@ -22,4 +22,7 @@ var (
 	ErrInvalidUsesRepo = errors.New("invalid repository in uses")
 	ErrInvalidUsesPath = errors.New("invalid repository path in uses")
 	ErrLocalAction     = errors.New("uses is a local action")
+
+	ErrDockerfileManifest = errors.New("found a Dockerfile manifest")
+	ErrNoManifest         = errors.New("could not find a manifest")
 )

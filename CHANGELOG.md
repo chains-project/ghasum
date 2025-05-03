@@ -12,6 +12,12 @@ Versioning].
 
 ## [Unreleased]
 
+### Bugs
+
+- Fix errors for actions with a `Dockerfile` manifest.
+
+## [v0.5.0] - 2025-05-03
+
 ### Enhancements
 
 - Correct typo in the `ghasum help verify` output.

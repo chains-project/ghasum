@@ -667,8 +667,8 @@ func TestManifestActions(t *testing.T) {
 		wantErr bool
 	}
 
-	testCases := []TestCase{
-		{
+	testCases := map[string]TestCase{
+		"root manifest without transitive actions": {
 			fs: map[string]mockFsEntry{
 				"action.yml": {
 					Content: []byte(manifestWithNoSteps),
@@ -677,7 +677,7 @@ func TestManifestActions(t *testing.T) {
 			path:    "",
 			wantErr: false,
 		},
-		{
+		"root manifest with transitive actions": {
 			fs: map[string]mockFsEntry{
 				"action.yml": {
 					Content: []byte(manifestWithStep),
@@ -686,7 +686,7 @@ func TestManifestActions(t *testing.T) {
 			path:    "",
 			wantErr: false,
 		},
-		{
+		"root manifest using nested actions": {
 			fs: map[string]mockFsEntry{
 				"action.yml": {
 					Content: []byte(manifestWithNestedActions),
@@ -695,7 +695,7 @@ func TestManifestActions(t *testing.T) {
 			path:    "",
 			wantErr: false,
 		},
-		{
+		"nested .yml manifest": {
 			fs: map[string]mockFsEntry{
 				"nested": {
 					Dir: true,
@@ -709,7 +709,7 @@ func TestManifestActions(t *testing.T) {
 			path:    "nested",
 			wantErr: false,
 		},
-		{
+		"root .yaml manifest": {
 			fs: map[string]mockFsEntry{
 				"action.yaml": {
 					Content: []byte(manifestWithStep),
@@ -718,7 +718,7 @@ func TestManifestActions(t *testing.T) {
 			path:    "",
 			wantErr: false,
 		},
-		{
+		"nested .yaml manifest": {
 			fs: map[string]mockFsEntry{
 				"nested": {
 					Dir: true,
@@ -732,7 +732,30 @@ func TestManifestActions(t *testing.T) {
 			path:    "nested",
 			wantErr: false,
 		},
-		{
+		"root Dockerfile manifest": {
+			fs: map[string]mockFsEntry{
+				"Dockerfile": {
+					Content: []byte(manifestDockerfile),
+				},
+			},
+			path:    "",
+			wantErr: false,
+		},
+		"nested Dockerfile manifest": {
+			fs: map[string]mockFsEntry{
+				"nested": {
+					Dir: true,
+					Children: map[string]mockFsEntry{
+						"Dockerfile": {
+							Content: []byte(manifestDockerfile),
+						},
+					},
+				},
+			},
+			path:    "nested",
+			wantErr: false,
+		},
+		"manifest with syntax error": {
 			fs: map[string]mockFsEntry{
 				"action.yml": {
 					Content: []byte(yamlWithSyntaxError),
@@ -741,7 +764,7 @@ func TestManifestActions(t *testing.T) {
 			path:    "",
 			wantErr: true,
 		},
-		{
+		"manifest with invalid uses value": {
 			fs: map[string]mockFsEntry{
 				"action.yml": {
 					Content: []byte(manifestWithInvalidUses),
@@ -750,15 +773,15 @@ func TestManifestActions(t *testing.T) {
 			path:    "",
 			wantErr: true,
 		},
-		{
+		"empty repo": {
 			fs:      map[string]mockFsEntry{},
 			path:    "",
 			wantErr: true,
 		},
 	}
 
-	for i, tt := range testCases {
-		t.Run(fmt.Sprintf("#%d", i), func(t *testing.T) {
+	for name, tt := range testCases {
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
 			repo, err := mockRepo(tt.fs)
