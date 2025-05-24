@@ -15,6 +15,7 @@ Versioning].
 ### Bugs
 
 - Fix errors for actions with a `Dockerfile` manifest.
+- Fix unexpected error due to Windows-style newlines in the sumfile.
 
 ## [v0.5.0] - 2025-05-03
 
