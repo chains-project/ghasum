@@ -30,6 +30,106 @@ For further help with using `ghasum` run:
 ghasum help
 ```
 
+## Integration
+
+To use `ghasum` in your GitHub Actions workflows:
+
+<details>
+
+<summary>For Ubuntu runners</summary>
+
+```yaml
+runs-on: ubuntu-24.04
+steps:
+- name: Checkout repository        # The repository has to be checked out before
+  uses: actions/checkout@v4.2.0    #   verifying checksums because we need to
+                                   #   read the GitHub Actions workflow files.
+- name: Verify action checksums
+  env:
+    VERSION: vX.Y.Z                # The version of ghasum to use.
+    CHECKSUM: dc97ef3...           # Checksum for 'ghasum_linux_amd64.tar.gz'
+                                   #   from 'checksums-sha512.txt'.
+    GH_TOKEN: ${{ github.token }}  # Required for the GitHub CLI (`gh`).
+    JOB: ${{ github.job }}
+    WORKFLOW: ${{ github.workflow_ref }}
+  run: |
+    # Download the ghasum CLI
+    ARTIFACT="ghasum_linux_amd64.tar.gz"
+    gh release download "${VERSION}" --repo chains-project/ghasum --pattern "${ARTIFACT}"
+    echo "${CHECKSUM}  ${ARTIFACT}" | shasum -a 512 -c -
+    tar -xf "${ARTIFACT}"
+
+    # Verify the action checksums
+    WORKFLOW=$(echo "${WORKFLOW}" | cut -d '@' -f 1 | cut -d '/' -f 3-5)
+    ./ghasum verify -cache /home/runner/work/_actions -no-evict -offline "${WORKFLOW}:${JOB}"
+```
+
+</details>
+
+<details>
+
+<summary>For macOS runners</summary>
+
+```yaml
+runs-on: macos-13
+steps:
+- name: Checkout repository        # The repository has to be checked out before
+  uses: actions/checkout@v4.2.0    #   verifying checksums because we need to
+                                   #   read the GitHub Actions workflow files.
+- name: Verify action checksums
+  env:
+    VERSION: vX.Y.Z                # The version of ghasum to use.
+    CHECKSUM: 9db78db...           # Checksum for 'ghasum_darwin_arm64.tar.gz'
+                                   #   from 'checksums-sha512.txt'.
+    GH_TOKEN: ${{ github.token }}  # Required for the GitHub CLI (`gh`).
+    JOB: ${{ github.job }}
+    WORKFLOW: ${{ github.workflow_ref }}
+  run: |
+    # Download the ghasum CLI
+    ARTIFACT="ghasum_darwin_arm64.tar.gz"
+    gh release download "${VERSION}" --repo chains-project/ghasum --pattern "${ARTIFACT}"
+    echo "${CHECKSUM}  ${ARTIFACT}" | shasum -a 512 -c -
+    tar -xf "${ARTIFACT}"
+
+    # Verify the action checksums
+    WORKFLOW=$(echo "${WORKFLOW}" | cut -d '@' -f 1 | cut -d '/' -f 3-5)
+    ./ghasum verify -cache /Users/runner/work/_actions -no-evict -offline "${WORKFLOW}:${JOB}"
+```
+
+</details>
+
+<details>
+
+<summary>For ARM-based Ubuntu runners</summary>
+
+```yaml
+runs-on: ubuntu-24.04-arm
+steps:
+- name: Checkout repository        # The repository has to be checked out before
+  uses: actions/checkout@v4.2.0    #   verifying checksums because we need to
+                                   #   read the GitHub Actions workflow files.
+- name: Verify action checksums
+  env:
+    VERSION: vX.Y.Z                # The version of ghasum to use.
+    CHECKSUM: f5adb5a...           # Checksum for 'ghasum_linux_arm64.tar.gz'
+                                   #   from 'checksums-sha512.txt'.
+    GH_TOKEN: ${{ github.token }}  # Required for the GitHub CLI (`gh`).
+    JOB: ${{ github.job }}
+    WORKFLOW: ${{ github.workflow_ref }}
+  run: |
+    # Download the ghasum CLI
+    ARTIFACT="ghasum_linux_arm64.tar.gz"
+    gh release download "${VERSION}" --repo chains-project/ghasum --pattern "${ARTIFACT}"
+    echo "${CHECKSUM}  ${ARTIFACT}" | shasum -a 512 -c -
+    tar -xf "${ARTIFACT}"
+
+    # Verify the action checksums
+    WORKFLOW=$(echo "${WORKFLOW}" | cut -d '@' -f 1 | cut -d '/' -f 3-5)
+    ./ghasum verify -cache /home/runner/work/_actions -no-evict -offline "${WORKFLOW}:${JOB}"
+```
+
+</details>
+
 ## Recommendations
 
 When using ghasum it is recommend to pin all Actions to version tags. If Actions
