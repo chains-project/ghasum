@@ -1,4 +1,4 @@
-// Copyright 2024 Eric Cornelissen
+// Copyright 2024-2025 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -70,6 +70,10 @@ func Encode(version Version, checksums []Entry) (string, error) {
 
 func parseFile(stored string) (map[string]string, []Entry, error) {
 	lines := strings.Split(stored, "\n")
+	if strings.Contains(stored, "\r") {
+		lines = strings.Split(stored, "\r\n")
+	}
+
 	headers, err := parseHeaders(lines)
 	if err != nil {
 		return nil, nil, err

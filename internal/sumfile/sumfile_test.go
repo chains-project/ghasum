@@ -1,4 +1,4 @@
-// Copyright 2024 Eric Cornelissen
+// Copyright 2024-2025 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 package sumfile
 
 import (
+	"slices"
 	"testing"
 	"testing/quick"
 )
@@ -40,6 +41,66 @@ func TestAnyVersion(t *testing.T) {
 
 	if err := quick.Check(decodable, nil); err != nil {
 		t.Errorf("decode(encode(x)) errored for: %v", err)
+	}
+}
+
+func TestDecode(t *testing.T) {
+	t.Parallel()
+
+	type TestCase struct {
+		sumfile string
+		want    []Entry
+	}
+
+	testCases := map[string]TestCase{
+		"basic example": {
+			sumfile: `version 1
+
+actions/checkout@v4.2.0 e6ng7MJDyAPkTZ/6d/plZK2YhZRzJZvxhYAPUPpNAzc=
+`,
+			want: []Entry{
+				{
+					Checksum: "e6ng7MJDyAPkTZ/6d/plZK2YhZRzJZvxhYAPUPpNAzc=",
+					ID:       []string{"actions/checkout", "v4.2.0"},
+				},
+			},
+		},
+		"windows newlines": {
+			sumfile: "version 1\r\n\r\nactions/checkout@v4.2.0 e6ng7MJDyAPkTZ/6d/plZK2YhZRzJZvxhYAPUPpNAzc=\r\n",
+			want: []Entry{
+				{
+					Checksum: "e6ng7MJDyAPkTZ/6d/plZK2YhZRzJZvxhYAPUPpNAzc=",
+					ID:       []string{"actions/checkout", "v4.2.0"},
+				},
+			},
+		},
+	}
+
+	for name, tt := range testCases {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			got, err := Decode(tt.sumfile)
+			if err != nil {
+				t.Fatalf("Want no error, got %v", err)
+			}
+
+			if got, want := len(got), len(tt.want); got != want {
+				t.Fatalf("Want %d entries, got %d entries", got, want)
+			}
+
+			for i, got := range got {
+				want := tt.want[i]
+
+				if got, want := got.Checksum, want.Checksum; got != want {
+					t.Errorf("Unexpected %dth checksum (got %q, want %q)", i, got, want)
+				}
+
+				if got, want := got.ID, want.ID; !slices.Equal(got, want) {
+					t.Errorf("Unexpected %dth checksum (got %q, want %q)", i, got, want)
+				}
+			}
+		})
 	}
 }
 
