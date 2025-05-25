@@ -217,7 +217,8 @@ func Verify(cfg *Config) ([]Problem, error) {
 		return nil, err
 	}
 
-	result := compare(fresh, stored)
+	reportRedundant := cfg.Workflow == "" && cfg.Job == ""
+	result := compare(fresh, stored, reportRedundant)
 	if err := unlock(cfg.Path); err != nil {
 		return nil, err
 	}

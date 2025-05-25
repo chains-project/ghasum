@@ -75,6 +75,21 @@ stdout 'no checksum found for "actions/setup-java@v4"'
 ! stdout 'Ok'
 ! stderr .
 
+# Checksum redundant - Repo
+! exec ghasum verify -cache .cache/ redundant/
+stdout '1 problem\(s\) occurred during validation:'
+stdout 'redundant checksum for "actions/reusable@v2"'
+! stdout 'Ok'
+! stderr .
+
+# Checksum redundant - Transitive
+! exec ghasum verify -cache .cache/ -no-transitive redundant/
+stdout '2 problem\(s\) occurred during validation:'
+stdout 'redundant checksum for "actions/reusable@v2"'
+stdout 'redundant checksum for "actions/setup-go@v5"'
+! stdout 'Ok'
+! stderr .
+
 -- mismatch/.github/workflows/gha.sum --
 version 1
 
@@ -139,6 +154,28 @@ jobs:
       uses: actions/composite@v1
   transitive-reusable-workflow:
     uses: actions/reusable/.github/workflows/workflow.yml@v2
+-- redundant/.github/workflows/gha.sum --
+version 1
+
+actions/checkout@v4 +34igsJdK09ZFEkVNQ+ZoyZnIlg48X3bm4ZaGGlX5o8=
+actions/composite@v1 VHsmCNCNfU2qFyTntn14sMoZL1UOOyne/omuQUvzQfA=
+actions/reusable@v2 /PcY8RI/utekzCyLUiLOEeL3FpJ96/FJVRbb5LBLmkU=
+actions/setup-go@v5 Vi4XogAGoojozgoXrRN/OBL93QIcbsxLJEOOAwlx+e8=
+-- redundant/.github/workflows/workflow.yml --
+name: Example workflow
+on: [push]
+
+jobs:
+  example-1:
+    name: example
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: This step uses transitive actions
+      uses: actions/composite@v1
+    - name: This step does not use an action
+      run: Echo 'hello world!'
 -- .cache/actions/checkout/v4/action.yml --
 name: actions/checkout@v4
 -- .cache/actions/composite/v1/action.yml --
