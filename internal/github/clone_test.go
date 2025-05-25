@@ -31,27 +31,30 @@ func TestToUrl(t *testing.T) {
 			want string
 		}
 
-		testCases := []TestCase{
-			{
-				in: Repository{
-					Owner:   "foo",
-					Project: "bar",
-				},
-				want: "https://github.com/foo/bar",
-			},
-			{
+		testCases := map[string]TestCase{
+			"Example without ref": {
 				in: Repository{
 					Owner:   "chains-project",
 					Project: "ghasum",
 				},
 				want: "https://github.com/chains-project/ghasum",
 			},
+			"Example with ref": {
+				in: Repository{
+					Owner:   "with",
+					Project: "ref",
+					Ref:     "v1",
+				},
+				want: "https://github.com/with/ref",
+			},
 		}
 
-		for _, tc := range testCases {
-			t.Run(tc.want, func(t *testing.T) {
-				got := toUrl(&tc.in)
-				if want := tc.want; got != want {
+		for name, tt := range testCases {
+			t.Run(name, func(t *testing.T) {
+				t.Parallel()
+
+				got := toUrl(&tt.in)
+				if want := tt.want; got != want {
 					t.Errorf("Incorrect result (got %q, wan %q)", got, want)
 				}
 			})

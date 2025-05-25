@@ -1,4 +1,4 @@
-// Copyright 2024 Eric Cornelissen
+// Copyright 2024-2025 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,15 +49,13 @@ func TestSetEqual(t *testing.T) {
 	t.Parallel()
 
 	type TestCase struct {
-		name string
 		a    []Entry
 		b    []Entry
 		want bool
 	}
 
-	testCases := []TestCase{
-		{
-			name: "identical",
+	testCases := map[string]TestCase{
+		"identical": {
 			a: []Entry{
 				{
 					Checksum: "bar",
@@ -72,8 +70,7 @@ func TestSetEqual(t *testing.T) {
 			},
 			want: true,
 		},
-		{
-			name: "in a but not in b",
+		"in a but not in b": {
 			a: []Entry{
 				{
 					Checksum: "bar",
@@ -83,9 +80,8 @@ func TestSetEqual(t *testing.T) {
 			b:    []Entry{},
 			want: false,
 		},
-		{
-			name: "in b but not in a",
-			a:    []Entry{},
+		"in b but not in a": {
+			a: []Entry{},
 			b: []Entry{
 				{
 					Checksum: "bar",
@@ -96,11 +92,11 @@ func TestSetEqual(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
+	for name, tt := range testCases {
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			if got, want := SetEqual(tc.a, tc.b), tc.want; got != want {
+			if got, want := SetEqual(tt.a, tt.b), tt.want; got != want {
 				t.Errorf("Wrong result (got %t, want %t)", got, want)
 			}
 		})

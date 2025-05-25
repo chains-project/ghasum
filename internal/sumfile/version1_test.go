@@ -1,4 +1,4 @@
-// Copyright 2024 Eric Cornelissen
+// Copyright 2024-2025 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -77,19 +77,16 @@ func TestDecodeV1(t *testing.T) {
 		t.Parallel()
 
 		type TestCase struct {
-			name    string
 			content []string
 			want    []Entry
 		}
 
-		testCases := []TestCase{
-			{
-				name:    "no checksums",
+		testCases := map[string]TestCase{
+			"no checksums": {
 				content: []string{},
 				want:    []Entry{},
 			},
-			{
-				name: "one checksum",
+			"one checksum": {
 				content: []string{
 					"foo bar",
 				},
@@ -100,8 +97,7 @@ func TestDecodeV1(t *testing.T) {
 					},
 				},
 			},
-			{
-				name: "one multi-part ID checksum",
+			"one multi-part ID checksum": {
 				content: []string{
 					"foo@bar foobar",
 				},
@@ -114,19 +110,19 @@ func TestDecodeV1(t *testing.T) {
 			},
 		}
 
-		for _, tc := range testCases {
-			t.Run(tc.name, func(t *testing.T) {
-				got, err := decodeV1(tc.content)
+		for name, tt := range testCases {
+			t.Run(name, func(t *testing.T) {
+				got, err := decodeV1(tt.content)
 				if err != nil {
 					t.Fatalf("Unexpected error: %+v", err)
 				}
 
-				if got, want := len(got), len(tc.want); got != want {
+				if got, want := len(got), len(tt.want); got != want {
 					t.Fatalf("Incorrect result length (got %d, want %d)", got, want)
 				}
 
 				for i, got := range got {
-					want := tc.want[i]
+					want := tt.want[i]
 
 					if got, want := got.Checksum, want.Checksum; got != want {
 						t.Fatalf("Incorrect checksum %d (got %q, want %q)", i, got, want)
@@ -144,35 +140,30 @@ func TestDecodeV1(t *testing.T) {
 		t.Parallel()
 
 		type TestCase struct {
-			name    string
 			content []string
 			want    int
 		}
 
-		testCases := []TestCase{
-			{
-				name: "no id-checksum separator",
+		testCases := map[string]TestCase{
+			"no id-checksum separator": {
 				content: []string{
 					"foobar",
 				},
 				want: 3,
 			},
-			{
-				name: "no checksum",
+			"no checksum": {
 				content: []string{
 					"foobar ",
 				},
 				want: 3,
 			},
-			{
-				name: "no id",
+			"no id": {
 				content: []string{
 					" foobar",
 				},
 				want: 3,
 			},
-			{
-				name: "on a later line",
+			"on a later line": {
 				content: []string{
 					"foo bar",
 					"syntax-error",
@@ -181,16 +172,16 @@ func TestDecodeV1(t *testing.T) {
 			},
 		}
 
-		for _, tc := range testCases {
-			t.Run(tc.name, func(t *testing.T) {
+		for name, tt := range testCases {
+			t.Run(name, func(t *testing.T) {
 				t.Parallel()
 
-				_, err := decodeV1(tc.content)
+				_, err := decodeV1(tt.content)
 				if err == nil {
 					t.Fatal("Unexpected success")
 				}
 
-				if got, want := err.Error(), fmt.Sprintf("line %d", tc.want); !strings.Contains(got, want) {
+				if got, want := err.Error(), fmt.Sprintf("line %d", tt.want); !strings.Contains(got, want) {
 					t.Errorf("Incorrect line number (got %q, want %q)", got, want)
 				}
 			})
@@ -203,19 +194,16 @@ func TestEncodeV1(t *testing.T) {
 		t.Parallel()
 
 		type TestCase struct {
-			name    string
 			content []Entry
 			want    string
 		}
 
-		testCases := []TestCase{
-			{
-				name:    "no checksums",
+		testCases := map[string]TestCase{
+			"no checksums": {
 				content: []Entry{},
 				want:    ``,
 			},
-			{
-				name: "one checksum",
+			"one checksum": {
 				content: []Entry{
 					{
 						Checksum: "bar",
@@ -225,8 +213,7 @@ func TestEncodeV1(t *testing.T) {
 				want: `foo bar
 `,
 			},
-			{
-				name: "one multi-part ID checksum",
+			"one multi-part ID checksum": {
 				content: []Entry{
 					{
 						Checksum: "foobar",
@@ -236,8 +223,7 @@ func TestEncodeV1(t *testing.T) {
 				want: `foo@bar foobar
 `,
 			},
-			{
-				name: "order",
+			"order": {
 				content: []Entry{
 					{
 						Checksum: "bb",
@@ -254,16 +240,16 @@ b bb
 			},
 		}
 
-		for _, tc := range testCases {
-			t.Run(tc.name, func(t *testing.T) {
+		for name, tt := range testCases {
+			t.Run(name, func(t *testing.T) {
 				t.Parallel()
 
-				got, err := encodeV1(tc.content)
+				got, err := encodeV1(tt.content)
 				if err != nil {
 					t.Fatalf("Unexpected error: %+v", err)
 				}
 
-				if want := tc.want; got != want {
+				if want := tt.want; got != want {
 					t.Fatalf("Incorrect result (got %q, want %q)", got, want)
 				}
 			})
@@ -273,64 +259,44 @@ b bb
 	t.Run("Invalid examples", func(t *testing.T) {
 		t.Parallel()
 
-		type TestCase struct {
-			name    string
-			content []Entry
-		}
-
-		testCases := []TestCase{
-			{
-				name: "checksum with newline",
-				content: []Entry{
-					{
-						ID:       []string{"anything"},
-						Checksum: "Hello\nworld!",
-					},
+		testCases := map[string][]Entry{
+			"checksum with newline": {
+				{
+					ID:       []string{"anything"},
+					Checksum: "Hello\nworld!",
 				},
 			},
-			{
-				name: "checksum with space",
-				content: []Entry{
-					{
-						ID:       []string{"anything"},
-						Checksum: "Hello world!",
-					},
+			"checksum with space": {
+				{
+					ID:       []string{"anything"},
+					Checksum: "Hello world!",
 				},
 			},
-			{
-				name: "ID part with newline",
-				content: []Entry{
-					{
-						ID:       []string{"Hello\nworld!"},
-						Checksum: "anything",
-					},
+			"ID part with newline": {
+				{
+					ID:       []string{"Hello\nworld!"},
+					Checksum: "anything",
 				},
 			},
-			{
-				name: "ID part with space",
-				content: []Entry{
-					{
-						ID:       []string{"Hello world!"},
-						Checksum: "anything",
-					},
+			"ID part with space": {
+				{
+					ID:       []string{"Hello world!"},
+					Checksum: "anything",
 				},
 			},
-			{
-				name: "ID part with '@'",
-				content: []Entry{
-					{
-						ID:       []string{"foo@bar"},
-						Checksum: "anything",
-					},
+			"ID part with '@'": {
+				{
+					ID:       []string{"foo@bar"},
+					Checksum: "anything",
 				},
 			},
 		}
 
-		for _, tc := range testCases {
-			t.Run(tc.name, func(t *testing.T) {
+		for name, entries := range testCases {
+			t.Run(name, func(t *testing.T) {
 				t.Parallel()
 
-				if _, err := encodeV1(tc.content); err == nil {
+				if _, err := encodeV1(entries); err == nil {
 					t.Fatal("Unexpected success")
 				}
 			})

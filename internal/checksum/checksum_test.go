@@ -1,4 +1,4 @@
-// Copyright 2024 Eric Cornelissen
+// Copyright 2024-2025 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,17 +18,45 @@ import (
 	"testing"
 )
 
-func TestExitCodes(t *testing.T) {
+func TestAlgorithms(t *testing.T) {
 	t.Parallel()
 
-	algos := []Algo{
-		Sha256,
-		BestAlgo,
-	}
+	t.Run("Default value", func(t *testing.T) {
+		t.Parallel()
 
-	for _, algo := range algos {
-		if _, ok := hashes[algo]; !ok {
-			t.Errorf("Missing algorithm %d from the hashes map", algo)
+		var algo Algo
+		if got, ok := hashes[algo]; ok {
+			t.Errorf("Want no default algo, got %v", got)
 		}
-	}
+	})
+
+	t.Run("Supported", func(t *testing.T) {
+		t.Parallel()
+
+		testCases := []Algo{
+			BestAlgo,
+			Sha256,
+		}
+
+		for _, algo := range testCases {
+			if _, ok := hashes[algo]; !ok {
+				t.Errorf("Want an algorithm for %d, got none", algo)
+			}
+		}
+	})
+
+	t.Run("Unsupported", func(t *testing.T) {
+		t.Parallel()
+
+		testCases := []Algo{
+			-1,
+			255,
+		}
+
+		for _, algo := range testCases {
+			if got, ok := hashes[algo]; ok {
+				t.Errorf("Want no algorithm for %d, got %v", algo, got)
+			}
+		}
+	})
 }

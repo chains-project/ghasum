@@ -15,7 +15,6 @@
 package gha
 
 import (
-	"fmt"
 	"slices"
 	"testing"
 
@@ -242,8 +241,8 @@ func TestWorkflowActions(t *testing.T) {
 		wantErr  bool
 	}
 
-	testCases := []TestCase{
-		{
+	testCases := map[string]TestCase{
+		"workflow with no jobs": {
 			fs: map[string]mockFsEntry{
 				".github": {
 					Dir: true,
@@ -262,7 +261,7 @@ func TestWorkflowActions(t *testing.T) {
 			workflow: ".github/workflows/workflow.yml",
 			wantErr:  false,
 		},
-		{
+		"workflow with job that has no steps": {
 			fs: map[string]mockFsEntry{
 				".github": {
 					Dir: true,
@@ -281,7 +280,7 @@ func TestWorkflowActions(t *testing.T) {
 			workflow: ".github/workflows/workflow.yml",
 			wantErr:  false,
 		},
-		{
+		"workflow with jobs 'uses:'": {
 			fs: map[string]mockFsEntry{
 				".github": {
 					Dir: true,
@@ -300,7 +299,7 @@ func TestWorkflowActions(t *testing.T) {
 			workflow: ".github/workflows/workflow.yml",
 			wantErr:  false,
 		},
-		{
+		"workflow with multiple steps": {
 			fs: map[string]mockFsEntry{
 				".github": {
 					Dir: true,
@@ -319,7 +318,7 @@ func TestWorkflowActions(t *testing.T) {
 			workflow: ".github/workflows/workflow.yml",
 			wantErr:  false,
 		},
-		{
+		"workflow with multiple jobs": {
 			fs: map[string]mockFsEntry{
 				".github": {
 					Dir: true,
@@ -338,7 +337,7 @@ func TestWorkflowActions(t *testing.T) {
 			workflow: ".github/workflows/workflow.yml",
 			wantErr:  false,
 		},
-		{
+		"workflow with 'owner/repo/path@v'-style 'uses:' value": {
 			fs: map[string]mockFsEntry{
 				".github": {
 					Dir: true,
@@ -357,7 +356,7 @@ func TestWorkflowActions(t *testing.T) {
 			workflow: ".github/workflows/workflow.yml",
 			wantErr:  false,
 		},
-		{
+		"workflow has invalid YAML syntax": {
 			fs: map[string]mockFsEntry{
 				".github": {
 					Dir: true,
@@ -376,7 +375,7 @@ func TestWorkflowActions(t *testing.T) {
 			workflow: ".github/workflows/workflow.yml",
 			wantErr:  true,
 		},
-		{
+		"workflow has invalid job 'uses:' value": {
 			fs: map[string]mockFsEntry{
 				".github": {
 					Dir: true,
@@ -395,7 +394,7 @@ func TestWorkflowActions(t *testing.T) {
 			workflow: ".github/workflows/workflow.yml",
 			wantErr:  true,
 		},
-		{
+		"workflow has invalid step 'uses:' value": {
 			fs: map[string]mockFsEntry{
 				".github": {
 					Dir: true,
@@ -414,15 +413,15 @@ func TestWorkflowActions(t *testing.T) {
 			workflow: ".github/workflows/workflow.yml",
 			wantErr:  true,
 		},
-		{
+		"workflow does not exist in project": {
 			fs:       map[string]mockFsEntry{},
 			workflow: ".github/workflows/workflow.yml",
 			wantErr:  true,
 		},
 	}
 
-	for i, tt := range testCases {
-		t.Run(fmt.Sprintf("#%d", i), func(t *testing.T) {
+	for name, tt := range testCases {
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
 			repo, err := mockRepo(tt.fs)
@@ -450,8 +449,8 @@ func TestJobActions(t *testing.T) {
 		wantErr  bool
 	}
 
-	testCases := []TestCase{
-		{
+	testCases := map[string]TestCase{
+		"job that has no steps": {
 			fs: map[string]mockFsEntry{
 				".github": {
 					Dir: true,
@@ -471,7 +470,7 @@ func TestJobActions(t *testing.T) {
 			job:      "no-steps",
 			wantErr:  false,
 		},
-		{
+		"job with multiple steps": {
 			fs: map[string]mockFsEntry{
 				".github": {
 					Dir: true,
@@ -491,7 +490,7 @@ func TestJobActions(t *testing.T) {
 			job:      "only-job",
 			wantErr:  false,
 		},
-		{
+		"workflow with multiple jobs (first job)": {
 			fs: map[string]mockFsEntry{
 				".github": {
 					Dir: true,
@@ -511,7 +510,7 @@ func TestJobActions(t *testing.T) {
 			job:      "job-a",
 			wantErr:  false,
 		},
-		{
+		"workflow with multiple jobs (second job)": {
 			fs: map[string]mockFsEntry{
 				".github": {
 					Dir: true,
@@ -531,7 +530,7 @@ func TestJobActions(t *testing.T) {
 			job:      "job-b",
 			wantErr:  false,
 		},
-		{
+		"job with 'owner/repo/path@v'-style 'uses:' value": {
 			fs: map[string]mockFsEntry{
 				".github": {
 					Dir: true,
@@ -551,7 +550,7 @@ func TestJobActions(t *testing.T) {
 			job:      "only-job",
 			wantErr:  false,
 		},
-		{
+		"workflow with no jobs": {
 			fs: map[string]mockFsEntry{
 				".github": {
 					Dir: true,
@@ -571,7 +570,7 @@ func TestJobActions(t *testing.T) {
 			job:      "anything",
 			wantErr:  true,
 		},
-		{
+		"job not in workflow": {
 			fs: map[string]mockFsEntry{
 				".github": {
 					Dir: true,
@@ -591,7 +590,7 @@ func TestJobActions(t *testing.T) {
 			job:      "missing",
 			wantErr:  true,
 		},
-		{
+		"workflow has invalid YAML syntax": {
 			fs: map[string]mockFsEntry{
 				".github": {
 					Dir: true,
@@ -611,7 +610,7 @@ func TestJobActions(t *testing.T) {
 			job:      "anything",
 			wantErr:  true,
 		},
-		{
+		"job has invalid step 'uses:' value": {
 			fs: map[string]mockFsEntry{
 				".github": {
 					Dir: true,
@@ -631,7 +630,7 @@ func TestJobActions(t *testing.T) {
 			job:      "job",
 			wantErr:  true,
 		},
-		{
+		"workflow does not exist in project": {
 			fs:       map[string]mockFsEntry{},
 			workflow: ".github/workflows/workflow.yml",
 			job:      "anything",
@@ -639,8 +638,8 @@ func TestJobActions(t *testing.T) {
 		},
 	}
 
-	for i, tt := range testCases {
-		t.Run(fmt.Sprintf("#%d", i), func(t *testing.T) {
+	for name, tt := range testCases {
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
 			repo, err := mockRepo(tt.fs)

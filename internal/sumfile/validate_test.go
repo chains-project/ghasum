@@ -1,4 +1,4 @@
-// Copyright 2024 Eric Cornelissen
+// Copyright 2024-2025 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,41 +24,27 @@ func TestHasEmpty(t *testing.T) {
 	t.Run("Non-empty examples", func(t *testing.T) {
 		t.Parallel()
 
-		type TestCase struct {
-			name    string
-			entries []Entry
-		}
-
-		testCases := []TestCase{
-			{
-				name:    "no entries",
-				entries: []Entry{},
-			},
-			{
-				name: "one ID parts",
-				entries: []Entry{
-					{
-						Checksum: "checksum",
-						ID:       []string{"foobar"},
-					},
+		testCases := map[string][]Entry{
+			"no entries": {},
+			"one ID parts": {
+				{
+					Checksum: "checksum",
+					ID:       []string{"foobar"},
 				},
 			},
-			{
-				name: "multiple ID parts",
-				entries: []Entry{
-					{
-						Checksum: "checksum",
-						ID:       []string{"foo", "bar"},
-					},
+			"multiple ID parts": {
+				{
+					Checksum: "checksum",
+					ID:       []string{"foo", "bar"},
 				},
 			},
 		}
 
-		for _, tc := range testCases {
-			t.Run(tc.name, func(t *testing.T) {
+		for name, entries := range testCases {
+			t.Run(name, func(t *testing.T) {
 				t.Parallel()
 
-				got := hasMissing(tc.entries)
+				got := hasMissing(entries)
 				if got {
 					t.Fatal("Unexpected positive result")
 				}
@@ -69,46 +55,32 @@ func TestHasEmpty(t *testing.T) {
 	t.Run("Empty examples", func(t *testing.T) {
 		t.Parallel()
 
-		type TestCase struct {
-			name    string
-			entries []Entry
-		}
-
-		testCases := []TestCase{
-			{
-				name: "empty checksum",
-				entries: []Entry{
-					{
-						Checksum: "",
-						ID:       []string{"foobar"},
-					},
+		testCases := map[string][]Entry{
+			"empty checksum": {
+				{
+					Checksum: "",
+					ID:       []string{"foobar"},
 				},
 			},
-			{
-				name: "empty id array",
-				entries: []Entry{
-					{
-						Checksum: "not-empty",
-						ID:       []string{},
-					},
+			"empty id array": {
+				{
+					Checksum: "not-empty",
+					ID:       []string{},
 				},
 			},
-			{
-				name: "empty id part",
-				entries: []Entry{
-					{
-						Checksum: "not-empty",
-						ID:       []string{""},
-					},
+			"empty id part": {
+				{
+					Checksum: "not-empty",
+					ID:       []string{""},
 				},
 			},
 		}
 
-		for _, tc := range testCases {
-			t.Run(tc.name, func(t *testing.T) {
+		for name, entries := range testCases {
+			t.Run(name, func(t *testing.T) {
 				t.Parallel()
 
-				got := hasMissing(tc.entries)
+				got := hasMissing(entries)
 				if !got {
 					t.Fatal("Unexpected negative result")
 				}
@@ -123,67 +95,31 @@ func TestHasDuplicates(t *testing.T) {
 	t.Run("No duplicates examples", func(t *testing.T) {
 		t.Parallel()
 
-		type TestCase struct {
-			name    string
-			entries []Entry
-		}
-
-		testCases := []TestCase{
-			{
-				name:    "no entries",
-				entries: []Entry{},
+		testCases := map[string][]Entry{
+			"no entries": {},
+			"one part": {
+				{ID: []string{"foo"}},
+				{ID: []string{"bar"}},
 			},
-			{
-				name: "one part",
-				entries: []Entry{
-					{
-						ID: []string{"foo"},
-					},
-					{
-						ID: []string{"bar"},
-					},
-				},
+			"two parts": {
+				{ID: []string{"foo", "bar"}},
+				{ID: []string{"hello", "world"}},
 			},
-			{
-				name: "two parts",
-				entries: []Entry{
-					{
-						ID: []string{"foo", "bar"},
-					},
-					{
-						ID: []string{"hello", "world"},
-					},
-				},
+			"two parts, first differs": {
+				{ID: []string{"bar", "foo"}},
+				{ID: []string{"baz", "foo"}},
 			},
-			{
-				name: "two parts, first differs",
-				entries: []Entry{
-					{
-						ID: []string{"bar", "foo"},
-					},
-					{
-						ID: []string{"baz", "foo"},
-					},
-				},
-			},
-			{
-				name: "two parts, second differs",
-				entries: []Entry{
-					{
-						ID: []string{"foo", "bar"},
-					},
-					{
-						ID: []string{"foo", "baz"},
-					},
-				},
+			"two parts, second differs": {
+				{ID: []string{"foo", "bar"}},
+				{ID: []string{"foo", "baz"}},
 			},
 		}
 
-		for _, tc := range testCases {
-			t.Run(tc.name, func(t *testing.T) {
+		for name, entries := range testCases {
+			t.Run(name, func(t *testing.T) {
 				t.Parallel()
 
-				got := hasDuplicates(tc.entries)
+				got := hasDuplicates(entries)
 				if got {
 					t.Fatal("Unexpected positive result")
 				}
@@ -194,41 +130,22 @@ func TestHasDuplicates(t *testing.T) {
 	t.Run("Duplicate examples", func(t *testing.T) {
 		t.Parallel()
 
-		type TestCase struct {
-			name    string
-			entries []Entry
-		}
-
-		testCases := []TestCase{
-			{
-				name: "one part",
-				entries: []Entry{
-					{
-						ID: []string{"foobar"},
-					},
-					{
-						ID: []string{"foobar"},
-					},
-				},
+		testCases := map[string][]Entry{
+			"one part": {
+				{ID: []string{"foobar"}},
+				{ID: []string{"foobar"}},
 			},
-			{
-				name: "multiple parts",
-				entries: []Entry{
-					{
-						ID: []string{"foo", "bar"},
-					},
-					{
-						ID: []string{"foo", "bar"},
-					},
-				},
+			"multiple parts": {
+				{ID: []string{"foo", "bar"}},
+				{ID: []string{"foo", "bar"}},
 			},
 		}
 
-		for _, tc := range testCases {
-			t.Run(tc.name, func(t *testing.T) {
+		for name, entries := range testCases {
+			t.Run(name, func(t *testing.T) {
 				t.Parallel()
 
-				got := hasDuplicates(tc.entries)
+				got := hasDuplicates(entries)
 				if !got {
 					t.Fatal("Unexpected negative result")
 				}

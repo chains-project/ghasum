@@ -1,4 +1,4 @@
-// Copyright 2024 Eric Cornelissen
+// Copyright 2024-2025 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,8 +24,10 @@ import (
 type Algo int
 
 const (
+	_ Algo = iota
+
 	// Sha256 identifies the SHA256 hashing algorithm.
-	Sha256 Algo = iota
+	Sha256
 
 	// BestAlgo identifies the best available hashing algorithm.
 	BestAlgo = Sha256
