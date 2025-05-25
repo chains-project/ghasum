@@ -778,6 +778,19 @@ func TestManifestActions(t *testing.T) {
 			path:    "",
 			wantErr: true,
 		},
+		"action.yml takes precedence over action.yaml": {
+			fs: map[string]mockFsEntry{
+				"action.yaml": {
+					Content: []byte(yamlWithSyntaxError),
+				},
+
+				"action.yml": {
+					Content: []byte(manifestWithNoSteps),
+				},
+			},
+			path:    "",
+			wantErr: false,
+		},
 	}
 
 	for name, tt := range testCases {
