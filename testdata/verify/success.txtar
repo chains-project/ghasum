@@ -13,11 +13,6 @@ exec ghasum verify -cache .cache/ up-to-date/.github/workflows/workflow.yml:exam
 stdout 'Ok'
 ! stderr .
 
-# Redundant checksum stored - Repo
-exec ghasum verify -cache .cache/ redundant/
-stdout 'Ok'
-! stderr .
-
 # Redundant checksum stored - Workflow
 exec ghasum verify -cache .cache/ redundant/.github/workflows/workflow.yml
 stdout 'Ok'
@@ -25,11 +20,6 @@ stdout 'Ok'
 
 # Redundant checksum stored - Job
 exec ghasum verify -cache .cache/ redundant/.github/workflows/workflow.yml:example-1
-stdout 'Ok'
-! stderr .
-
-# Redundant checksum stored - Transitive
-exec ghasum verify -cache .cache/ -no-transitive no-transitive/
 stdout 'Ok'
 ! stderr .
 
@@ -165,33 +155,6 @@ jobs:
         go-version-file: go.mod
     - name: This step uses transitive actions
       uses: actions/composite@v1
--- no-transitive/.github/workflows/gha.sum --
-version 1
-
-actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
-actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
-actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
-actions/setup-java@v4.7.1 this-action-is-only-used-transitively
-actions/setup-node@v4.4.0 this-action-is-only-used-transitively
--- no-transitive/.github/workflows/workflow.yml --
-name: Example workflow
-on: [push]
-
-jobs:
-  example-1:
-    name: example
-    runs-on: ubuntu-22.04
-    steps:
-    - name: Install Go
-      uses: actions/setup-go@v5.0.0
-      with:
-        go-version-file: go.mod
-    - name: This step uses transitive actions
-      uses: actions/composite@v1
-    - name: This step does not use an action
-      run: Echo 'hello world!'
-  example-2:
-    uses: actions/reusable/.github/workflows/workflow.yml@v2
 -- .cache/actions/checkout/main/action.yml --
 name: actions/checkout@main
 -- .cache/actions/composite/v1/action.yml --

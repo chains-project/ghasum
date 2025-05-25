@@ -12,6 +12,10 @@ Versioning].
 
 ## [Unreleased]
 
+### Enhancements
+
+- Report redundant checksums on verification of an entire repository.
+
 ### Bugs
 
 - Fix errors for actions with a `Dockerfile` manifest.

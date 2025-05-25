@@ -44,7 +44,7 @@ func clear(file *os.File) error {
 	return nil
 }
 
-func compare(got, want []sumfile.Entry) []Problem {
+func compare(got, want []sumfile.Entry, reportRedundant bool) []Problem {
 	toMap := func(entries []sumfile.Entry) map[string]string {
 		m := make(map[string]string, len(entries))
 		for _, entry := range entries {
@@ -68,6 +68,15 @@ func compare(got, want []sumfile.Entry) []Problem {
 			if got != want {
 				p := fmt.Sprintf("checksum mismatch for %q", key)
 				problems = append(problems, Problem(p))
+			}
+		}
+
+		if reportRedundant {
+			for key := range want {
+				if _, ok := got[key]; !ok {
+					p := fmt.Sprintf("redundant checksum for %q", key)
+					problems = append(problems, Problem(p))
+				}
 			}
 		}
 
