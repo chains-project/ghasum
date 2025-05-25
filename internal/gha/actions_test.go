@@ -674,6 +674,18 @@ func TestManifestInRepo(t *testing.T) {
 				dir:  "nested",
 				want: []byte(manifestWithStep),
 			},
+			".yml and .yaml": {
+				fs: map[string]mockFsEntry{
+					"action.yaml": {
+						Content: []byte(yamlWithSyntaxError),
+					},
+					"action.yml": {
+						Content: []byte(manifestWithStep),
+					},
+				},
+				dir:  "",
+				want: []byte(manifestWithStep),
+			},
 		}
 
 		for name, tt := range testCases {
