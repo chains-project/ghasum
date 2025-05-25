@@ -152,41 +152,47 @@ func TestUnknownVersion(t *testing.T) {
 func TestDecodeCorruptFile(t *testing.T) {
 	t.Parallel()
 
-	testCases := []string{
-		"",
-		" ",
-		"version",
-		"version ",
-		"not a version",
-		"version 1",
-		`version 1
+	testCases := map[string]string{
+		"empty":                         "",
+		"whitespace only":               " ",
+		"only 'version'":                "version",
+		"only 'version' and whitespace": "version ",
+		"first header is not 'version'": "not a version",
+		"only a version header":         "version 1",
+		"multiple version headers, identical value": `version 1
+version 1
+`,
+		"multiple version headers, different value": `version 1
 version 2
 `,
-		`version 2
-version 1
+		"duplicated header, identical value": `version 1
+example-header foobar
+example-header foobar
 `,
-		`version 1
-version 1
+		"duplicated header, different value": `version 1
+example-header foo
+example-header bar
 `,
-		`version 1
-duplicate header
-duplicate header
-`,
-		`version 1
+		"duplicated checksum, identical value": `version 1
 
-duplicate checksum
-duplicate checksum
+example-checksum foobar
+example-checksum foobar
 `,
-		`version 1
+		"duplicated checksum, different value": `version 1
 
-missing final newline`,
+example-checksum foo
+example-checksum bar
+`,
+		"missing a final newline": `version 1
+
+entry checksum`,
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc, func(t *testing.T) {
+	for name, tt := range testCases {
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			if _, err := Decode(tc); err == nil {
+			if _, err := Decode(tt); err == nil {
 				t.Fatal("Unexpected success")
 			}
 		})

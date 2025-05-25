@@ -257,14 +257,14 @@ func TestParseWorkflow(t *testing.T) {
 			want workflow
 		}
 
-		testCases := []TestCase{
-			{
+		testCases := map[string]TestCase{
+			"workflow with no jobs": {
 				in: workflowWithNoJobs,
 				want: workflow{
 					Jobs: map[string]job{},
 				},
 			},
-			{
+			"workflow with a job with no steps": {
 				in: workflowWithJobNoSteps,
 				want: workflow{
 					Jobs: map[string]job{
@@ -272,7 +272,7 @@ func TestParseWorkflow(t *testing.T) {
 					},
 				},
 			},
-			{
+			"workflow with a 'uses:' job": {
 				in: workflowWithJobUses,
 				want: workflow{
 					Jobs: map[string]job{
@@ -282,7 +282,7 @@ func TestParseWorkflow(t *testing.T) {
 					},
 				},
 			},
-			{
+			"workflow with one job and steps": {
 				in: workflowWithJobWithSteps,
 				want: workflow{
 					Jobs: map[string]job{
@@ -302,7 +302,7 @@ func TestParseWorkflow(t *testing.T) {
 					},
 				},
 			},
-			{
+			"workflow with multiple jobs and steps": {
 				in: workflowWithJobsWithSteps,
 				want: workflow{
 					Jobs: map[string]job{
@@ -326,7 +326,7 @@ func TestParseWorkflow(t *testing.T) {
 					},
 				},
 			},
-			{
+			"workflow with 'owner/repo/path@v'-style 'uses:' value": {
 				in: workflowWithNestedActions,
 				want: workflow{
 					Jobs: map[string]job{
@@ -343,7 +343,7 @@ func TestParseWorkflow(t *testing.T) {
 					},
 				},
 			},
-			{
+			"workflow with an invalid step 'uses:' value": {
 				in: workflowWithInvalidStepUses,
 				want: workflow{
 					Jobs: map[string]job{
@@ -357,7 +357,7 @@ func TestParseWorkflow(t *testing.T) {
 					},
 				},
 			},
-			{
+			"workflow with an invalid job 'uses:' value": {
 				in: workflowWithInvalidJobUses,
 				want: workflow{
 					Jobs: map[string]job{
@@ -369,8 +369,8 @@ func TestParseWorkflow(t *testing.T) {
 			},
 		}
 
-		for _, tt := range testCases {
-			t.Run(strings.Split(tt.in, "\n")[0], func(t *testing.T) {
+		for name, tt := range testCases {
+			t.Run(name, func(t *testing.T) {
 				t.Parallel()
 
 				got, err := parseWorkflow([]byte(tt.in))
@@ -409,12 +409,12 @@ func TestParseWorkflow(t *testing.T) {
 	t.Run("Invalid examples", func(t *testing.T) {
 		t.Parallel()
 
-		cases := []string{
-			yamlWithSyntaxError,
+		testCases := map[string]string{
+			"workflow with YAML syntax error": yamlWithSyntaxError,
 		}
 
-		for _, tt := range cases {
-			t.Run(tt, func(t *testing.T) {
+		for name, tt := range testCases {
+			t.Run(name, func(t *testing.T) {
 				t.Parallel()
 
 				if _, err := parseWorkflow([]byte(tt)); err == nil {
@@ -449,12 +449,12 @@ func TestParseManifest(t *testing.T) {
 			want manifest
 		}
 
-		testCases := []TestCase{
-			{
+		testCases := map[string]TestCase{
+			"manifest with no steps": {
 				in:   manifestWithNoSteps,
 				want: manifest{},
 			},
-			{
+			"manifest with steps": {
 				in: manifestWithStep,
 				want: manifest{
 					Runs: runs{
@@ -466,7 +466,7 @@ func TestParseManifest(t *testing.T) {
 					},
 				},
 			},
-			{
+			"manifest with 'owner/repo/path@v'-style 'uses:' value": {
 				in: manifestWithNestedActions,
 				want: manifest{
 					Runs: runs{
@@ -477,7 +477,7 @@ func TestParseManifest(t *testing.T) {
 					},
 				},
 			},
-			{
+			"manifest with invalid 'uses:' value": {
 				in: manifestWithInvalidUses,
 				want: manifest{
 					Runs: runs{
@@ -489,8 +489,8 @@ func TestParseManifest(t *testing.T) {
 			},
 		}
 
-		for _, tt := range testCases {
-			t.Run(strings.Split(tt.in, "\n")[0], func(t *testing.T) {
+		for name, tt := range testCases {
+			t.Run(name, func(t *testing.T) {
 				t.Parallel()
 
 				got, err := parseManifest([]byte(tt.in))
@@ -515,12 +515,12 @@ func TestParseManifest(t *testing.T) {
 	t.Run("Invalid examples", func(t *testing.T) {
 		t.Parallel()
 
-		cases := []string{
-			yamlWithSyntaxError,
+		testCases := map[string]string{
+			"manifest with YAML syntax error": yamlWithSyntaxError,
 		}
 
-		for _, tt := range cases {
-			t.Run(tt, func(t *testing.T) {
+		for name, tt := range testCases {
+			t.Run(name, func(t *testing.T) {
 				t.Parallel()
 
 				if _, err := parseManifest([]byte(tt)); err == nil {
