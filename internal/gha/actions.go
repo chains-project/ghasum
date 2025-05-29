@@ -21,7 +21,6 @@ import (
 	"io/fs"
 	"maps"
 	"path"
-	"path/filepath"
 	"slices"
 )
 
@@ -141,20 +140,20 @@ func workflowInRepo(repo fs.FS, path string) ([]byte, error) {
 }
 
 func manifestInRepo(repo fs.FS, dir string) ([]byte, error) {
-	path := filepath.Join(dir, "action.yml")
-	if file, err := repo.Open(path); err == nil {
+	manifest := path.Join(dir, "action.yml")
+	if file, err := repo.Open(manifest); err == nil {
 		data, _ := io.ReadAll(file)
 		return data, nil
 	}
 
-	path = filepath.Join(dir, "action.yaml")
-	if file, err := repo.Open(path); err == nil {
+	manifest = path.Join(dir, "action.yaml")
+	if file, err := repo.Open(manifest); err == nil {
 		data, _ := io.ReadAll(file)
 		return data, nil
 	}
 
-	path = filepath.Join(dir, "Dockerfile")
-	if _, err := repo.Open(path); err == nil {
+	manifest = path.Join(dir, "Dockerfile")
+	if _, err := repo.Open(manifest); err == nil {
 		return nil, ErrDockerfileManifest
 	}
 

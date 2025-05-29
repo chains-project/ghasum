@@ -53,7 +53,7 @@ func cmdVerify(argv []string) error {
 	}
 
 	var job string
-	if i := strings.LastIndexByte(target, 0x3A); i >= 0 {
+	if i := strings.LastIndexByte(target, 0x3A); i > 1 {
 		job = target[i+1:]
 		target = target[0:i]
 	}
@@ -67,6 +67,7 @@ func cmdVerify(argv []string) error {
 	if !stat.IsDir() {
 		repo := path.Join(path.Dir(target), "..", "..")
 		workflow, _ = filepath.Rel(repo, target)
+		workflow = strings.ReplaceAll(workflow, string(filepath.Separator), "/")
 		target = repo
 	}
 
