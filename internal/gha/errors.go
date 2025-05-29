@@ -17,12 +17,27 @@ package gha
 import "errors"
 
 var (
-	ErrDockerUses      = errors.New("uses is a Docker Hub/Container Registry action")
-	ErrInvalidUses     = errors.New("invalid uses value")
-	ErrInvalidUsesRepo = errors.New("invalid repository in uses")
-	ErrInvalidUsesPath = errors.New("invalid repository path in uses")
-	ErrLocalAction     = errors.New("uses is a local action")
+	// ErrDockerUses is the error used when a uses value is for a Docker action.
+	ErrDockerUses = errors.New("uses is a Docker Hub/Container Registry action")
 
+	// ErrInvalidUses is the error used for an invalid uses value.
+	ErrInvalidUses = errors.New("invalid uses value")
+
+	// ErrInvalidUsesRepo is the error used for a uses value with an invalid
+	// repository.
+	ErrInvalidUsesRepo = errors.New("invalid repository in uses")
+
+	// ErrInvalidUsesPath is the error used for a uses value with an invalid
+	// path in the repository.
+	ErrInvalidUsesPath = errors.New("invalid repository path in uses")
+
+	// ErrLocalAction is the error used when a uses value is for a local action.
+	ErrLocalAction = errors.New("uses is a local action")
+
+	// ErrDockerfileManifest is the error used when (only) a Dockerfile Action
+	// manifest is present.
 	ErrDockerfileManifest = errors.New("found a Dockerfile manifest")
-	ErrNoManifest         = errors.New("could not find a manifest")
+
+	// ErrNoManifest is the error used when no Action manifest could be found.
+	ErrNoManifest = errors.New("could not find a manifest")
 )

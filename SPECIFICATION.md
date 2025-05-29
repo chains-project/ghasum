@@ -83,7 +83,11 @@ will be considered. If the target is a workflow, only actions used in all jobs
 in the workflow will be considered. If the target is a job, only actions used in
 the job will be considered.
 
-Redundant checksums are ignored by this process.
+If the target is a repository, the checksum file must also be checked for
+redundant checksums. I.e., any entry that is present in the checksum file but
+was not checked against an action used by the repository must be reported as
+redundant and cause the process to exit with a non-zero exit code. If the target
+is not a repository then redundant checksums must be ignored.
 
 ## Procedures
 

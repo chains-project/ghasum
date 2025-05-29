@@ -12,6 +12,10 @@ Versioning].
 
 ## [Unreleased]
 
+- _No changes yet._
+
+## [v0.5.2] - 2025-05-29
+
 ### Bugs
 
 - Fix verifying a non-job target identified by the absolute path on Windows.
