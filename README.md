@@ -32,7 +32,169 @@ ghasum help
 
 ## Integration
 
-To use ghasum in your GitHub Actions workflows:
+To use `ghasum` in your GitHub Actions workflows there are two options. One is
+to create and use a local action that runs `ghasum` (recommended) and the other
+is to run `ghasum` inline in every job.
+
+### Local Action (Recommended)
+
+To integrate `ghasum` as a local action into your GitHub Actions workflows you
+have to create the local action and then use it in every job in every workflow.
+
+1. <details>
+
+   <summary>Create a local action to run <code>ghasum</code>:</summary>
+
+   Create the file `.github/actions/ghasum/action.yml` and copy the following
+   content into the file. Then fill in the `ghasum` version and checksums.
+
+   ```yaml
+   name: ghasum
+   description: Verify checksums of actions
+
+   runs:
+     using: composite
+     steps:
+     # macOS
+     - name: Download the ghasum CLI (amd64)
+       if: runner.os == 'macOS' && runner.arch == 'X64'
+       shell: bash
+       env:
+         VERSION: vX.Y.Z                # Set the ghasum version.
+         CHECKSUM: 3414193...           # Set the ghasum binary checksum.
+         GH_TOKEN: ${{ github.token }}  # Required for the GitHub CLI (`gh`).
+       run: |
+         ARTIFACT="ghasum_darwin_amd64.tar.gz"
+         gh release download "${VERSION}" --repo chains-project/ghasum --pattern "${ARTIFACT}"
+         echo "${CHECKSUM}  ${ARTIFACT}" | shasum -a 512 -c -
+         tar -xf "${ARTIFACT}"
+     - name: Download the ghasum CLI (arm64)
+       if: runner.os == 'macOS' && runner.arch == 'ARM64'
+       shell: bash
+       env:
+         VERSION: vX.Y.Z                # Set the ghasum version.
+         CHECKSUM: 94a5919...           # Set the ghasum binary checksum.
+         GH_TOKEN: ${{ github.token }}  # Required for the GitHub CLI (`gh`).
+       run: |
+         ARTIFACT="ghasum_darwin_arm64.tar.gz"
+         gh release download "${VERSION}" --repo chains-project/ghasum --pattern "${ARTIFACT}"
+         echo "${CHECKSUM}  ${ARTIFACT}" | shasum -a 512 -c -
+         tar -xf "${ARTIFACT}"
+     - name: Verify the action checksums
+       if: runner.os == 'macOS'
+       shell: bash
+       env:
+         JOB: ${{ github.job }}
+         WORKFLOW: ${{ github.workflow_ref }}
+       run: |
+         WORKFLOW=$(echo "${WORKFLOW}" | cut -d '@' -f 1 | cut -d '/' -f 3-5)
+         ./ghasum verify -cache /Users/runner/work/_actions -no-evict -offline "${WORKFLOW}:${JOB}"
+
+     # Linux
+     - name: Download the ghasum CLI (amd64)
+       if: runner.os == 'Linux' && runner.arch == 'X64'
+       shell: bash
+       env:
+         VERSION: vX.Y.Z                # Set the ghasum version.
+         CHECKSUM: f5f2ff0...           # Set the ghasum binary checksum.
+         GH_TOKEN: ${{ github.token }}  # Required for the GitHub CLI (`gh`).
+       run: |
+         ARTIFACT="ghasum_linux_amd64.tar.gz"
+         gh release download "${VERSION}" --repo chains-project/ghasum --pattern "${ARTIFACT}"
+         echo "${CHECKSUM}  ${ARTIFACT}" | shasum -a 512 -c -
+         tar -xf "${ARTIFACT}"
+     - name: Download the ghasum CLI (arm64)
+       if: runner.os == 'Linux' && runner.arch == 'ARM64'
+       shell: bash
+       env:
+         VERSION: vX.Y.Z                # Set the ghasum version.
+         CHECKSUM: 8a5c3d8...           # Set the ghasum binary checksum.
+         GH_TOKEN: ${{ github.token }}  # Required for the GitHub CLI (`gh`).
+       run: |
+         ARTIFACT="ghasum_linux_arm64.tar.gz"
+         gh release download "${VERSION}" --repo chains-project/ghasum --pattern "${ARTIFACT}"
+         echo "${CHECKSUM}  ${ARTIFACT}" | shasum -a 512 -c -
+         tar -xf "${ARTIFACT}"
+     - name: Verify the action checksums
+       if: runner.os == 'Linux'
+       shell: bash
+       env:
+         JOB: ${{ github.job }}
+         WORKFLOW: ${{ github.workflow_ref }}
+       run: |
+         WORKFLOW=$(echo "${WORKFLOW}" | cut -d '@' -f 1 | cut -d '/' -f 3-5)
+         ./ghasum verify -cache /home/runner/work/_actions -no-evict -offline "${WORKFLOW}:${JOB}"
+
+     # Windows
+     - name: Download the ghasum CLI (amd64)
+       if: runner.os == 'Windows' && runner.arch == 'X64'
+       shell: pwsh
+       env:
+         VERSION: vX.Y.Z                # Set the ghasum version.
+         CHECKSUM: e3d49db...           # Set the ghasum binary checksum.
+         GH_TOKEN: ${{ github.token }}  # Required for the GitHub CLI (`gh`).
+       run: |
+         $ARTIFACT = "ghasum_windows_amd64.zip"
+         gh release download "$env:VERSION" --repo chains-project/ghasum --pattern "$ARTIFACT"
+         if ((Get-FileHash -Algorithm SHA512 "$ARTIFACT").Hash -ne $env:CHECKSUM) {
+             Write-Error "Checksum mismatch!"
+             exit 1
+         }
+         Expand-Archive -Path "$ARTIFACT" -DestinationPath .
+     - name: Download the ghasum CLI (arm64)
+       if: runner.os == 'Windows' && runner.arch == 'ARM64'
+       shell: pwsh
+       env:
+         VERSION: vX.Y.Z                # Set the ghasum version.
+         CHECKSUM: 3114a13...           # Set the ghasum binary checksum.
+         GH_TOKEN: ${{ github.token }}  # Required for the GitHub CLI (`gh`).
+       run: |
+         $ARTIFACT = "ghasum_windows_arm64.zip"
+         gh release download "$env:VERSION" --repo chains-project/ghasum --pattern "$ARTIFACT"
+         if ((Get-FileHash -Algorithm SHA512 "$ARTIFACT").Hash -ne $env:CHECKSUM) {
+             Write-Error "Checksum mismatch!"
+             exit 1
+         }
+         Expand-Archive -Path "$ARTIFACT" -DestinationPath .
+     - name: Verify the action checksums
+       if: runner.os == 'Windows'
+       shell: pwsh
+       env:
+         JOB: ${{ github.job }}
+         WORKFLOW: ${{ github.workflow_ref }}
+       run: |
+         $WorkflowParts = $env:WORKFLOW -split '@'
+         $WorkflowPath = ($WorkflowParts[0] -split '/')[2..4] -join '/'
+         .\ghasum.exe verify -cache C:\a\_actions -no-evict -offline "${WorkflowPath}:${env:JOB}"
+   ```
+
+   </details>
+
+2. <details>
+
+   <summary>Use the local action in your workflows:</summary>
+
+   ```yaml
+   jobs:
+     example:
+       steps:
+       # The repository has to be checked out before verifying checksums because
+       #  it requires access to the content in .github/workflows. Because this
+       #  action is run before the checksums are verified it should be pinned to
+       #  a commit SHA.
+       - name: Checkout repository
+         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+       # Verify the checksums with ghasum through the local action.
+       - name: Verify action checksums
+         uses: ./.github/actions/ghasum
+
+       # The rest of your job ...
+   ```
+
+   </details>
+
+### Inline
 
 <details>
 
@@ -44,7 +206,7 @@ job:
   steps:
   # The repository has to be checked out before verifying checksums because it
   #  requires access to the content in .github/workflows. Because this action is
-  #  ran before the checksums are verified it should be pinned to a commit SHA.
+  #  run before the checksums are verified it should be pinned to a commit SHA.
   - name: Checkout repository
     uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
@@ -84,7 +246,7 @@ job:
   steps:
   # The repository has to be checked out before verifying checksums because it
   #  requires access to the content in .github/workflows. Because this action is
-  #  ran before the checksums are verified it should be pinned to a commit SHA.
+  #  run before the checksums are verified it should be pinned to a commit SHA.
   - name: Checkout repository
     uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
@@ -118,7 +280,7 @@ job:
   steps:
   # The repository has to be checked out before verifying checksums because it
   #  requires access to the content in .github/workflows. Because this action is
-  #  ran before the checksums are verified it should be pinned to a commit SHA.
+  #  run before the checksums are verified it should be pinned to a commit SHA.
   - name: Checkout repository
     uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
@@ -156,7 +318,7 @@ job:
   steps:
   # The repository has to be checked out before verifying checksums because it
   #  requires access to the content in .github/workflows. Because this action is
-  #  ran before the checksums are verified it should be pinned to a commit SHA.
+  #  run before the checksums are verified it should be pinned to a commit SHA.
   - name: Checkout repository
     uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
@@ -198,7 +360,7 @@ job:
   steps:
   # The repository has to be checked out before verifying checksums because it
   #  requires access to the content in .github/workflows. Because this action is
-  #  ran before the checksums are verified it should be pinned to a commit SHA.
+  #  run before the checksums are verified it should be pinned to a commit SHA.
   - name: Checkout repository
     uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
@@ -236,7 +398,7 @@ job:
   steps:
   # The repository has to be checked out before verifying checksums because it
   #  requires access to the content in .github/workflows. Because this action is
-  #  ran before the checksums are verified it should be pinned to a commit SHA.
+  #  run before the checksums are verified it should be pinned to a commit SHA.
   - name: Checkout repository
     uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
@@ -270,11 +432,11 @@ job:
 
 ## Recommendations
 
-When using ghasum it is recommend to pin all Actions to version tags. If Actions
-are benign, these won't change over time. Major version tags or branch refs are
-expected to change over time as changes are made to the Action, which results in
-failing verification by ghasum. Commit SHAs do not have to be used because the
-benefits they provide are covered by ghasum.
+When using ghasum it is recommended to pin all Actions to version tags. If
+Actions are benign, these won't change over time. Major version tags or branch
+refs are expected to change over time as changes are made to the Action, which
+results in failing verification by ghasum. Commit SHAs do not have to be used
+because the benefits they provide are covered by ghasum.
 
 If an Action misbehaves - moving version refs after publishing - it is
 recommended to use commit SHAs instead to avoid failing verification by ghasum.
