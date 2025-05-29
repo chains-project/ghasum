@@ -12,6 +12,13 @@ Versioning].
 
 ## [Unreleased]
 
+### Bugs
+
+- Fix verifying a non-job target identified by the absolute path on Windows.
+- Fix various cases where files or directories could not found on Windows.
+
+## [v0.5.1] - 2025-05-25
+
 ### Enhancements
 
 - Report redundant checksums on verification of an entire repository.

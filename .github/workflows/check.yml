@@ -30,8 +30,18 @@ jobs:
     - name: Build binary
       run: go run tasks.go build
   dogfeed:
-    name: Dogfeed
-    runs-on: ubuntu-24.04
+    name: Dogfeed (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - name: macOS
+          os: macos-15
+        - name: Ubuntu
+          os: ubuntu-24.04
+        - name: Windows
+          os: windows-2025
     needs:
     - test
     steps:
@@ -44,14 +54,32 @@ jobs:
       with:
         go-version-file: go.mod
     - name: Verify action checksums
+      if: matrix.name == 'macOS'
+      env:
+        JOB: ${{ github.job }}
+        WORKFLOW: ${{ github.workflow_ref }}
+      run: |
+        WORKFLOW=$(echo "$WORKFLOW" | cut -d '@' -f 1 | cut -d '/' -f 3-5)
+        go run ./cmd/ghasum verify -cache /Users/runner/work/_actions -no-evict -offline "${WORKFLOW}:${JOB}"
+    - name: Verify action checksums
+      if: matrix.name == 'Ubuntu'
       env:
         JOB: ${{ github.job }}
         WORKFLOW: ${{ github.workflow_ref }}
       run: |
         WORKFLOW=$(echo "$WORKFLOW" | cut -d '@' -f 1 | cut -d '/' -f 3-5)
         go run ./cmd/ghasum verify -cache /home/runner/work/_actions -no-evict -offline "$WORKFLOW:$JOB"
+    - name: Verify action checksums
+      if: matrix.name == 'Windows'
+      env:
+        JOB: ${{ github.job }}
+        WORKFLOW: ${{ github.workflow_ref }}
+      run: |
+        $WorkflowParts = $env:WORKFLOW -split '@'
+        $WorkflowPath = ($WorkflowParts[0] -split '/')[2..4] -join '/'
+        go run ./cmd/ghasum verify -cache D:\a\_actions -no-evict -offline "${WorkflowPath}:${env:JOB}"
     - name: Uninitialize ghasum
-      run: rm -f .github/workflows/gha.sum
+      run: rm .github/workflows/gha.sum
     - name: Run on this repository
       run: |
         go run ./cmd/ghasum init

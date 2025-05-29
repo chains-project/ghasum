@@ -18,7 +18,7 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"path/filepath"
+	"path"
 )
 
 // A GitHubAction identifies a specific version of a GitHub Action.
@@ -64,7 +64,7 @@ const (
 )
 
 // WorkflowsPath is the relative path to the GitHub Actions workflow directory.
-var WorkflowsPath = filepath.Join(".github", "workflows")
+var WorkflowsPath = path.Join(".github", "workflows")
 
 // RepoActions extracts the GitHub Actions used in the repository at the given
 // file system hierarchy.
