@@ -92,14 +92,13 @@ func find(cfg *Config) ([]gha.GitHubAction, error) {
 		err     error
 	)
 
-	if cfg.Workflow == "" {
+	switch {
+	case cfg.Job != "":
+		actions, err = gha.JobActions(cfg.Repo, cfg.Workflow, cfg.Job)
+	case cfg.Workflow != "":
+		actions, err = gha.WorkflowActions(cfg.Repo, cfg.Workflow)
+	default:
 		actions, err = gha.RepoActions(cfg.Repo)
-	} else {
-		if cfg.Job == "" {
-			actions, err = gha.WorkflowActions(cfg.Repo, cfg.Workflow)
-		} else {
-			actions, err = gha.JobActions(cfg.Repo, cfg.Workflow, cfg.Job)
-		}
 	}
 
 	if err != nil {
