@@ -30,6 +30,244 @@ For further help with using `ghasum` run:
 ghasum help
 ```
 
+## Integration
+
+To use ghasum in your GitHub Actions workflows:
+
+<details>
+
+<summary>For Ubuntu runners</summary>
+
+```yaml
+job:
+  runs-on: ubuntu-24.04 # Also 'ubuntu-latest'
+  steps:
+  # The repository has to be checked out before verifying checksums because it
+  #  requires access to the content in .github/workflows. Because this action is
+  #  ran before the checksums are verified it should be pinned to a commit SHA.
+  - name: Checkout repository
+    uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+  # Verify the action checksums with ghasum.
+  - name: Verify action checksums
+    env:
+      VERSION: vX.Y.Z                # Set the ghasum version.
+      CHECKSUM: f5f2ff0...           # Set the ghasum binary checksum.
+      GH_TOKEN: ${{ github.token }}  # Required for the GitHub CLI (`gh`).
+      JOB: ${{ github.job }}
+      WORKFLOW: ${{ github.workflow_ref }}
+    run: |
+      # Download the ghasum CLI
+      ARTIFACT="ghasum_linux_amd64.tar.gz"
+      gh release download "${VERSION}" --repo chains-project/ghasum --pattern "${ARTIFACT}"
+      echo "${CHECKSUM}  ${ARTIFACT}" | shasum -a 512 -c -
+      tar -xf "${ARTIFACT}"
+
+      # Verify the action checksums
+      WORKFLOW=$(echo "${WORKFLOW}" | cut -d '@' -f 1 | cut -d '/' -f 3-5)
+      ./ghasum verify -cache /home/runner/work/_actions -no-evict -offline "${WORKFLOW}:${JOB}"
+
+  # The rest of your job ...
+```
+
+</details>
+
+<details>
+
+<summary>For macOS runners</summary>
+
+For newer ARM-based runners:
+
+```yaml
+job:
+  runs-on: macos-15 # Also 'macos-latest'
+  steps:
+  # The repository has to be checked out before verifying checksums because it
+  #  requires access to the content in .github/workflows. Because this action is
+  #  ran before the checksums are verified it should be pinned to a commit SHA.
+  - name: Checkout repository
+    uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+  # Verify the action checksums with ghasum.
+  - name: Verify action checksums
+    env:
+      VERSION: vX.Y.Z                # Set the ghasum version.
+      CHECKSUM: 94a5919...           # Set the ghasum binary checksum.
+      GH_TOKEN: ${{ github.token }}  # Required for the GitHub CLI (`gh`).
+      JOB: ${{ github.job }}
+      WORKFLOW: ${{ github.workflow_ref }}
+    run: |
+      # Download the ghasum CLI
+      ARTIFACT="ghasum_darwin_arm64.tar.gz"
+      gh release download "${VERSION}" --repo chains-project/ghasum --pattern "${ARTIFACT}"
+      echo "${CHECKSUM}  ${ARTIFACT}" | shasum -a 512 -c -
+      tar -xf "${ARTIFACT}"
+
+      # Verify the action checksums
+      WORKFLOW=$(echo "${WORKFLOW}" | cut -d '@' -f 1 | cut -d '/' -f 3-5)
+      ./ghasum verify -cache /Users/runner/work/_actions -no-evict -offline "${WORKFLOW}:${JOB}"
+
+  # The rest of your job ...
+```
+
+For older Intel-based runners:
+
+```yaml
+job:
+  runs-on: macos-13
+  steps:
+  # The repository has to be checked out before verifying checksums because it
+  #  requires access to the content in .github/workflows. Because this action is
+  #  ran before the checksums are verified it should be pinned to a commit SHA.
+  - name: Checkout repository
+    uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+  # Verify the action checksums with ghasum.
+  - name: Verify action checksums
+    env:
+      VERSION: vX.Y.Z                # Set the ghasum version.
+      CHECKSUM: 3414193...           # Set the ghasum binary checksum.
+      GH_TOKEN: ${{ github.token }}  # Required for the GitHub CLI (`gh`).
+      JOB: ${{ github.job }}
+      WORKFLOW: ${{ github.workflow_ref }}
+    run: |
+      # Download the ghasum CLI
+      ARTIFACT="ghasum_darwin_amd64.tar.gz"
+      gh release download "${VERSION}" --repo chains-project/ghasum --pattern "${ARTIFACT}"
+      echo "${CHECKSUM}  ${ARTIFACT}" | shasum -a 512 -c -
+      tar -xf "${ARTIFACT}"
+
+      # Verify the action checksums
+      WORKFLOW=$(echo "${WORKFLOW}" | cut -d '@' -f 1 | cut -d '/' -f 3-5)
+      ./ghasum verify -cache /Users/runner/work/_actions -no-evict -offline "${WORKFLOW}:${JOB}"
+
+  # The rest of your job ...
+```
+
+</details>
+
+<details>
+
+<summary>For Windows runners</summary>
+
+```yaml
+job:
+  runs-on: windows-2025 # Also 'windows-latest'
+  steps:
+  # The repository has to be checked out before verifying checksums because it
+  #  requires access to the content in .github/workflows. Because this action is
+  #  ran before the checksums are verified it should be pinned to a commit SHA.
+  - name: Checkout repository
+    uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+  # Verify the action checksums with ghasum.
+  - name: Verify action checksums
+    env:
+      VERSION: vX.Y.Z                # Set the ghasum version.
+      CHECKSUM: e3d49db...           # Set the ghasum binary checksum.
+      GH_TOKEN: ${{ github.token }}  # Required for the GitHub CLI (`gh`).
+      JOB: ${{ github.job }}
+      WORKFLOW: ${{ github.workflow_ref }}
+    run: |
+      # Download the ghasum CLI
+      $ARTIFACT = "ghasum_windows_amd64.zip"
+      gh release download "$env:VERSION" --repo chains-project/ghasum --pattern "$ARTIFACT"
+      if ((Get-FileHash -Algorithm SHA512 "$ARTIFACT").Hash -ne $env:CHECKSUM) {
+          Write-Error "Checksum mismatch!"
+          exit 1
+      }
+      Expand-Archive -Path "$ARTIFACT" -DestinationPath .
+
+      # Verify the action checksums
+      $WorkflowParts = $env:WORKFLOW -split '@'
+      $WorkflowPath = ($WorkflowParts[0] -split '/')[2..4] -join '/'
+      .\ghasum.exe verify -cache C:\a\_actions -no-evict -offline "${WorkflowPath}:${env:JOB}"
+
+  # The rest of your job ...
+```
+
+</details>
+
+<details>
+
+<summary>For ARM-based Ubuntu runners</summary>
+
+```yaml
+job:
+  runs-on: ubuntu-24.04-arm
+  steps:
+  # The repository has to be checked out before verifying checksums because it
+  #  requires access to the content in .github/workflows. Because this action is
+  #  ran before the checksums are verified it should be pinned to a commit SHA.
+  - name: Checkout repository
+    uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+  # Verify the action checksums with ghasum.
+  - name: Verify action checksums
+    env:
+      VERSION: vX.Y.Z                # Set the ghasum version.
+      CHECKSUM: 8a5c3d8...           # Set the ghasum binary checksum.
+      GH_TOKEN: ${{ github.token }}  # Required for the GitHub CLI (`gh`).
+      JOB: ${{ github.job }}
+      WORKFLOW: ${{ github.workflow_ref }}
+    run: |
+      # Download the ghasum CLI
+      ARTIFACT="ghasum_linux_arm64.tar.gz"
+      gh release download "${VERSION}" --repo chains-project/ghasum --pattern "${ARTIFACT}"
+      echo "${CHECKSUM}  ${ARTIFACT}" | shasum -a 512 -c -
+      tar -xf "${ARTIFACT}"
+
+      # Verify the action checksums
+      WORKFLOW=$(echo "${WORKFLOW}" | cut -d '@' -f 1 | cut -d '/' -f 3-5)
+      ./ghasum verify -cache /home/runner/work/_actions -no-evict -offline "${WORKFLOW}:${JOB}"
+
+  # The rest of your job ...
+```
+
+</details>
+
+<details>
+
+<summary>For ARM-based Windows runners</summary>
+
+```yaml
+job:
+  runs-on: windows-11-arm
+  steps:
+  # The repository has to be checked out before verifying checksums because it
+  #  requires access to the content in .github/workflows. Because this action is
+  #  ran before the checksums are verified it should be pinned to a commit SHA.
+  - name: Checkout repository
+    uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+  # Verify the action checksums with ghasum.
+  - name: Verify action checksums
+    env:
+      VERSION: vX.Y.Z                # Set the ghasum version.
+      CHECKSUM: 3114a13...           # Set the ghasum binary checksum.
+      GH_TOKEN: ${{ github.token }}  # Required for the GitHub CLI (`gh`).
+      JOB: ${{ github.job }}
+      WORKFLOW: ${{ github.workflow_ref }}
+    run: |
+      # Download the ghasum CLI
+      $ARTIFACT = "ghasum_windows_arm64.zip"
+      gh release download "$env:VERSION" --repo chains-project/ghasum --pattern "$ARTIFACT"
+      if ((Get-FileHash -Algorithm SHA512 "$ARTIFACT").Hash -ne $env:CHECKSUM) {
+          Write-Error "Checksum mismatch!"
+          exit 1
+      }
+      Expand-Archive -Path "$ARTIFACT" -DestinationPath .
+
+      # Verify the action checksums
+      $WorkflowParts = $env:WORKFLOW -split '@'
+      $WorkflowPath = ($WorkflowParts[0] -split '/')[2..4] -join '/'
+      .\ghasum.exe verify -cache C:\a\_actions -no-evict -offline "${WorkflowPath}:${env:JOB}"
+
+  # The rest of your job ...
+```
+
+</details>
+
 ## Recommendations
 
 When using ghasum it is recommend to pin all Actions to version tags. If Actions
