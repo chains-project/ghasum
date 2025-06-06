@@ -6,7 +6,7 @@ require (
 	github.com/go-git/go-git/v5 v5.16.1
 	github.com/liamg/memoryfs v1.6.0
 	github.com/rogpeppe/go-internal v1.14.1
-	golang.org/x/mod v0.23.0
+	golang.org/x/mod v0.25.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
