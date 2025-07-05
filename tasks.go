@@ -340,6 +340,7 @@ func TaskVet(t *T) error {
 		"go run github.com/ultraware/whitespace/cmd/whitespace ./...",
 		"go run gitlab.com/bosi/decorder/cmd/decorder -disable-dec-num-check ./...",
 		"go run go.uber.org/nilaway/cmd/nilaway -include-pkgs=github.com/chains-project/ghasum ./...",
+		"go run golang.org/x/tools/cmd/deadcode ./...",
 		"go run golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow ./...",
 		"go run honnef.co/go/tools/cmd/staticcheck ./...",
 		"go run mvdan.cc/unparam ./...",
