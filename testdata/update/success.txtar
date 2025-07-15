@@ -1,71 +1,43 @@
 # Update unnecessary
-cmp unchanged/.github/workflows/gha.sum want/gha.sum
+cmp unchanged/.github/workflows/gha.sum .want/gha.sum
 
 exec ghasum update -cache .cache/ unchanged/
 stdout 'Ok'
 ! stderr .
-cmp unchanged/.github/workflows/gha.sum want/gha.sum
+cmp unchanged/.github/workflows/gha.sum .want/gha.sum
 
 # Update necessary
-! cmp changed/.github/workflows/gha.sum want/gha.sum
+! cmp changed/.github/workflows/gha.sum .want/gha.sum
 
 exec ghasum update -cache .cache/ changed/
 stdout 'Ok'
 ! stderr .
-cmp changed/.github/workflows/gha.sum want/gha.sum
+cmp changed/.github/workflows/gha.sum .want/gha.sum
 
 # Removal necessary
-! cmp remove/.github/workflows/gha.sum want/gha.sum
+! cmp remove/.github/workflows/gha.sum .want/gha.sum
 
 exec ghasum update -cache .cache/ remove/
 stdout 'Ok'
 ! stderr .
-cmp remove/.github/workflows/gha.sum want/gha.sum
+cmp remove/.github/workflows/gha.sum .want/gha.sum
 
 # Preserve existing values
-! cmp preserve/.github/workflows/gha.sum want/gha-preserve.sum
+! cmp preserve/.github/workflows/gha.sum .want/gha-preserve.sum
 
 exec ghasum update -cache .cache/ preserve/
 stdout 'Ok'
 ! stderr .
-cmp preserve/.github/workflows/gha.sum want/gha-preserve.sum
+cmp preserve/.github/workflows/gha.sum .want/gha-preserve.sum
 
 # Remove transitive
-cmp changed/.github/workflows/gha.sum want/gha.sum
+cmp changed/.github/workflows/gha.sum .want/gha.sum
 
 exec ghasum update -cache .cache/ -no-transitive changed/
 stdout 'Ok'
 ! stderr .
-cmp changed/.github/workflows/gha.sum want/gha-no-transitive.sum
+cmp changed/.github/workflows/gha.sum .want/gha-no-transitive.sum
 
--- want/gha.sum --
-version 1
-
-actions/checkout@v4.1.1 TTVf+dWEJueFyMoZnvuqlW5lX4aXYXxGWaFaV8lO910=
-actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
-actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
-actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
-actions/setup-java@v4.7.1 ZcPr3aVvmk2yL8zkjqDUpH+YLqGwjtenFrjEk3OEZ3k=
-actions/setup-node@v4.4.0 Gdoys4h+gIN02lzrWZW0uxjBQ8Rk5YSE6+q1SOrw/+o=
-golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
--- want/gha-no-transitive.sum --
-version 1
-
-actions/checkout@v4.1.1 TTVf+dWEJueFyMoZnvuqlW5lX4aXYXxGWaFaV8lO910=
-actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
-actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
-actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
-golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
--- want/gha-preserve.sum --
-version 1
-
-actions/checkout@v4.1.1 this-is-invalid-but-should-not-be-updated
-actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
-actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
-actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
-actions/setup-java@v4.7.1 ZcPr3aVvmk2yL8zkjqDUpH+YLqGwjtenFrjEk3OEZ3k=
-actions/setup-node@v4.4.0 Gdoys4h+gIN02lzrWZW0uxjBQ8Rk5YSE6+q1SOrw/+o=
-golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
 -- unchanged/.github/workflows/gha.sum --
 version 1
 
@@ -246,3 +218,31 @@ name: actions/setup-java@v4.7.1
 name: actions/setup-node@v4.4.0
 -- .cache/golangci/golangci-lint-action/3a91952/action.yml --
 name: golangci/golangci-lint-action@3a91952
+-- .want/gha.sum --
+version 1
+
+actions/checkout@v4.1.1 TTVf+dWEJueFyMoZnvuqlW5lX4aXYXxGWaFaV8lO910=
+actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
+actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
+actions/setup-java@v4.7.1 ZcPr3aVvmk2yL8zkjqDUpH+YLqGwjtenFrjEk3OEZ3k=
+actions/setup-node@v4.4.0 Gdoys4h+gIN02lzrWZW0uxjBQ8Rk5YSE6+q1SOrw/+o=
+golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
+-- .want/gha-no-transitive.sum --
+version 1
+
+actions/checkout@v4.1.1 TTVf+dWEJueFyMoZnvuqlW5lX4aXYXxGWaFaV8lO910=
+actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
+actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
+golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
+-- .want/gha-preserve.sum --
+version 1
+
+actions/checkout@v4.1.1 this-is-invalid-but-should-not-be-updated
+actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
+actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
+actions/setup-java@v4.7.1 ZcPr3aVvmk2yL8zkjqDUpH+YLqGwjtenFrjEk3OEZ3k=
+actions/setup-node@v4.4.0 Gdoys4h+gIN02lzrWZW0uxjBQ8Rk5YSE6+q1SOrw/+o=
+golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
