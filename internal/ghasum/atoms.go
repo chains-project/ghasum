@@ -108,7 +108,7 @@ func compare(got, want []sumfile.Entry, reportRedundant bool) []Problem {
 	return cmp(toMap(got), toMap(want))
 }
 
-func find(cfg *Config) ([]gha.GitHubAction, error) {
+func find(cfg *Config) (tree, error) {
 	var (
 		actions []gha.GitHubAction
 		err     error
@@ -123,57 +123,63 @@ func find(cfg *Config) ([]gha.GitHubAction, error) {
 		actions, err = gha.RepoActions(cfg.Repo)
 	}
 
+	root := tree{}
 	if err != nil {
-		return nil, fmt.Errorf("could not get GitHub Actions: %v", err)
+		return root, fmt.Errorf("could not find GitHub Actions: %v", err)
 	}
 
-	for _, action := range actions {
+	parents := make([]*tree, len(actions))
+	for i := range actions {
+		parents[i] = &root
+	}
+
+	for i := 0; i < len(actions); i++ {
+		action := actions[i]
 		actionDir, err := clone(cfg, &action)
 		if err != nil {
-			return nil, err
+			return root, err
 		}
 
+		subtree := tree{value: &action}
 		if cfg.Transitive {
 			repo, _ := os.OpenRoot(actionDir)
 
 			var transitive []gha.GitHubAction
 			switch action.Kind {
 			case gha.Action:
-				tmp, err := gha.ManifestActions(repo.FS(), action.Path)
+				transitive, err = gha.ManifestActions(repo.FS(), action.Path)
 				if err != nil {
-					return nil, fmt.Errorf("action manifest parsing failed for %s: %v", action, err)
+					return root, fmt.Errorf("action manifest parsing failed for %s: %v", action, err)
 				}
-
-				transitive = tmp
 			case gha.ReusableWorkflow:
-				tmp, err := gha.WorkflowActions(repo.FS(), action.Path)
+				transitive, err = gha.WorkflowActions(repo.FS(), action.Path)
 				if err != nil {
-					return nil, fmt.Errorf("reusable workflow parsing failed for %s: %v", action, err)
+					return root, fmt.Errorf("reusable workflow parsing failed for %s: %v", action, err)
 				}
-
-				transitive = tmp
 			}
 
-			for _, transitive := range transitive {
-				if slices.Index(actions, transitive) == -1 {
-					actions = append(actions, transitive)
-				}
+			for _, action := range transitive {
+				actions = append(actions, action)
+				parents = append(parents, &subtree)
 			}
 		}
+
+		parents[i].add(&subtree)
 	}
 
-	return actions, nil
+	return root, nil
 }
 
-func compute(cfg *Config, actions []gha.GitHubAction, algo checksum.Algo) ([]sumfile.Entry, error) {
+func compute(cfg *Config, actions tree, algo checksum.Algo) ([]sumfile.Entry, error) {
 	if err := cfg.Cache.Init(); err != nil {
 		return nil, fmt.Errorf("could not initialize cache: %v", err)
 	} else {
 		defer cfg.Cache.Cleanup()
 	}
 
-	entries := make(map[string]sumfile.Entry, len(actions))
-	for _, action := range actions {
+	list := slices.Collect(actions.All())
+	entries := make(map[string]sumfile.Entry, len(list))
+	for _, action := range list {
 		actionDir, err := clone(cfg, &action)
 		if err != nil {
 			return nil, err

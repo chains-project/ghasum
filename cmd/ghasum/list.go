@@ -19,7 +19,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/chains-project/ghasum/internal/cache"
 	"github.com/chains-project/ghasum/internal/ghasum"
@@ -77,7 +76,7 @@ func cmdList(argv []string) error {
 		return errors.Join(errUnexpected, err)
 	}
 
-	fmt.Println(strings.Join(list, "\n"))
+	fmt.Print(list)
 	return nil
 }
 
