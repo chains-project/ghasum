@@ -79,7 +79,19 @@ var helpers = map[string]Helper{
 }
 
 func main() {
-	os.Exit(run())
+	code := exitCodeError
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Println(err)
+			fmt.Println()
+			fmt.Println("An fatal error occurred. Please report the error and command to:")
+			fmt.Println("https://github.com/chains-project/ghasum/issues/new/choose")
+		}
+
+		os.Exit(code)
+	}()
+
+	code = run()
 }
 
 func run() int {
