@@ -32,6 +32,7 @@ const (
 	cmdNameCache   = "cache"
 	cmdNameHelp    = "help"
 	cmdNameInit    = "init"
+	cmdNameList    = "list"
 	cmdNameUpdate  = "update"
 	cmdNameVerify  = "verify"
 	cmdNameVersion = "version"
@@ -64,6 +65,7 @@ var commands = map[string]Command{
 	cmdNameCache:   cmdCache,
 	cmdNameHelp:    cmdHelp,
 	cmdNameInit:    cmdInit,
+	cmdNameList:    cmdList,
 	cmdNameUpdate:  cmdUpdate,
 	cmdNameVerify:  cmdVerify,
 	cmdNameVersion: cmdVersion,
@@ -73,6 +75,7 @@ var helpers = map[string]Helper{
 	cmdNameCache:   helpCache,
 	cmdNameHelp:    help,
 	cmdNameInit:    helpInit,
+	cmdNameList:    helpList,
 	cmdNameUpdate:  helpUpdate,
 	cmdNameVerify:  helpVerify,
 	cmdNameVersion: helpVersion,

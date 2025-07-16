@@ -61,6 +61,7 @@ The available commands are:
 
     cache     Manage the ghasum cache.
     init      Initialize ghasum for a repository.
+    list      View the list of GitHub Actions dependencies.
     update    Update the checksums for a repository.
     verify    Verify the checksums for a repository.
     version   Print the ghasum version.
