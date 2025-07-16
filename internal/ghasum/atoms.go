@@ -32,6 +32,28 @@ import (
 
 var ghasumPath = path.Join(gha.WorkflowsPath, "gha.sum")
 
+func archived(actions []gha.GitHubAction) []Problem {
+	var problems []Problem
+	for _, action := range actions {
+		repo := github.Repository{
+			Owner:   action.Owner,
+			Project: action.Project,
+		}
+
+		isArchived, err := github.Archived(&repo)
+		if err != nil {
+			return nil
+		}
+
+		if isArchived {
+			p := fmt.Sprintf("repository archived %q", action)
+			problems = append(problems, Problem(p))
+		}
+	}
+
+	return problems
+}
+
 func clear(file *os.File) error {
 	if _, err := file.Seek(0, 0); err != nil {
 		return errors.Join(ErrSumfileWrite, err)
