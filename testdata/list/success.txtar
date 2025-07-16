@@ -84,10 +84,11 @@ name: golangci/golangci-lint-action@3a91952
 -- .want/all.txt --
 actions/checkout@main (action)
 actions/composite@v1 (action)
+  actions/setup-go@v5.0.0 (action)
+  actions/setup-node@v4.4.0 (action)
 actions/reusable/.github/workflows/workflow.yml@v2 (reusable workflow)
+  actions/setup-java@v4.7.1 (action)
 actions/setup-go@v5.0.0 (action)
-actions/setup-java@v4.7.1 (action)
-actions/setup-node@v4.4.0 (action)
 golangci/golangci-lint-action@3a91952 (action)
 -- .want/no-transitive.txt --
 actions/checkout@main (action)
