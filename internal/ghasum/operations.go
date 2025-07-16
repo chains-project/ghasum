@@ -16,9 +16,11 @@ package ghasum
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"slices"
+	"strings"
 
 	"github.com/chains-project/ghasum/internal/cache"
 	"github.com/chains-project/ghasum/internal/checksum"
@@ -224,4 +226,21 @@ func Verify(cfg *Config) ([]Problem, error) {
 	}
 
 	return result, nil
+}
+
+// List will compute and return the list of GitHub Actions dependencies for the
+// repository specified in the given configuration.
+func List(cfg *Config) ([]string, error) {
+	actions, err := find(cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	list := make([]string, len(actions))
+	for i, action := range actions {
+		list[i] = fmt.Sprintf("%s (%s)", action, action.Kind)
+	}
+
+	slices.SortFunc(list, strings.Compare)
+	return list, nil
 }

@@ -154,7 +154,11 @@ func find(cfg *Config) ([]gha.GitHubAction, error) {
 				transitive = tmp
 			}
 
-			actions = append(actions, transitive...)
+			for _, transitive := range transitive {
+				if slices.Index(actions, transitive) == -1 {
+					actions = append(actions, transitive)
+				}
+			}
 		}
 	}
 
