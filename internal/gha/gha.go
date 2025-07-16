@@ -174,3 +174,14 @@ func (a GitHubAction) String() string {
 		return fmt.Sprintf("%s/%s/%s@%s", a.Owner, a.Project, a.Path, a.Ref)
 	}
 }
+
+func (k ActionKind) String() string {
+	switch k {
+	case Action:
+		return "action"
+	case ReusableWorkflow:
+		return "reusable workflow"
+	default:
+		panic("unknown action kind " + string(k))
+	}
+}
