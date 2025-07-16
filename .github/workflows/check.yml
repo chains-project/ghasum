@@ -77,7 +77,11 @@ jobs:
       run: |
         $WorkflowParts = $env:WORKFLOW -split '@'
         $WorkflowPath = ($WorkflowParts[0] -split '/')[2..4] -join '/'
-        go run ./cmd/ghasum verify -cache D:\a\_actions -no-evict -offline "${WorkflowPath}:${env:JOB}"
+        if (Test-Path -Path 'C:\a\_actions') {
+          go run ./cmd/ghasum verify -cache C:\a\_actions -no-evict -offline "${WorkflowPath}:${env:JOB}"
+        } else {
+          go run ./cmd/ghasum verify -cache D:\a\_actions -no-evict -offline "${WorkflowPath}:${env:JOB}"
+        }
     - name: Uninitialize ghasum
       run: rm .github/workflows/gha.sum
     - name: Run on this repository
