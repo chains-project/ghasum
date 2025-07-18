@@ -32,6 +32,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"runtime"
 	"strings"
 )
 
@@ -194,8 +195,9 @@ func TaskDevEnv(t *T) error {
 	var (
 		engine = t.Env("CONTAINER_ENGINE", "docker")
 		build  = fmt.Sprintf(
-			"%s build --file Containerfile.dev --tag ghasum-dev-img .",
+			"%s build --build-arg GO_VERSION=%s --file Containerfile.dev --tag ghasum-dev-img .",
 			engine,
+			runtime.Version()[2:],
 		)
 		run = fmt.Sprintf(
 			"%s run -it --rm --workdir /ghasum --mount 'type=bind,source=%s,target=/ghasum' --name ghasum-dev-env ghasum-dev-img",
