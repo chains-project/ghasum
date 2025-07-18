@@ -52,7 +52,6 @@ require (
 	github.com/jgautheron/goconst v1.7.1 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
 	github.com/kisielk/errcheck v1.8.0 // indirect
-	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/kunwardeep/paralleltest v1.0.10 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
@@ -87,7 +86,6 @@ require (
 	gitlab.com/bosi/decorder v0.4.2 // indirect
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.uber.org/nilaway v0.0.0-20241010202415-ba14292918d8 // indirect
 	golang.org/x/crypto v0.39.0 // indirect
 	golang.org/x/exp v0.0.0-20240808152545-0cdaa3abc0fa // indirect
 	golang.org/x/exp/typeparams v0.0.0-20240213143201-ec583247a57a // indirect
@@ -129,7 +127,6 @@ tool (
 	github.com/tomarrell/wrapcheck/v2/cmd/wrapcheck
 	github.com/ultraware/whitespace/cmd/whitespace
 	gitlab.com/bosi/decorder/cmd/decorder
-	go.uber.org/nilaway/cmd/nilaway
 	golang.org/x/tools/cmd/deadcode
 	golang.org/x/tools/cmd/goimports
 	golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow

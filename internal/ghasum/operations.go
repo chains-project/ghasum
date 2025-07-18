@@ -225,3 +225,14 @@ func Verify(cfg *Config) ([]Problem, error) {
 
 	return result, nil
 }
+
+// List will compute and return the list of GitHub Actions dependencies for the
+// repository specified in the given configuration.
+func List(cfg *Config) (string, error) {
+	actions, err := find(cfg)
+	if err != nil {
+		return "", err
+	}
+
+	return actions.String(), nil
+}

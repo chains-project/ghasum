@@ -44,6 +44,28 @@ func clear(file *os.File) error {
 	return nil
 }
 
+func clone(cfg *Config, action *gha.GitHubAction) (string, error) {
+	actionDir := path.Join(cfg.Cache.Path(), action.Owner, action.Project, action.Ref)
+	if _, err := os.Stat(actionDir); err != nil {
+		if cfg.Offline {
+			return actionDir, fmt.Errorf("missing %q from cache", action)
+		}
+
+		repo := github.Repository{
+			Owner:   action.Owner,
+			Project: action.Project,
+			Ref:     action.Ref,
+		}
+
+		err := github.Clone(actionDir, &repo)
+		if err != nil {
+			return actionDir, fmt.Errorf("clone failed: %v", err)
+		}
+	}
+
+	return actionDir, nil
+}
+
 func compare(got, want []sumfile.Entry, reportRedundant bool) []Problem {
 	toMap := func(entries []sumfile.Entry) map[string]string {
 		m := make(map[string]string, len(entries))
@@ -86,7 +108,7 @@ func compare(got, want []sumfile.Entry, reportRedundant bool) []Problem {
 	return cmp(toMap(got), toMap(want))
 }
 
-func find(cfg *Config) ([]gha.GitHubAction, error) {
+func find(cfg *Config) (tree, error) {
 	var (
 		actions []gha.GitHubAction
 		err     error
@@ -101,63 +123,66 @@ func find(cfg *Config) ([]gha.GitHubAction, error) {
 		actions, err = gha.RepoActions(cfg.Repo)
 	}
 
+	root := tree{}
 	if err != nil {
-		return nil, fmt.Errorf("could not get GitHub Actions: %v", err)
+		return root, fmt.Errorf("could not find GitHub Actions: %v", err)
 	}
 
-	return actions, nil
-}
-
-func compute(cfg *Config, actions []gha.GitHubAction, algo checksum.Algo) ([]sumfile.Entry, error) {
-	if err := cfg.Cache.Init(); err != nil {
-		return nil, fmt.Errorf("could not initialize cache: %v", err)
-	} else {
-		defer cfg.Cache.Cleanup()
+	parents := make([]*tree, len(actions))
+	for i := range actions {
+		parents[i] = &root
 	}
 
-	entries := make(map[string]sumfile.Entry, len(actions))
 	for i := 0; i < len(actions); i++ {
 		action := actions[i]
-		repo := github.Repository{
-			Owner:   action.Owner,
-			Project: action.Project,
-			Ref:     action.Ref,
+		actionDir, err := clone(cfg, &action)
+		if err != nil {
+			return root, err
 		}
 
-		actionDir := path.Join(cfg.Cache.Path(), repo.Owner, repo.Project, repo.Ref)
-		if _, err := os.Stat(actionDir); err != nil {
-			if cfg.Offline {
-				return nil, fmt.Errorf("missing %q from cache", action)
-			}
-
-			err := github.Clone(actionDir, &repo)
-			if err != nil {
-				return nil, fmt.Errorf("clone failed: %v", err)
-			}
-		}
-
+		subtree := tree{value: &action}
 		if cfg.Transitive {
 			repo, _ := os.OpenRoot(actionDir)
 
 			var transitive []gha.GitHubAction
 			switch action.Kind {
 			case gha.Action:
-				tmp, err := gha.ManifestActions(repo.FS(), action.Path)
+				transitive, err = gha.ManifestActions(repo.FS(), action.Path)
 				if err != nil {
-					return nil, fmt.Errorf("action manifest parsing failed for %s: %v", action, err)
+					return root, fmt.Errorf("action manifest parsing failed for %s: %v", action, err)
 				}
-
-				transitive = tmp
 			case gha.ReusableWorkflow:
-				tmp, err := gha.WorkflowActions(repo.FS(), action.Path)
+				transitive, err = gha.WorkflowActions(repo.FS(), action.Path)
 				if err != nil {
-					return nil, fmt.Errorf("reusable workflow parsing failed for %s: %v", action, err)
+					return root, fmt.Errorf("reusable workflow parsing failed for %s: %v", action, err)
 				}
-
-				transitive = tmp
 			}
 
-			actions = append(actions, transitive...)
+			for _, action := range transitive {
+				actions = append(actions, action)
+				parents = append(parents, &subtree)
+			}
+		}
+
+		parents[i].add(&subtree)
+	}
+
+	return root, nil
+}
+
+func compute(cfg *Config, actions tree, algo checksum.Algo) ([]sumfile.Entry, error) {
+	if err := cfg.Cache.Init(); err != nil {
+		return nil, fmt.Errorf("could not initialize cache: %v", err)
+	} else {
+		defer cfg.Cache.Cleanup()
+	}
+
+	list := slices.Collect(actions.All())
+	entries := make(map[string]sumfile.Entry, len(list))
+	for _, action := range list {
+		actionDir, err := clone(cfg, &action)
+		if err != nil {
+			return nil, err
 		}
 
 		id := fmt.Sprintf("%s%s%s", action.Owner, action.Project, action.Ref)
@@ -168,7 +193,7 @@ func compute(cfg *Config, actions []gha.GitHubAction, algo checksum.Algo) ([]sum
 			}
 
 			entries[id] = sumfile.Entry{
-				ID:       []string{fmt.Sprintf("%s/%s", repo.Owner, repo.Project), action.Ref},
+				ID:       []string{fmt.Sprintf("%s/%s", action.Owner, action.Project), action.Ref},
 				Checksum: strings.Replace(checksum, "h1:", "", 1),
 			}
 		}
