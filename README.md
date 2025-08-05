@@ -430,6 +430,72 @@ job:
 
 </details>
 
+### Using Go
+
+In a Go-based project, you can use the Go toolchain to integrate `ghasum`. To
+get started, add `ghasum` as a tool dependency:
+
+```shell
+go get -tool github.com/chains-project/ghasum/cmd/ghasum
+```
+
+Initialize `ghasum` for your project if you haven't already:
+
+```shell
+go run github.com/chains-project/ghasum/cmd/ghasum init
+```
+
+Verify the setup succeeded:
+
+```shell
+go run github.com/chains-project/ghasum/cmd/ghasum verify
+```
+
+And update your workflows to verify the checksums at runtime. You can follow
+either the Local Action or Inline approach. Like with the other approaches you
+must first use `actions/checkout`. Moreover, because this runs from source you
+must also first use `actions/setup-go`. Both should be pinned to a commit SHA as
+they're run before checksum verification.
+
+<details>
+
+<summary>For Ubuntu/macOS runners</summary>
+
+```yaml
+- uses: actions/checkout # @commit-sha
+- uses: actions/setup-go # @commit-sha
+- name: Verify action checksums
+  env:
+    JOB: ${{ github.job }}
+    WORKFLOW: ${{ github.workflow_ref }}
+  run: |
+    WORKFLOW=$(echo "${WORKFLOW}" | cut -d '@' -f 1 | cut -d '/' -f 3-5)
+    go run github.com/chains-project/ghasum/cmd/ghasum verify \
+      -cache /home/runner/work/_actions -no-evict -offline "${WORKFLOW}:${JOB}"
+```
+
+</details>
+
+<details>
+
+<summary>For Windows runners</summary>
+
+```yaml
+- uses: actions/checkout # @commit-sha
+- uses: actions/setup-go # @commit-sha
+- name: Verify action checksums
+  env:
+    JOB: ${{ github.job }}
+    WORKFLOW: ${{ github.workflow_ref }}
+  run: |
+    $WorkflowParts = $env:WORKFLOW -split '@'
+    $WorkflowPath = ($WorkflowParts[0] -split '/')[2..4] -join '/'
+    go run github.com/chains-project/ghasum/cmd/ghasum verify \
+      -cache C:\a\_actions -no-evict -offline "${WorkflowPath}:${env:JOB}"
+```
+
+</details>
+
 ## Recommendations
 
 When using ghasum it is recommended to pin all Actions to version tags. If
