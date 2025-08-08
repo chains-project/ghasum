@@ -30,6 +30,7 @@ import (
 func cmdVerify(argv []string) error {
 	var (
 		flags            = flag.NewFlagSet(cmdNameVerify, flag.ContinueOnError)
+		flagArchived     = flags.Bool("archived", false, "")
 		flagCache        = flags.String(flagNameCache, "", "")
 		flagNoCache      = flags.Bool(flagNameNoCache, false, "")
 		flagNoEvict      = flags.Bool(flagNameNoEvict, false, "")
@@ -97,7 +98,7 @@ func cmdVerify(argv []string) error {
 		Transitive: !(*flagNoTransitive),
 	}
 
-	problems, err := ghasum.Verify(&cfg)
+	problems, err := ghasum.Verify(&cfg, *flagArchived)
 	if err != nil {
 		return errors.Join(errUnexpected, err)
 	}
@@ -144,6 +145,8 @@ In this case checksums will be verified only for the given job in the workflow.
 
 The available flags are:
 
+    -archived
+        Report actions from archived repositories as errors.
     -cache dir
         The location of the cache directory. This is where ghasum stores and
         looks up repositories it needs.

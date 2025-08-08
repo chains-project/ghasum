@@ -186,7 +186,7 @@ func Update(cfg *Config, force bool) error {
 //
 // Verification report checksums that do not match and checksums that are
 // missing. It does not report checksums that are not used.
-func Verify(cfg *Config) ([]Problem, error) {
+func Verify(cfg *Config, reportArchived bool) ([]Problem, error) {
 	file, err := open(cfg.Path)
 	if err != nil {
 		return nil, err
@@ -221,6 +221,10 @@ func Verify(cfg *Config) ([]Problem, error) {
 	result := compare(fresh, stored, reportRedundant)
 	if err := unlock(cfg.Path); err != nil {
 		return nil, err
+	}
+
+	if reportArchived {
+		result = append(result, archived(actions)...)
 	}
 
 	return result, nil
