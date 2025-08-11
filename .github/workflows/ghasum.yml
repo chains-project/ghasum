@@ -15,7 +15,7 @@ jobs:
       contents: write # To push a commit
     steps:
     - name: Create automation token
-      uses: actions/create-github-app-token@v2.0.6
+      uses: actions/create-github-app-token@v2.1.0
       id: automation-token
       with:
         app-id: ${{ secrets.AUTOMATION_APP_ID }}
