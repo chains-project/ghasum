@@ -1,7 +1,7 @@
 version 1
 
 actions/checkout@v4.2.0 e6ng7MJDyAPkTZ/6d/plZK2YhZRzJZvxhYAPUPpNAzc=
-actions/create-github-app-token@v2.0.6 20ZEA+CZd/Dx+sI8Iu0uEm5WKm0A42u+iZgbkwY/ry4=
+actions/create-github-app-token@v2.1.0 VrFa97EVkoNy8fiAGL4gQVWBoycJDF3yVgStHeqfSX8=
 actions/setup-go@v5.5.0 vSiNC7HetrtPF3QhZDzPHWyJ1e8pFltzruLjcw65Sok=
 github/codeql-action@v3.29.0 EHmrWPs3TigbNzGrCQBGGHmtmbW5+gPaF8Qj+Zs/aPc=
 ncipollo/release-action@v1.18.0 xoLZgWU2qmceVE1cIutBUMKLHHiWc105Qar4yO9x+kY=
