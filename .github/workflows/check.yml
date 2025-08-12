@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4.2.0
+      uses: actions/checkout@v5.0.0
       with:
         persist-credentials: false
     - name: Install Go
@@ -46,7 +46,7 @@ jobs:
     - test
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4.2.0
+      uses: actions/checkout@v5.0.0
       with:
         persist-credentials: false
     - name: Install Go
@@ -95,7 +95,7 @@ jobs:
     - build
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4.2.0
+      uses: actions/checkout@v5.0.0
       with:
         persist-credentials: false
     - name: Install Go
@@ -118,7 +118,7 @@ jobs:
     - build
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4.2.0
+      uses: actions/checkout@v5.0.0
       with:
         persist-credentials: false
     - name: Install Go
@@ -141,7 +141,7 @@ jobs:
     - build
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4.2.0
+      uses: actions/checkout@v5.0.0
       with:
         persist-credentials: false
     - name: Install Go
@@ -164,7 +164,7 @@ jobs:
     - build
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4.2.0
+      uses: actions/checkout@v5.0.0
       with:
         persist-credentials: false
     - name: Install Go
