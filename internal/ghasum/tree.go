@@ -15,10 +15,7 @@
 package ghasum
 
 import (
-	"fmt"
 	"iter"
-	"slices"
-	"strings"
 
 	"github.com/chains-project/ghasum/internal/gha"
 )
@@ -50,36 +47,4 @@ func (t *tree) every(f func(gha.GitHubAction) bool) bool {
 	}
 
 	return true
-}
-
-func (t *tree) String() string {
-	var b strings.Builder
-
-	root := t.value == nil
-	if !root {
-		name := fmt.Sprintf("%s (%s)", t.value, t.value.Kind)
-		b.WriteString(name)
-		b.WriteRune('\n')
-	}
-
-	ordered := make([]string, len(t.children))
-	mapped := make(map[string]*tree, len(t.children))
-	for i, child := range t.children {
-		id := child.value.String()
-		ordered[i] = id
-		mapped[id] = child
-	}
-
-	slices.SortFunc(ordered, strings.Compare)
-	for _, name := range ordered {
-		child := mapped[name]
-		for line := range strings.Lines(child.String()) {
-			if !root {
-				b.WriteString("  ")
-			}
-			b.WriteString(line)
-		}
-	}
-
-	return b.String()
 }

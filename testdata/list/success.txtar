@@ -1,17 +1,17 @@
 # Example
-exec ghasum list -cache .cache/ target/
+exec ghasum list -offline -cache .cache/ target/
 cmp stdout .want/all.txt
 ! stderr .
 
 # Without transitive actions
-exec ghasum list -cache .cache/ -no-transitive target/
+exec ghasum list -offline -cache .cache/ -no-transitive target/
 cmp stdout .want/no-transitive.txt
 ! stderr .
 
 # Without sumfile
 rm target/.github/workflows/gha.sum
 
-exec ghasum list -cache .cache/ target/
+exec ghasum list -offline -cache .cache/ target/
 cmp stdout .want/all.txt
 ! stderr .
 
