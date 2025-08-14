@@ -186,10 +186,12 @@ func Update(cfg *Config, force bool) error {
 //
 // Verification report checksums that do not match and checksums that are
 // missing. It does not report checksums that are not used.
-func Verify(cfg *Config) ([]Problem, error) {
+func Verify(cfg *Config) (VerifyReport, error) {
+	var report VerifyReport
+
 	file, err := open(cfg.Path)
 	if err != nil {
-		return nil, err
+		return report, err
 	}
 
 	defer func() {
@@ -199,31 +201,33 @@ func Verify(cfg *Config) ([]Problem, error) {
 
 	raw, err := io.ReadAll(file)
 	if err != nil {
-		return nil, errors.Join(ErrSumfileRead, err)
+		return report, errors.Join(ErrSumfileRead, err)
 	}
 
 	stored, err := decode(raw)
 	if err != nil {
-		return nil, err
+		return report, err
 	}
 
 	actions, err := find(cfg)
 	if err != nil {
-		return nil, err
+		return report, err
 	}
 
 	fresh, err := compute(cfg, actions, checksum.Sha256)
 	if err != nil {
-		return nil, err
+		return report, err
 	}
 
 	reportRedundant := cfg.Workflow == "" && cfg.Job == ""
-	result := compare(fresh, stored, reportRedundant)
+	report.Problems = compare(fresh, stored, reportRedundant)
+	report.Total = len(fresh)
+
 	if err := unlock(cfg.Path); err != nil {
-		return nil, err
+		return report, err
 	}
 
-	return result, nil
+	return report, nil
 }
 
 // List will compute and return the list of GitHub Actions dependencies for the
