@@ -12,7 +12,16 @@ Versioning].
 
 ## [Unreleased]
 
-- _No changes yet._
+### Enhancements
+
+- Add the `ghasum list` subcommand to get a nested list of GitHub Actions
+  dependencies for the target.
+- Include archived status in the `ghasum list` output.
+- Request a bug report when a panic occurs.
+
+### Security
+
+- Upgrade Go to `v1.24.4`.
 
 ## [v0.5.2] - 2025-05-29
 
