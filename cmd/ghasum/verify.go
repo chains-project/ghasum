@@ -33,8 +33,8 @@ func cmdVerify(argv []string) error {
 		flagCache        = flags.String(flagNameCache, "", "")
 		flagNoCache      = flags.Bool(flagNameNoCache, false, "")
 		flagNoEvict      = flags.Bool(flagNameNoEvict, false, "")
-		flagOffline      = flags.Bool(flagNameOffline, false, "")
 		flagNoTransitive = flags.Bool(flagNameNoTransitive, false, "")
+		flagOffline      = flags.Bool(flagNameOffline, false, "")
 	)
 
 	flags.Usage = func() { fmt.Fprintln(os.Stderr) }
@@ -152,10 +152,10 @@ The available flags are:
         Disable the use of the cache. Makes the -cache flag ineffective.
     -no-evict
         Disable cache eviction.
+    -no-transitive
+        Do not verify checksums for transitive actions.
     -offline
         Run without fetching repositories from the internet, verify exclusively
         against the cache. If the cache is missing an entry it causes an error.
-    -no-transitive
-        Do not verify checksums for transitive actions.
 `
 }

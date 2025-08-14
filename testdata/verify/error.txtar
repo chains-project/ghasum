@@ -1,83 +1,83 @@
 # Repo without GitHub Actions
-! exec ghasum verify no-actions/
+! exec ghasum verify -offline no-actions/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'ghasum has not yet been initialized'
 
 # Uninitialized repo with GitHub Actions
-! exec ghasum verify uninitialized/
+! exec ghasum verify -offline uninitialized/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'ghasum has not yet been initialized'
 
 # Sumfile with syntax error in headers
-! exec ghasum verify sumfile-syntax-headers/
+! exec ghasum verify -offline sumfile-syntax-headers/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'sumfile headers are invalid'
 stderr 'invalid header on line 2'
 
 # Sumfile with syntax error in entries
-! exec ghasum verify sumfile-syntax-entries/
+! exec ghasum verify -offline sumfile-syntax-entries/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'syntax error on line 3'
 
 # Sumfile with duplicate headers
-! exec ghasum verify sumfile-duplicate-headers/
+! exec ghasum verify -offline sumfile-duplicate-headers/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'sumfile headers are invalid'
 stderr 'duplicate header "foo" on line 3'
 
 # Sumfile with duplicate entries
-! exec ghasum verify sumfile-duplicate-entries/
+! exec ghasum verify -offline sumfile-duplicate-entries/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'checksums are corrupted'
 stderr 'duplicate entry found'
 
 # Invalid workflow
-! exec ghasum verify invalid-workflow/
+! exec ghasum verify -offline invalid-workflow/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'could not parse workflow'
 stderr '.github/workflows/workflow.yml'
 
 # Invalid manifest
-! exec ghasum verify -cache .cache/ invalid-manifest/
+! exec ghasum verify -offline -cache .cache/ invalid-manifest/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'could not parse manifest'
 stderr 'action manifest parsing failed for actions/composite@v1'
 
 # Invalid reusable workflow
-! exec ghasum verify -cache .cache/ invalid-reusable-workflow/
+! exec ghasum verify -offline -cache .cache/ invalid-reusable-workflow/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'could not parse workflow'
 stderr 'reusable workflow parsing failed for actions/reusable/.github/workflows/workflow.yml@v2'
 
 # Directory not found
-! exec ghasum verify directory-not-found/
+! exec ghasum verify -offline directory-not-found/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'no such file or directory'
 
 # Workflow not found
-! exec ghasum verify initialized/.github/workflows/not-found.yml
+! exec ghasum verify -offline initialized/.github/workflows/not-found.yml
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'no such file or directory'
 
 # Job not found
-! exec ghasum verify initialized/.github/workflows/workflow.yml:not-found
+! exec ghasum verify -offline initialized/.github/workflows/workflow.yml:not-found
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'job "not-found" not found in workflow ".github/workflows/workflow.yml"'
 
 # Offline cache entry missing
-! exec ghasum verify -cache .cache/ -offline not-cached/
+! exec ghasum verify -offline -cache .cache/ -offline not-cached/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'missing "actions/checkout@not-cached" from cache'
