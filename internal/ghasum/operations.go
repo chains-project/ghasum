@@ -234,5 +234,5 @@ func List(cfg *Config) (string, error) {
 		return "", err
 	}
 
-	return actions.String(), nil
+	return list(cfg, &actions), nil
 }

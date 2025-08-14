@@ -1,32 +1,32 @@
 # Repo without GitHub Actions
-! exec ghasum list no-actions/
+! exec ghasum list -offline no-actions/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'no such file or directory'
 
 # Invalid workflow
-! exec ghasum list invalid-workflow/
+! exec ghasum list -offline invalid-workflow/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'could not parse workflow'
 stderr '.github/workflows/workflow.yml'
 
 # Invalid action manifest
-! exec ghasum list -cache .cache/ invalid-manifest/
+! exec ghasum list -offline -cache .cache/ invalid-manifest/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'could not parse manifest'
 stderr 'action manifest parsing failed for actions/composite@v1'
 
 # Invalid reusable workflow
-! exec ghasum list -cache .cache/ invalid-reusable-workflow/
+! exec ghasum list -offline -cache .cache/ invalid-reusable-workflow/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'could not parse workflow'
 stderr 'reusable workflow parsing failed for actions/reusable/.github/workflows/workflow.yml@v2'
 
 # Directory not found
-! exec ghasum list directory-not-found/
+! exec ghasum list -offline directory-not-found/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'no such file or directory'

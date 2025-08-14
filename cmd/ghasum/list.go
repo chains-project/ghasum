@@ -31,6 +31,7 @@ func cmdList(argv []string) error {
 		flagNoCache      = flags.Bool(flagNameNoCache, false, "")
 		flagNoEvict      = flags.Bool(flagNameNoEvict, false, "")
 		flagNoTransitive = flags.Bool(flagNameNoTransitive, false, "")
+		flagOffline      = flags.Bool(flagNameOffline, false, "")
 	)
 
 	flags.Usage = func() { fmt.Fprintln(os.Stderr) }
@@ -68,6 +69,7 @@ func cmdList(argv []string) error {
 		Repo:       repo.FS(),
 		Path:       target,
 		Cache:      c,
+		Offline:    *flagOffline,
 		Transitive: !(*flagNoTransitive),
 	}
 
@@ -98,5 +100,8 @@ The available flags are:
         Disable cache eviction.
     -no-transitive
         Do not include transitive actions.
+    -offline
+        Run without fetching repositories or metadata from the internet. If the
+        cache is missing an entry it causes an error.
 `
 }

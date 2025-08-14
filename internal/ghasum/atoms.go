@@ -235,6 +235,47 @@ func encode(version sumfile.Version, checksums []sumfile.Entry) (string, error) 
 	return content, nil
 }
 
+func list(cfg *Config, t *tree) string {
+	var b strings.Builder
+
+	action := t.value
+	root := action == nil
+
+	if !root {
+		b.WriteString(action.String())
+		b.WriteString(" (")
+		b.WriteString(action.Kind.String())
+		if !cfg.Offline {
+			isArchived, err := github.Archived(&github.Repository{
+				Owner:   action.Owner,
+				Project: action.Project,
+			})
+			if err == nil && isArchived {
+				b.WriteString(", archived")
+			}
+		}
+		b.WriteString(")\n")
+	}
+
+	ordered := slices.SortedFunc(
+		slices.Values(t.children),
+		func(a, b *tree) int {
+			return strings.Compare(a.value.String(), b.value.String())
+		},
+	)
+
+	for _, children := range ordered {
+		for line := range strings.Lines(list(cfg, children)) {
+			if !root {
+				b.WriteString("  ")
+			}
+			b.WriteString(line)
+		}
+	}
+
+	return b.String()
+}
+
 func open(base string) (*os.File, error) {
 	fullGhasumPath := path.Join(base, ghasumPath)
 
