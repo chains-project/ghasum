@@ -1,5 +1,5 @@
 # Checksum mismatch - Repo
-! exec ghasum verify -cache .cache/ mismatch/
+! exec ghasum verify -offline -cache .cache/ mismatch/
 stdout '3 problem\(s\) occurred during validation:'
 stdout 'checksum mismatch for "actions/checkout@v4"'
 stdout 'checksum mismatch for "actions/setup-go@v5"'
@@ -8,7 +8,7 @@ stdout 'checksum mismatch for "actions/setup-java@v4"'
 ! stderr .
 
 # Checksum mismatch - Workflow
-! exec ghasum verify -cache .cache/ mismatch/.github/workflows/workflow.yml
+! exec ghasum verify -offline -cache .cache/ mismatch/.github/workflows/workflow.yml
 stdout '3 problem\(s\) occurred during validation:'
 stdout 'checksum mismatch for "actions/checkout@v4"'
 stdout 'checksum mismatch for "actions/setup-go@v5"'
@@ -17,7 +17,7 @@ stdout 'checksum mismatch for "actions/setup-java@v4"'
 ! stderr .
 
 # Checksum mismatch - Job
-! exec ghasum verify -cache .cache/ mismatch/.github/workflows/workflow.yml:example
+! exec ghasum verify -offline -cache .cache/ mismatch/.github/workflows/workflow.yml:example
 stdout '2 problem\(s\) occurred during validation:'
 stdout 'checksum mismatch for "actions/checkout@v4"'
 stdout 'checksum mismatch for "actions/setup-go@v5"'
@@ -25,21 +25,21 @@ stdout 'checksum mismatch for "actions/setup-go@v5"'
 ! stderr .
 
 # Checksum mismatch - Transitive, manifest
-! exec ghasum verify -cache .cache/ mismatch/.github/workflows/workflow.yml:transitive-manifest
+! exec ghasum verify -offline -cache .cache/ mismatch/.github/workflows/workflow.yml:transitive-manifest
 stdout '1 problem\(s\) occurred during validation:'
 stdout 'checksum mismatch for "actions/setup-go@v5"'
 ! stdout 'Ok'
 ! stderr .
 
 # Checksum mismatch - Transitive, reusable workflow
-! exec ghasum verify -cache .cache/ mismatch/.github/workflows/workflow.yml:transitive-reusable-workflow
+! exec ghasum verify -offline -cache .cache/ mismatch/.github/workflows/workflow.yml:transitive-reusable-workflow
 stdout '1 problem\(s\) occurred during validation:'
 stdout 'checksum mismatch for "actions/setup-java@v4"'
 ! stdout 'Ok'
 ! stderr .
 
 # Checksum missing - Repo
-! exec ghasum verify -cache .cache/ missing/
+! exec ghasum verify -offline -cache .cache/ missing/
 stdout '2 problem\(s\) occurred during validation:'
 stdout 'no checksum found for "actions/setup-go@v5"'
 stdout 'no checksum found for "actions/setup-java@v4"'
@@ -47,7 +47,7 @@ stdout 'no checksum found for "actions/setup-java@v4"'
 ! stderr .
 
 # Checksum missing - Workflow
-! exec ghasum verify -cache .cache/ missing/.github/workflows/workflow.yml
+! exec ghasum verify -offline -cache .cache/ missing/.github/workflows/workflow.yml
 stdout '2 problem\(s\) occurred during validation:'
 stdout 'no checksum found for "actions/setup-go@v5"'
 stdout 'no checksum found for "actions/setup-java@v4"'
@@ -55,35 +55,35 @@ stdout 'no checksum found for "actions/setup-java@v4"'
 ! stderr .
 
 # Checksum missing - Job
-! exec ghasum verify -cache .cache/ missing/.github/workflows/workflow.yml:example
+! exec ghasum verify -offline -cache .cache/ missing/.github/workflows/workflow.yml:example
 stdout '1 problem\(s\) occurred during validation:'
 stdout 'no checksum found for "actions/setup-go@v5"'
 ! stdout 'Ok'
 ! stderr .
 
 # Checksum missing - Transitive, manifest
-! exec ghasum verify -cache .cache/ missing/.github/workflows/workflow.yml:transitive-manifest
+! exec ghasum verify -offline -cache .cache/ missing/.github/workflows/workflow.yml:transitive-manifest
 stdout '1 problem\(s\) occurred during validation:'
 stdout 'no checksum found for "actions/setup-go@v5"'
 ! stdout 'Ok'
 ! stderr .
 
 # Checksum missing - Transitive, reusable workflow
-! exec ghasum verify -cache .cache/ missing/.github/workflows/workflow.yml:transitive-reusable-workflow
+! exec ghasum verify -offline -cache .cache/ missing/.github/workflows/workflow.yml:transitive-reusable-workflow
 stdout '1 problem\(s\) occurred during validation:'
 stdout 'no checksum found for "actions/setup-java@v4"'
 ! stdout 'Ok'
 ! stderr .
 
 # Checksum redundant - Repo
-! exec ghasum verify -cache .cache/ redundant/
+! exec ghasum verify -offline -cache .cache/ redundant/
 stdout '1 problem\(s\) occurred during validation:'
 stdout 'redundant checksum for "actions/reusable@v2"'
 ! stdout 'Ok'
 ! stderr .
 
 # Checksum redundant - Transitive
-! exec ghasum verify -cache .cache/ -no-transitive redundant/
+! exec ghasum verify -offline -cache .cache/ -no-transitive redundant/
 stdout '2 problem\(s\) occurred during validation:'
 stdout 'redundant checksum for "actions/reusable@v2"'
 stdout 'redundant checksum for "actions/setup-go@v5"'
