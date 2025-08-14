@@ -1,36 +1,36 @@
 # Checksums match exactly - Repo
 exec ghasum verify -offline -cache .cache/ up-to-date/
-stdout 'Ok'
+stdout 'Ok \(verified 7 actions\)'
 ! stderr .
 
 # Checksums match exactly - Workflow
 exec ghasum verify -offline -cache .cache/ up-to-date/.github/workflows/workflow.yml
-stdout 'Ok'
+stdout 'Ok \(verified 7 actions\)'
 ! stderr .
 
 # Checksums match exactly - Job
 exec ghasum verify -offline -cache .cache/ up-to-date/.github/workflows/workflow.yml:example-1
-stdout 'Ok'
+stdout 'Ok \(verified 5 actions\)'
 ! stderr .
 
 # Redundant checksum stored - Workflow
 exec ghasum verify -offline -cache .cache/ redundant/.github/workflows/workflow.yml
-stdout 'Ok'
+stdout 'Ok \(verified 6 actions\)'
 ! stderr .
 
 # Redundant checksum stored - Job
 exec ghasum verify -offline -cache .cache/ redundant/.github/workflows/workflow.yml:example-1
-stdout 'Ok'
+stdout 'Ok \(verified 4 actions\)'
 ! stderr .
 
 # Checksums match partially - Workflow
 exec ghasum verify -offline -cache .cache/ partial/.github/workflows/valid.yml
-stdout 'Ok'
+stdout 'Ok \(verified 1 action\)'
 ! stderr .
 
 # Checksums match partially - Job
 exec ghasum verify -offline -cache .cache/ partial/.github/workflows/invalid.yml:valid
-stdout 'Ok'
+stdout 'Ok \(verified 1 action\)'
 ! stderr .
 
 # Checksums match partially - Sanity check
