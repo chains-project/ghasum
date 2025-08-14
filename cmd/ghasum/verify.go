@@ -97,23 +97,32 @@ func cmdVerify(argv []string) error {
 		Transitive: !(*flagNoTransitive),
 	}
 
-	problems, err := ghasum.Verify(&cfg)
+	report, err := ghasum.Verify(&cfg)
 	if err != nil {
 		return errors.Join(errUnexpected, err)
 	}
 
-	if cnt := len(problems); cnt > 0 {
+	if cnt := len(report.Problems); cnt > 0 {
 		var sb strings.Builder
+
 		sb.WriteString(fmt.Sprintf("%d problem(s) occurred during validation:\n", cnt))
-		for _, problem := range problems {
+		for _, problem := range report.Problems {
 			sb.WriteString(fmt.Sprintf("  %s\n", problem))
 		}
 
 		return errors.Join(errFailure, errors.New(sb.String()))
 	}
 
-	fmt.Println("Ok")
+	reportVerify(&report)
 	return nil
+}
+
+func reportVerify(report *ghasum.VerifyReport) {
+	if report.Total == 1 {
+		fmt.Println("Ok (verified 1 action)")
+	} else {
+		fmt.Printf("Ok (verified %d actions)\n", report.Total)
+	}
 }
 
 func helpVerify() string {
