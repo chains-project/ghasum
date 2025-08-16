@@ -19,6 +19,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/chains-project/ghasum/internal/cache"
 	"github.com/chains-project/ghasum/internal/ghasum"
@@ -72,12 +73,35 @@ func cmdUpdate(argv []string) error {
 		Transitive: !(*flagNoTransitive),
 	}
 
-	if err := ghasum.Update(&cfg, *flagForce); err != nil {
+	report, err := ghasum.Update(&cfg, *flagForce)
+	if err != nil {
 		return errors.Join(errUnexpected, err)
 	}
 
-	fmt.Println("Ok")
+	reportUpdate(&report)
 	return nil
+}
+
+func reportUpdate(report *ghasum.UpdateReport) {
+	var changes []string
+	if report.Added > 0 {
+		changes = append(changes, fmt.Sprintf("%d added", report.Added))
+	}
+	if report.Overridden > 0 {
+		changes = append(changes, fmt.Sprintf("%d overridden", report.Overridden))
+	}
+	if report.Removed > 0 {
+		changes = append(changes, fmt.Sprintf("%d removed", report.Removed))
+	}
+	if report.Updated > 0 {
+		changes = append(changes, fmt.Sprintf("%d updated", report.Updated))
+	}
+
+	if len(changes) == 0 {
+		fmt.Println("Ok (nothing changed)")
+	} else {
+		fmt.Printf("Ok (%s)\n", strings.Join(changes, ", "))
+	}
 }
 
 func helpUpdate() string {

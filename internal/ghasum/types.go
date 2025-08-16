@@ -14,6 +14,24 @@
 
 package ghasum
 
+// UpdateReport is a report produced by [Update].
+type UpdateReport struct {
+	// The number of checksums that were added.
+	Added uint
+
+	// The number of checksums that were not changed
+	Kept uint
+
+	// the number of checksums that were override (forced updates).
+	Overridden uint
+
+	// The number of checksums that were removed.
+	Removed uint
+
+	// The number of checksums that were updated.
+	Updated uint
+}
+
 // VerifyReport is a report produced by [Verify].
 type VerifyReport struct {
 	// The list of problems that occurred during verification.

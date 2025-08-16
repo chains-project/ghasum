@@ -2,15 +2,23 @@
 cmp unchanged/.github/workflows/gha.sum .want/gha.sum
 
 exec ghasum update -cache .cache/ unchanged/
-stdout 'Ok'
+stdout 'Ok \(nothing changed\)'
 ! stderr .
 cmp unchanged/.github/workflows/gha.sum .want/gha.sum
+
+# Additions necessary
+! cmp changed/.github/workflows/gha.sum .want/gha.sum
+
+exec ghasum update -cache .cache/ missing/
+stdout 'Ok \(3 added\)'
+! stderr .
+cmp missing/.github/workflows/gha.sum .want/gha.sum
 
 # Update necessary
 ! cmp changed/.github/workflows/gha.sum .want/gha.sum
 
 exec ghasum update -cache .cache/ changed/
-stdout 'Ok'
+stdout 'Ok \(4 updated\)'
 ! stderr .
 cmp changed/.github/workflows/gha.sum .want/gha.sum
 
@@ -18,7 +26,7 @@ cmp changed/.github/workflows/gha.sum .want/gha.sum
 ! cmp remove/.github/workflows/gha.sum .want/gha.sum
 
 exec ghasum update -cache .cache/ remove/
-stdout 'Ok'
+stdout 'Ok \(4 removed\)'
 ! stderr .
 cmp remove/.github/workflows/gha.sum .want/gha.sum
 
@@ -26,15 +34,23 @@ cmp remove/.github/workflows/gha.sum .want/gha.sum
 ! cmp preserve/.github/workflows/gha.sum .want/gha-preserve.sum
 
 exec ghasum update -cache .cache/ preserve/
-stdout 'Ok'
+stdout 'Ok \(1 updated\)'
 ! stderr .
 cmp preserve/.github/workflows/gha.sum .want/gha-preserve.sum
+
+# Complex update
+! cmp complex/.github/workflows/gha.sum .want/gha.sum
+
+exec ghasum update -cache .cache/ complex/
+stdout 'Ok \(1 added, 1 removed, 1 updated\)'
+! stderr .
+cmp complex/.github/workflows/gha.sum .want/gha.sum
 
 # Remove transitive
 cmp changed/.github/workflows/gha.sum .want/gha.sum
 
 exec ghasum update -cache .cache/ -no-transitive changed/
-stdout 'Ok'
+stdout 'Ok \(2 removed\)'
 ! stderr .
 cmp changed/.github/workflows/gha.sum .want/gha-no-transitive.sum
 
@@ -80,12 +96,83 @@ version 1
 
 actions/checkout@main JHipZi1UCvybC3fwi9RFLTK8vpI/gURTga/ColyHI4k=
 actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
-actions/reusable@v1 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
+actions/reusable@v1 beehxIBvWfNSzMdxFIFz7TN7evNWgHXE1NtnCIzp+Qc=
 actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
 actions/setup-java@v4.7.0 240JvB7Dubp+edN0SvskXBdKdZ86Ql1cxXz9c78L9PI=
 actions/setup-node@v4.3.0 95uwSqDyUuR/AjEP6GwURLEvoyCfPVG72zlrkAMmtw8=
 golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
 -- changed/.github/workflows/workflow.yml --
+name: Example workflow
+on: [push]
+
+jobs:
+  example-1:
+    name: example
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4.1.1
+    - name: Install Go
+      uses: actions/setup-go@v5.0.0
+      with:
+        go-version-file: go.mod
+    - name: golangci-lint
+      uses: golangci/golangci-lint-action@3a91952
+    - name: This step uses transitive actions
+      uses: actions/composite@v1
+    - name: This step uses a local action
+      uses: ./.github/actions/hello-world-action
+    - name: This step uses a Docker Hub action
+      uses: docker://alpine:3.8
+    - name: This step does not use an action
+      run: Echo 'hello world!'
+  example-2:
+    uses: actions/reusable/.github/workflows/workflow.yml@v2
+-- complex/.github/workflows/gha.sum --
+version 1
+
+actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/redundant@v4.3.0 this-one-should-be-removed
+actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
+actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
+actions/setup-java@v4.7.0 240JvB7Dubp+edN0SvskXBdKdZ86Ql1cxXz9c78L9PI=
+actions/setup-node@v4.4.0 Gdoys4h+gIN02lzrWZW0uxjBQ8Rk5YSE6+q1SOrw/+o=
+golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
+-- complex/.github/workflows/workflow.yml --
+name: Example workflow
+on: [push]
+
+jobs:
+  example-1:
+    name: example
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4.1.1
+    - name: Install Go
+      uses: actions/setup-go@v5.0.0
+      with:
+        go-version-file: go.mod
+    - name: golangci-lint
+      uses: golangci/golangci-lint-action@3a91952
+    - name: This step uses transitive actions
+      uses: actions/composite@v1
+    - name: This step uses a local action
+      uses: ./.github/actions/hello-world-action
+    - name: This step uses a Docker Hub action
+      uses: docker://alpine:3.8
+    - name: This step does not use an action
+      run: Echo 'hello world!'
+  example-2:
+    uses: actions/reusable/.github/workflows/workflow.yml@v2
+-- missing/.github/workflows/gha.sum --
+version 1
+
+actions/checkout@v4.1.1 TTVf+dWEJueFyMoZnvuqlW5lX4aXYXxGWaFaV8lO910=
+actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
+golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
+-- missing/.github/workflows/workflow.yml --
 name: Example workflow
 on: [push]
 
@@ -118,6 +205,7 @@ version 1
 actions/checkout@main this-one-should-be-removed
 actions/checkout@v4.1.1 TTVf+dWEJueFyMoZnvuqlW5lX4aXYXxGWaFaV8lO910=
 actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/redundant@v4.3.0 this-one-should-be-removed
 actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
 actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
 actions/setup-java@v4.7.0 this-one-should-be-removed

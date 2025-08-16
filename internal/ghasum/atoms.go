@@ -108,6 +108,55 @@ func compare(got, want []sumfile.Entry, reportRedundant bool) []Problem {
 	return cmp(toMap(got), toMap(want))
 }
 
+func diff(before, after []sumfile.Entry) (uint, uint, uint, uint, uint) {
+	old := make(map[int]sumfile.Entry, len(before))
+	for i, entry := range before {
+		old[i] = entry
+	}
+
+	new := make(map[int]sumfile.Entry, len(after))
+	for i, entry := range after {
+		new[i] = entry
+	}
+
+	var kept, overridden uint
+	for i, nEntry := range new {
+		for j, oEntry := range old {
+			if slices.Equal(nEntry.ID, oEntry.ID) {
+				if nEntry.Checksum == oEntry.Checksum {
+					kept += 1
+				} else {
+					overridden += 1
+				}
+
+				delete(new, i)
+				delete(old, j)
+				break
+			}
+		}
+	}
+
+	var updated uint
+	for i, nEntry := range new {
+		for j, oEntry := range old {
+			if slices.Equal(nEntry.ID[:1], oEntry.ID[:1]) {
+				if nEntry.Checksum != oEntry.Checksum {
+					updated += 1
+					delete(new, i)
+					delete(old, j)
+				}
+
+				break
+			}
+		}
+	}
+
+	added := uint(len(new))
+	removed := uint(len(old))
+
+	return added, kept, overridden, removed, updated
+}
+
 func find(cfg *Config) (tree, error) {
 	var (
 		actions []gha.GitHubAction
