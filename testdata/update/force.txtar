@@ -1,48 +1,48 @@
 # Error in entries
 exec ghasum update -cache .cache/ -force entries/
-stdout 'Ok'
+stdout 'Ok \(1 added\)'
 ! stderr .
 cmp entries/.github/workflows/gha.sum .want/gha.sum
 
 # Duplicate entries
 exec ghasum update -cache .cache/ -force duplicate/
-stdout 'Ok'
+stdout 'Ok \(1 added\)'
 ! stderr .
 cmp duplicate/.github/workflows/gha.sum .want/gha.sum
 
 # Error in headers
 exec ghasum update -cache .cache/ -force headers/
-stdout 'Ok'
+stdout 'Ok \(1 added\)'
 ! stderr .
 cmp headers/.github/workflows/gha.sum .want/gha.sum
 
 # Error in version
 exec ghasum update -cache .cache/ -force nan-version/
-stdout 'Ok'
+stdout 'Ok \(1 added\)'
 ! stderr .
 cmp nan-version/.github/workflows/gha.sum .want/gha.sum
 
 # Invalid version
 exec ghasum update -cache .cache/ -force invalid-version/
-stdout 'Ok'
+stdout 'Ok \(1 added\)'
 ! stderr .
 cmp invalid-version/.github/workflows/gha.sum .want/gha.sum
 
 # Missing version
 exec ghasum update -cache .cache/ -force no-version/
-stdout 'Ok'
+stdout 'Ok \(1 added\)'
 ! stderr .
 cmp no-version/.github/workflows/gha.sum .want/gha.sum
 
 # Invalid existing sum
 exec ghasum update -cache .cache/ -force invalid-sum/
-stdout 'Ok'
+stdout 'Ok \(1 overridden\)'
 ! stderr .
 cmp invalid-sum/.github/workflows/gha.sum .want/gha.sum
 
 # Invalid existing transitive sum
 exec ghasum update -cache .cache/ -force transitive/
-stdout 'Ok'
+stdout 'Ok \(2 overridden\)'
 ! stderr .
 cmp transitive/.github/workflows/gha.sum .want/gha-transitive.sum
 
