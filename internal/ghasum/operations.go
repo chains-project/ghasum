@@ -112,10 +112,12 @@ func Initialize(cfg *Config) error {
 
 // Update will update the ghasum checksums for the repository specified in the
 // given configuration.
-func Update(cfg *Config, force bool) error {
+func Update(cfg *Config, force bool) (UpdateReport, error) {
+	var report UpdateReport
+
 	file, err := open(cfg.Path)
 	if err != nil {
-		return err
+		return report, err
 	}
 
 	defer func() {
@@ -125,14 +127,14 @@ func Update(cfg *Config, force bool) error {
 
 	raw, err := io.ReadAll(file)
 	if err != nil {
-		return errors.Join(ErrSumfileRead, err)
+		return report, errors.Join(ErrSumfileRead, err)
 	}
 
 	version, err := version(raw)
 	oldChecksums, _ := decode(raw)
 	if err != nil {
 		if !force {
-			return errors.Join(ErrSumfileRead, err)
+			return report, errors.Join(ErrSumfileRead, err)
 		}
 
 		if errors.Is(err, sumfile.ErrHeaders) || errors.Is(err, sumfile.ErrVersion) {
@@ -142,12 +144,12 @@ func Update(cfg *Config, force bool) error {
 
 	actions, err := find(cfg)
 	if err != nil {
-		return err
+		return report, err
 	}
 
 	checksums, err := compute(cfg, actions, checksum.BestAlgo)
 	if err != nil {
-		return err
+		return report, err
 	}
 
 	if !force {
@@ -163,22 +165,29 @@ func Update(cfg *Config, force bool) error {
 
 	encoded, err := encode(version, checksums)
 	if err != nil {
-		return err
+		return report, err
 	}
 
 	if err := clear(file); err != nil {
-		return err
+		return report, err
 	}
 
 	if err := write(file, encoded); err != nil {
-		return err
+		return report, err
 	}
 
 	if err := unlock(cfg.Path); err != nil {
-		return err
+		return report, err
 	}
 
-	return nil
+	a, k, o, r, u := diff(oldChecksums, checksums)
+	report.Added = a
+	report.Kept = k
+	report.Overridden = o
+	report.Removed = r
+	report.Updated = u
+
+	return report, nil
 }
 
 // Verify will compare the stored ghasum checksums against recomputed checksums
