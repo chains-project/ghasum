@@ -46,13 +46,16 @@ func cmdCache(argv []string) error {
 		return errors.Join(errUnexpected, err)
 	}
 
-	msg := "Ok"
+	var msg string
 	command := args[0]
 	switch command {
 	case "clear":
 		err = c.Clear()
+		msg = "Ok"
 	case "evict":
-		err = c.Evict()
+		var cnt uint
+		cnt, err = c.Evict()
+		msg = fmt.Sprintf("Ok (%d evicted)", cnt)
 	case "path":
 		msg = c.Path()
 	default:

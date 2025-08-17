@@ -10,6 +10,18 @@ stdout 'Ok'
 ! stderr .
 ! exists .does-not-exist/
 
+# Evict - cache directory exists
+exec ghasum cache -cache .cache/ evict
+stdout 'Ok \(0 evicted\)'
+! stderr .
+! exists .cache/
+
+# Evict - cache directory does not exist
+exec ghasum cache -cache .does-not-exist/ evict
+stdout 'Ok \(0 evicted\)'
+! stderr .
+! exists .does-not-exist/
+
 # Path - no path specified
 exec ghasum cache path
 ! stdout 'Ok'

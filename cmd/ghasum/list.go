@@ -55,7 +55,7 @@ func cmdList(argv []string) error {
 	}
 
 	if !*flagNoEvict {
-		if err = c.Evict(); err != nil {
+		if _, err = c.Evict(); err != nil {
 			return errors.Join(errCache, err)
 		}
 	}
