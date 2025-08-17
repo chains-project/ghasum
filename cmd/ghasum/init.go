@@ -75,7 +75,11 @@ func cmdInit(argv []string) error {
 		return errors.Join(errUnexpected, err)
 	}
 
-	fmt.Println("Ok")
+	fmt.Println(`Ok
+
+Next:
+1. Track .github/workflows/gha.sum with git.
+2. Integrate ghasum into the project's workflows.`)
 	return nil
 }
 
