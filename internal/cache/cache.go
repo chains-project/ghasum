@@ -51,8 +51,10 @@ func (c *Cache) Clear() error {
 }
 
 // Evict removes old entries from the cache.
-func (c *Cache) Evict() error {
+func (c *Cache) Evict() (uint, error) {
 	deadline := time.Now().AddDate(0, 0, -5)
+
+	var count uint
 	walk := func(path string, entry fs.DirEntry, _ error) error {
 		depth := strings.Count(path, string(os.PathSeparator))
 		if depth < 2 {
@@ -65,6 +67,7 @@ func (c *Cache) Evict() error {
 		}
 
 		if info.ModTime().Before(deadline) {
+			count += 1
 			_ = os.RemoveAll(filepath.Join(c.path, path))
 			return fs.SkipDir
 		}
@@ -74,16 +77,16 @@ func (c *Cache) Evict() error {
 
 	fsys, err := os.OpenRoot(c.path)
 	if errors.Is(err, fs.ErrNotExist) {
-		return nil
+		return 0, nil
 	} else if err != nil {
-		return fmt.Errorf("could not open cache directory: %v", err)
+		return 0, fmt.Errorf("could not open cache directory: %v", err)
 	}
 
 	if err := fs.WalkDir(fsys.FS(), ".", walk); err != nil {
-		return fmt.Errorf("cache eviction failed: %v", err)
+		return 0, fmt.Errorf("cache eviction failed: %v", err)
 	}
 
-	return nil
+	return count, nil
 }
 
 // Init sets up the cache (if necessary).
