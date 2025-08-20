@@ -594,6 +594,19 @@ recommended to use commit SHAs instead to avoid failing verification by ghasum.
 - uses: actions/checkout@main
 ```
 
+## Benefits
+
+- Pins transitive (composite) GitHub Actions.
+- Prevents using actions that have changed since you started using them. Avoids
+  the impact of supply chain attacks such as [CVE-2025-30066] (`tj-actions`).
+- Prevents using [impostor commits].
+- Reveals your GitHub Actions dependency hierarchy with `ghasum list`, even
+  without integrating `ghasum`.
+- Protects against git commit SHA hash collisions (more details below).
+
+[impostor commits]: https://www.chainguard.dev/unchained/what-the-fork-imposter-commits-in-github-actions-and-ci-cd
+[CVE-2025-30066]: https://github.com/advisories/GHSA-mrrh-fwg8-r2c3
+
 ## Limitations
 
 - Requires manual intervention when an Action is updated.
