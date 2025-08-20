@@ -49,15 +49,13 @@ func cmdList(argv []string) error {
 		return err
 	}
 
-	c, err := cache.New(*flagCache, *flagNoCache)
+	c, err := cache.New(
+		cache.WithLocation(*flagCache),
+		cache.WithEviction(!*flagNoEvict),
+		cache.WithEphemeralCache(*flagNoCache),
+	)
 	if err != nil {
 		return errors.Join(errCache, err)
-	}
-
-	if !*flagNoEvict {
-		if _, err = c.Evict(); err != nil {
-			return errors.Join(errCache, err)
-		}
 	}
 
 	repo, err := os.OpenRoot(target)
