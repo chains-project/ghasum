@@ -184,6 +184,8 @@ func find(cfg *Config) (tree, error) {
 
 	for i := 0; i < len(actions); i++ {
 		action := actions[i]
+		parent := parents[i]
+
 		actionDir, err := clone(cfg, &action)
 		if err != nil {
 			return root, err
@@ -213,7 +215,7 @@ func find(cfg *Config) (tree, error) {
 			}
 		}
 
-		parents[i].add(&subtree)
+		parent.add(&subtree)
 	}
 
 	return root, nil

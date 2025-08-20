@@ -41,7 +41,10 @@ func cmdCache(argv []string) error {
 		return errors.New("only one command can be run at the time")
 	}
 
-	c, err := cache.New(*flagCache, false)
+	c, err := cache.New(
+		cache.WithLocation(*flagCache),
+		cache.WithEviction(false),
+	)
 	if err != nil {
 		return errors.Join(errUnexpected, err)
 	}

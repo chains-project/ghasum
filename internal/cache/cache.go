@@ -30,18 +30,21 @@ type Cache struct {
 	path string
 
 	// Ephemeral marks the cache as such, locating it in the system's temporary
-	// directory and
+	// directory.
 	ephemeral bool
 }
 
-// Cleanup removes the cache if it is ephemeral, ignoring errors.
+// Cleanup the cache if it is ephemeral, removing it.
+//
+// Any errors are silently ignored under the assumption that the temporary
+// directory will be cleaned automatically.
 func (c *Cache) Cleanup() {
 	if c.ephemeral {
 		_ = c.Clear()
 	}
 }
 
-// Clear removes the contents of the cache.
+// Clear the contents of the cache, removing everything.
 func (c *Cache) Clear() error {
 	if err := os.RemoveAll(c.path); err != nil {
 		return fmt.Errorf("could not clear %q: %v", c.path, err)
@@ -50,7 +53,7 @@ func (c *Cache) Clear() error {
 	return nil
 }
 
-// Evict removes old entries from the cache.
+// Evict old entries from the cache, removing them.
 func (c *Cache) Evict() (uint, error) {
 	deadline := time.Now().AddDate(0, 0, -5)
 
@@ -89,7 +92,7 @@ func (c *Cache) Evict() (uint, error) {
 	return count, nil
 }
 
-// Init sets up the cache (if necessary).
+// Init the cache.
 func (c *Cache) Init() error {
 	if c.ephemeral {
 		location, err := os.MkdirTemp(os.TempDir(), "ghasum-clone-*")
@@ -119,21 +122,30 @@ func (c *Cache) Path() string {
 //
 // If ephemeral is set the cache will be located in a unique directory in the
 // system's temporary directory (and the given location is ignored).
-func New(location string, ephemeral bool) (Cache, error) {
+func New(options ...Option) (Cache, error) {
+	opts := defaultOpts
+	for _, option := range options {
+		opts = option(opts)
+	}
+
 	var c Cache
-
-	if ephemeral {
+	switch {
+	case opts.Ephemeral:
 		c.ephemeral = true
-	} else {
-		if location == "" {
-			home, err := os.UserHomeDir()
-			if err != nil {
-				return c, fmt.Errorf("could not get user home directory: %v", err)
-			}
+	case opts.Location == "":
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return c, fmt.Errorf("could not get home directory: %v", err)
+		}
 
-			c.path = filepath.Join(home, ".ghasum")
-		} else {
-			c.path = location
+		c.path = filepath.Join(home, ".ghasum")
+	default:
+		c.path = opts.Location
+	}
+
+	if opts.Evict {
+		if _, err := c.Evict(); err != nil {
+			return c, err
 		}
 	}
 
