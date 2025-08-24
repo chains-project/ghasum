@@ -198,19 +198,9 @@ func Update(cfg *Config, force bool) (UpdateReport, error) {
 func Verify(cfg *Config) (VerifyReport, error) {
 	var report VerifyReport
 
-	file, err := open(cfg.Path)
+	raw, err := read(cfg.Repo)
 	if err != nil {
 		return report, err
-	}
-
-	defer func() {
-		_ = unlock(cfg.Path)
-		_ = file.Close()
-	}()
-
-	raw, err := io.ReadAll(file)
-	if err != nil {
-		return report, errors.Join(ErrSumfileRead, err)
 	}
 
 	stored, err := decode(raw)
@@ -231,10 +221,6 @@ func Verify(cfg *Config) (VerifyReport, error) {
 	reportRedundant := cfg.Workflow == "" && cfg.Job == ""
 	report.Problems = compare(fresh, stored, reportRedundant)
 	report.Total = len(fresh)
-
-	if err := unlock(cfg.Path); err != nil {
-		return report, err
-	}
 
 	return report, nil
 }

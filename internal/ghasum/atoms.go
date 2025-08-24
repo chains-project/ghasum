@@ -17,6 +17,7 @@ package ghasum
 import (
 	"errors"
 	"fmt"
+	"io"
 	"io/fs"
 	"maps"
 	"os"
@@ -342,6 +343,26 @@ func open(base string) (*os.File, error) {
 	}
 
 	return file, nil
+}
+
+func read(fsys fs.FS) ([]byte, error) {
+	file, err := fsys.Open(ghasumPath)
+	if errors.Is(err, fs.ErrNotExist) {
+		return nil, ErrNotInitialized
+	} else if err != nil {
+		return nil, errors.Join(ErrSumfileOpen, err)
+	}
+
+	defer func() {
+		_ = file.Close()
+	}()
+
+	raw, err := io.ReadAll(file)
+	if err != nil {
+		return nil, errors.Join(ErrSumfileRead, err)
+	}
+
+	return raw, nil
 }
 
 func remove(base string) error {
