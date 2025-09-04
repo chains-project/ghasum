@@ -15,24 +15,24 @@ jobs:
       contents: write # To push a commit
     steps:
     - name: Create automation token
-      uses: actions/create-github-app-token@v2.1.0
+      uses: actions/create-github-app-token@0f859bf9e69e887678d5bbfbee594437cb440ffe # v2.1.0
       id: automation-token
       with:
         app-id: ${{ secrets.AUTOMATION_APP_ID }}
         private-key: ${{ secrets.AUTOMATION_APP_KEY }}
     - name: Checkout repository
-      uses: actions/checkout@v5.0.0
+      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       with:
         token: ${{ steps.automation-token.outputs.token }}
     - name: Install Go
-      uses: actions/setup-go@v5.5.0
+      uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
       with:
         go-version-file: go.mod
     # NOTE: skip "Verify action checksums" because they might not be up-to-date
     - name: Update gha.sum
       run: go run ./cmd/ghasum update -force
     - name: Commit gha.sum
-      uses: stefanzweifel/git-auto-commit-action@v6.0.0
+      uses: stefanzweifel/git-auto-commit-action@3cc016cfc892e0844046da36fc68da4e525e081f # v6.0.0
       with:
         commit_message: Update ghasum checksums
         file_pattern: .github/workflows/gha.sum

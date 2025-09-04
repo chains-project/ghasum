@@ -14,11 +14,11 @@ jobs:
       contents: write # To create a GitHub Release
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v5.0.0
+      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       with:
         persist-credentials: false
     - name: Install Go
-      uses: actions/setup-go@v5.5.0
+      uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
       with:
         go-version-file: go.mod
     - name: Verify action checksums
@@ -35,7 +35,7 @@ jobs:
     - name: Compile
       run: go run tasks.go build-all
     - name: Create GitHub release
-      uses: ncipollo/release-action@v1.18.0
+      uses: ncipollo/release-action@bcfe5470707e8832e12347755757cec0eb3c22af # v1.18.0
       with:
         tag: ${{ steps.version.outputs.value }}
         name: Release ${{ steps.version.outputs.value }}
