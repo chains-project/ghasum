@@ -35,9 +35,10 @@ jobs:
     - name: Compile
       run: go run tasks.go build-all
     - name: Create GitHub release
-      uses: ncipollo/release-action@bcfe5470707e8832e12347755757cec0eb3c22af # v1.18.0
+      uses: ncipollo/release-action@b7eabc95ff50cbeeedec83973935c8f306dfcd0b # v1.20.0
       with:
         tag: ${{ steps.version.outputs.value }}
         name: Release ${{ steps.version.outputs.value }}
         body: ${{ steps.version.outputs.value }}
         artifacts: ./_compiled/*
+        immutableCreate: true
