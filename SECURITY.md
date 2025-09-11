@@ -15,6 +15,17 @@ repository.
 
 Only the latest release of the project is supported with security updates.
 
+### Threat Model
+
+The program considers the Go runtime and CLI arguments to be trusted. The
+content of the target repository are assumed to be correct but are otherwise
+untrusted. All other input and external content is considered untrusted. Any
+violation of availability, confidentiality, or integrity is considered an issue.
+
+The project considers project maintainers and the GitHub infrastructure to be
+trusted. Any action performed by any other GitHub user against the repository is
+considered untrusted.
+
 ## Reporting a Vulnerability
 
 To report a security issue in the latest release or development head, either:
