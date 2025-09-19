@@ -7,7 +7,7 @@ require (
 	github.com/liamg/memoryfs v1.6.0
 	github.com/rogpeppe/go-internal v1.14.1
 	golang.org/x/mod v0.28.0
-	gopkg.in/yaml.v2 v2.4.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -101,7 +101,7 @@ require (
 	google.golang.org/protobuf v1.36.3 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	honnef.co/go/tools v0.6.0 // indirect
 	mvdan.cc/unparam v0.0.0-20250211232406-0e51248738fc // indirect
 )
