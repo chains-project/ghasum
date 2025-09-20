@@ -68,6 +68,7 @@ func parseUses(uses string) (GitHubAction, error) {
 	// uses values that don't fit the [GitHubAction] model
 	switch {
 	case strings.HasPrefix(uses, "./"):
+		a.Path = uses
 		return a, ErrLocalAction
 	case strings.HasPrefix(uses, "docker://"):
 		return a, ErrDockerUses

@@ -1,7 +1,8 @@
 # Checksum mismatch - Repo
 ! exec ghasum verify -offline -cache .cache/ mismatch/
-stdout '3 problem\(s\) occurred during validation:'
+stdout '4 problem\(s\) occurred during validation:'
 stdout 'checksum mismatch for "actions/checkout@v4"'
+stdout 'checksum mismatch for "actions/github-script@v8"'
 stdout 'checksum mismatch for "actions/setup-go@v5"'
 stdout 'checksum mismatch for "actions/setup-java@v4"'
 ! stdout 'Ok'
@@ -9,8 +10,9 @@ stdout 'checksum mismatch for "actions/setup-java@v4"'
 
 # Checksum mismatch - Workflow
 ! exec ghasum verify -offline -cache .cache/ mismatch/.github/workflows/workflow.yml
-stdout '3 problem\(s\) occurred during validation:'
+stdout '4 problem\(s\) occurred during validation:'
 stdout 'checksum mismatch for "actions/checkout@v4"'
+stdout 'checksum mismatch for "actions/github-script@v8"'
 stdout 'checksum mismatch for "actions/setup-go@v5"'
 stdout 'checksum mismatch for "actions/setup-java@v4"'
 ! stdout 'Ok'
@@ -21,6 +23,13 @@ stdout 'checksum mismatch for "actions/setup-java@v4"'
 stdout '2 problem\(s\) occurred during validation:'
 stdout 'checksum mismatch for "actions/checkout@v4"'
 stdout 'checksum mismatch for "actions/setup-go@v5"'
+! stdout 'Ok'
+! stderr .
+
+# Checksum mismatch - Local action
+! exec ghasum verify -offline -cache .cache/ mismatch/.github/workflows/workflow.yml:local-action
+stdout '1 problem\(s\) occurred during validation:'
+stdout 'checksum mismatch for "actions/github-script@v8"'
 ! stdout 'Ok'
 ! stderr .
 
@@ -40,7 +49,8 @@ stdout 'checksum mismatch for "actions/setup-java@v4"'
 
 # Checksum missing - Repo
 ! exec ghasum verify -offline -cache .cache/ missing/
-stdout '2 problem\(s\) occurred during validation:'
+stdout '3 problem\(s\) occurred during validation:'
+stdout 'no checksum found for "actions/github-script@v8"'
 stdout 'no checksum found for "actions/setup-go@v5"'
 stdout 'no checksum found for "actions/setup-java@v4"'
 ! stdout 'Ok'
@@ -48,7 +58,8 @@ stdout 'no checksum found for "actions/setup-java@v4"'
 
 # Checksum missing - Workflow
 ! exec ghasum verify -offline -cache .cache/ missing/.github/workflows/workflow.yml
-stdout '2 problem\(s\) occurred during validation:'
+stdout '3 problem\(s\) occurred during validation:'
+stdout 'no checksum found for "actions/github-script@v8"'
 stdout 'no checksum found for "actions/setup-go@v5"'
 stdout 'no checksum found for "actions/setup-java@v4"'
 ! stdout 'Ok'
@@ -58,6 +69,13 @@ stdout 'no checksum found for "actions/setup-java@v4"'
 ! exec ghasum verify -offline -cache .cache/ missing/.github/workflows/workflow.yml:example
 stdout '1 problem\(s\) occurred during validation:'
 stdout 'no checksum found for "actions/setup-go@v5"'
+! stdout 'Ok'
+! stderr .
+
+# Checksum missing - Local action
+! exec ghasum verify -offline -cache .cache/ missing/.github/workflows/workflow.yml:local-action
+stdout '1 problem\(s\) occurred during validation:'
+stdout 'no checksum found for "actions/github-script@v8"'
 ! stdout 'Ok'
 ! stderr .
 
@@ -90,14 +108,26 @@ stdout 'redundant checksum for "actions/setup-go@v5"'
 ! stdout 'Ok'
 ! stderr .
 
+-- mismatch/.github/actions/hello-world-action/action.yml --
+name: Hello world action
+description: Says 'Hello world!'
+
+runs:
+  using: composite
+  steps:
+  - name: Say hello world
+    uses: actions/github-script@v8
+    with:
+      script: console.log("Hello world!");
 -- mismatch/.github/workflows/gha.sum --
 version 1
 
-actions/checkout@v4 oJp2lqI5zRjHTtu2vQ9/rfcqiYqRAnhqMjwnw/ss4x0=
+actions/checkout@v4 this-is-intentionally-incorrect
 actions/composite@v1 VHsmCNCNfU2qFyTntn14sMoZL1UOOyne/omuQUvzQfA=
+actions/github-script@v8 this-is-intentionally-incorrect
 actions/reusable@v2 /PcY8RI/utekzCyLUiLOEeL3FpJ96/FJVRbb5LBLmkU=
-actions/setup-go@v5 this-is-intentionally-invalid
-actions/setup-java@v4 this-is-intentionally-invalid
+actions/setup-go@v5 this-is-intentionally-incorrect
+actions/setup-java@v4 this-is-intentionally-incorrect
 -- mismatch/.github/workflows/workflow.yml --
 name: Example workflow
 on: [push]
@@ -115,14 +145,32 @@ jobs:
         go-version-file: go.mod
     - name: This step does not use an action
       run: Echo 'hello world!'
+  local-action:
+    name: example local action
+    runs-on: ubuntu-24.04
+    steps:
+    - name: This step uses a local action
+      uses: ./.github/actions/hello-world-action
   transitive-manifest:
-    name: example
+    name: example transitive action
     runs-on: ubuntu-24.04
     steps:
     - name: This step uses transitive actions
       uses: actions/composite@v1
   transitive-reusable-workflow:
+    name: example transitive reusable workflow
     uses: actions/reusable/.github/workflows/workflow.yml@v2
+-- missing/.github/actions/hello-world-action/action.yml --
+name: Hello world action
+description: Says 'Hello world!'
+
+runs:
+  using: composite
+  steps:
+  - name: Say hello world
+    uses: actions/github-script@v8
+    with:
+      script: console.log("Hello world!");
 -- missing/.github/workflows/gha.sum --
 version 1
 
@@ -146,13 +194,20 @@ jobs:
         go-version-file: go.mod
     - name: This step does not use an action
       run: Echo 'hello world!'
+  local-action:
+    name: example local action
+    runs-on: ubuntu-24.04
+    steps:
+    - name: This step uses a local action
+      uses: ./.github/actions/hello-world-action
   transitive-manifest:
-    name: example
+    name: example transitive action
     runs-on: ubuntu-24.04
     steps:
     - name: This step uses transitive actions
       uses: actions/composite@v1
   transitive-reusable-workflow:
+    name: example transitive reusable workflow
     uses: actions/reusable/.github/workflows/workflow.yml@v2
 -- redundant/.github/workflows/gha.sum --
 version 1
@@ -183,6 +238,8 @@ name: actions/composite@v1
 runs:
   steps:
   - uses: actions/setup-go@v5
+-- .cache/actions/github-script/v8/action.yml --
+name: actions/github-script@v8
 -- .cache/actions/reusable/v2/.github/workflows/workflow.yml --
 name: Example reusable workflow
 on: [workflow_dispatch]

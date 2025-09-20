@@ -1,26 +1,26 @@
 # Checksums match exactly - Repo
 exec ghasum verify -offline -cache .cache/ up-to-date/
-stdout 'Ok \(verified 7 actions\)'
+stdout 'Ok \(verified 8 actions\)'
 ! stderr .
 
 # Checksums match exactly - Workflow
 exec ghasum verify -offline -cache .cache/ up-to-date/.github/workflows/workflow.yml
-stdout 'Ok \(verified 7 actions\)'
+stdout 'Ok \(verified 8 actions\)'
 ! stderr .
 
 # Checksums match exactly - Job
 exec ghasum verify -offline -cache .cache/ up-to-date/.github/workflows/workflow.yml:example-1
-stdout 'Ok \(verified 5 actions\)'
+stdout 'Ok \(verified 6 actions\)'
 ! stderr .
 
 # Redundant checksum stored - Workflow
 exec ghasum verify -offline -cache .cache/ redundant/.github/workflows/workflow.yml
-stdout 'Ok \(verified 6 actions\)'
+stdout 'Ok \(verified 7 actions\)'
 ! stderr .
 
 # Redundant checksum stored - Job
 exec ghasum verify -offline -cache .cache/ redundant/.github/workflows/workflow.yml:example-1
-stdout 'Ok \(verified 4 actions\)'
+stdout 'Ok \(verified 5 actions\)'
 ! stderr .
 
 # Checksums match partially - Workflow
@@ -38,11 +38,23 @@ stdout 'Ok \(verified 1 action\)'
 ! exec ghasum verify -offline -cache .cache/ partial/.github/workflows/invalid.yml
 ! exec ghasum verify -offline -cache .cache/ partial/.github/workflows/invalid.yml:invalid
 
+-- up-to-date/.github/actions/hello-world-action/action.yml --
+name: Hello world action
+description: Says 'Hello world!'
+
+runs:
+  using: composite
+  steps:
+  - name: Say hello world
+    uses: actions/github-script@v8.0.0
+    with:
+      script: console.log("Hello world!");
 -- up-to-date/.github/workflows/gha.sum --
 version 1
 
 actions/checkout@main JHipZi1UCvybC3fwi9RFLTK8vpI/gURTga/ColyHI4k=
 actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/github-script@v8.0.0 dogzpuS7aUONFkCn/ICEFTALznP9/Gi8A3rCCqTXDVk=
 actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
 actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
 actions/setup-java@v4.7.1 ZcPr3aVvmk2yL8zkjqDUpH+YLqGwjtenFrjEk3OEZ3k=
@@ -75,11 +87,23 @@ jobs:
       run: Echo 'hello world!'
   example-2:
     uses: actions/reusable/.github/workflows/workflow.yml@v2
+-- redundant/.github/actions/hello-world-action/action.yml --
+name: Hello world action
+description: Says 'Hello world!'
+
+runs:
+  using: composite
+  steps:
+  - name: Say hello world
+    uses: actions/github-script@v8.0.0
+    with:
+      script: console.log("Hello world!");
 -- redundant/.github/workflows/gha.sum --
 version 1
 
 actions/checkout@main JHipZi1UCvybC3fwi9RFLTK8vpI/gURTga/ColyHI4k=
 actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/github-script@v8.0.0 dogzpuS7aUONFkCn/ICEFTALznP9/Gi8A3rCCqTXDVk=
 actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
 actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
 actions/setup-java@v4.7.1 ZcPr3aVvmk2yL8zkjqDUpH+YLqGwjtenFrjEk3OEZ3k=
@@ -110,6 +134,17 @@ jobs:
       run: Echo 'hello world!'
   example-2:
     uses: actions/reusable/.github/workflows/workflow.yml@v2
+-- partial/.github/actions/hello-world-action/action.yml --
+name: Hello world action
+description: Says 'Hello world!'
+
+runs:
+  using: composite
+  steps:
+  - name: Say hello world
+    uses: actions/github-script@v8.0.0
+    with:
+      script: console.log("Hello world!");
 -- partial/.github/workflows/gha.sum --
 version 1
 
@@ -165,6 +200,8 @@ runs:
     uses: actions/setup-go@v5.0.0
   - name: Unique transitive dependency
     uses: actions/setup-node@v4.4.0
+-- .cache/actions/github-script/v8.0.0/action.yml --
+name: actions/github-script@v8.0.0
 -- .cache/actions/reusable/v2/.github/workflows/workflow.yml --
 name: Example reusable workflow
 on: [workflow_dispatch]

@@ -44,14 +44,21 @@ stderr 'an unexpected error occurred'
 stderr 'could not parse workflow'
 stderr '.github/workflows/workflow.yml'
 
-# Invalid manifest
+# Invalid action manifest
 ! exec ghasum verify -cache .cache/ invalid-manifest/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'could not parse manifest'
 stderr 'action manifest parsing failed for actions/composite@v1'
 
-# Invalid reusable manifest
+# Invalid local action manifest
+! exec ghasum init -cache .cache/ invalid-local-manifest/
+! stdout 'Ok'
+stderr 'an unexpected error occurred'
+stderr 'could not parse manifest'
+stderr 'action manifest parsing failed for //./.github/actions/hello-world-action'
+
+# Invalid reusable workflow
 ! exec ghasum verify -cache .cache/ invalid-reusable-workflow/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
@@ -64,6 +71,28 @@ stderr 'reusable workflow parsing failed for actions/reusable/.github/workflows/
 stderr 'an unexpected error occurred'
 stderr 'no such file or directory'
 
+-- invalid-local-manifest/.github/actions/hello-world-action/action.yml --
+name: Hello world action
+description: Says 'Hello world!'
+
+runs:
+  using: composite
+  steps:
+- name: Say hello world
+  uses: actions/github-script@v8.0.0
+  with:
+    script: console.log("Hello world!");
+-- invalid-local-manifest/.github/workflows/workflow.yml --
+name: Example workflow
+on: [push]
+
+jobs:
+  example:
+    name: example
+    runs-on: ubuntu-24.04
+    steps:
+    - name: This step uses a local action
+      uses: ./.github/actions/hello-world-action
 -- invalid-manifest/.github/workflows/gha.sum --
 version 1
 
