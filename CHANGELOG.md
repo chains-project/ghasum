@@ -12,6 +12,16 @@ Versioning].
 
 ## [Unreleased]
 
+### Bugs
+
+- Cover the actions and workflows used in local actions and reusable workflows.
+
+### Security
+
+- Upgrade Go to `v1.25.0`.
+
+## [v0.6.0] - 2025-08-17
+
 ### Enhancements
 
 - Add the `ghasum list` subcommand to get a nested list of GitHub Actions

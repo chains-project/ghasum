@@ -63,6 +63,14 @@ const (
 	// Dockerfile.
 	LocalAction
 
+	// LocalReusableWorkflow represent a GitHub Actions component local to the
+	// parent project that is a "reusable workflow".
+	//
+	// A local reusable workflow is a workflow in the parent repository with the
+	// appropriate workflow trigger. These are used in the `uses:` value of
+	// workflow jobs.
+	LocalReusableWorkflow
+
 	// ReusableWorkflow represent a GitHub Actions component that is a "reusable
 	// workflow".
 	//
@@ -187,7 +195,7 @@ func (k ActionKind) String() string {
 	switch k {
 	case Action, LocalAction:
 		return "action"
-	case ReusableWorkflow:
+	case ReusableWorkflow, LocalReusableWorkflow:
 		return "reusable workflow"
 	default:
 		panic("unknown action kind " + string(k))
@@ -195,5 +203,5 @@ func (k ActionKind) String() string {
 }
 
 func (k ActionKind) IsLocal() bool {
-	return k == LocalAction
+	return k == LocalAction || k == LocalReusableWorkflow
 }

@@ -371,7 +371,7 @@ func TestActionsInWorkflows(t *testing.T) {
 						},
 					},
 				},
-				want: 0,
+				want: 1,
 			},
 			"job with external reusable workflow": {
 				in: []workflow{
