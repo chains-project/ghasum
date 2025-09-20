@@ -22,6 +22,7 @@ import (
 	"maps"
 	"path"
 	"slices"
+	"strings"
 )
 
 type workflowFile struct {
@@ -50,13 +51,15 @@ func actionsInWorkflows(workflows []workflow) ([]GitHubAction, error) {
 
 			if job.Uses != "" {
 				action, err := parseUses(job.Uses)
-				if errors.Is(err, ErrLocalAction) {
-					continue
-				} else if err != nil {
+				switch {
+				case err == nil:
+					action.Kind = ReusableWorkflow
+				case errors.Is(err, ErrLocalAction):
+					action.Kind = LocalReusableWorkflow
+				default:
 					return nil, err
 				}
 
-				action.Kind = ReusableWorkflow
 				unique[actionId(action)] = action
 			}
 		}
@@ -134,7 +137,7 @@ func workflowsInRepo(repo fs.FS) ([]workflowFile, error) {
 }
 
 func workflowInRepo(repo fs.FS, path string) ([]byte, error) {
-	file, err := repo.Open(path)
+	file, err := repo.Open(strings.TrimPrefix(path, "./"))
 	if err != nil {
 		return nil, fmt.Errorf("could not open workflow at %q: %v", path, err)
 	}

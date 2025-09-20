@@ -216,7 +216,7 @@ func find(cfg *Config) (tree, error) {
 				if err != nil {
 					return root, fmt.Errorf("action manifest parsing failed for %s: %v", action, err)
 				}
-			case gha.ReusableWorkflow:
+			case gha.ReusableWorkflow, gha.LocalReusableWorkflow:
 				transitive, err = gha.WorkflowActions(repo.FS(), action.Path)
 				if err != nil {
 					return root, fmt.Errorf("reusable workflow parsing failed for %s: %v", action, err)

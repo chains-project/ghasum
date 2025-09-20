@@ -1,20 +1,22 @@
 # Checksum mismatch - Repo
 ! exec ghasum verify -offline -cache .cache/ mismatch/
-stdout '4 problem\(s\) occurred during validation:'
+stdout '5 problem\(s\) occurred during validation:'
 stdout 'checksum mismatch for "actions/checkout@v4"'
 stdout 'checksum mismatch for "actions/github-script@v8"'
 stdout 'checksum mismatch for "actions/setup-go@v5"'
 stdout 'checksum mismatch for "actions/setup-java@v4"'
+stdout 'checksum mismatch for "actions/setup-python@v6"'
 ! stdout 'Ok'
 ! stderr .
 
 # Checksum mismatch - Workflow
 ! exec ghasum verify -offline -cache .cache/ mismatch/.github/workflows/workflow.yml
-stdout '4 problem\(s\) occurred during validation:'
+stdout '5 problem\(s\) occurred during validation:'
 stdout 'checksum mismatch for "actions/checkout@v4"'
 stdout 'checksum mismatch for "actions/github-script@v8"'
 stdout 'checksum mismatch for "actions/setup-go@v5"'
 stdout 'checksum mismatch for "actions/setup-java@v4"'
+stdout 'checksum mismatch for "actions/setup-python@v6"'
 ! stdout 'Ok'
 ! stderr .
 
@@ -30,6 +32,13 @@ stdout 'checksum mismatch for "actions/setup-go@v5"'
 ! exec ghasum verify -offline -cache .cache/ mismatch/.github/workflows/workflow.yml:local-action
 stdout '1 problem\(s\) occurred during validation:'
 stdout 'checksum mismatch for "actions/github-script@v8"'
+! stdout 'Ok'
+! stderr .
+
+# Checksum mismatch - Local reusable workflow
+! exec ghasum verify -offline -cache .cache/ mismatch/.github/workflows/workflow.yml:local-reusable-workflow
+stdout '1 problem\(s\) occurred during validation:'
+stdout 'checksum mismatch for "actions/setup-python@v6"'
 ! stdout 'Ok'
 ! stderr .
 
@@ -49,19 +58,21 @@ stdout 'checksum mismatch for "actions/setup-java@v4"'
 
 # Checksum missing - Repo
 ! exec ghasum verify -offline -cache .cache/ missing/
-stdout '3 problem\(s\) occurred during validation:'
+stdout '4 problem\(s\) occurred during validation:'
 stdout 'no checksum found for "actions/github-script@v8"'
 stdout 'no checksum found for "actions/setup-go@v5"'
 stdout 'no checksum found for "actions/setup-java@v4"'
+stdout 'no checksum found for "actions/setup-python@v6"'
 ! stdout 'Ok'
 ! stderr .
 
 # Checksum missing - Workflow
 ! exec ghasum verify -offline -cache .cache/ missing/.github/workflows/workflow.yml
-stdout '3 problem\(s\) occurred during validation:'
+stdout '4 problem\(s\) occurred during validation:'
 stdout 'no checksum found for "actions/github-script@v8"'
 stdout 'no checksum found for "actions/setup-go@v5"'
 stdout 'no checksum found for "actions/setup-java@v4"'
+stdout 'no checksum found for "actions/setup-python@v6"'
 ! stdout 'Ok'
 ! stderr .
 
@@ -76,6 +87,13 @@ stdout 'no checksum found for "actions/setup-go@v5"'
 ! exec ghasum verify -offline -cache .cache/ missing/.github/workflows/workflow.yml:local-action
 stdout '1 problem\(s\) occurred during validation:'
 stdout 'no checksum found for "actions/github-script@v8"'
+! stdout 'Ok'
+! stderr .
+
+# Checksum missing - Local reusable workflow
+! exec ghasum verify -offline -cache .cache/ missing/.github/workflows/workflow.yml:local-reusable-workflow
+stdout '1 problem\(s\) occurred during validation:'
+stdout 'no checksum found for "actions/setup-python@v6"'
 ! stdout 'Ok'
 ! stderr .
 
@@ -128,6 +146,18 @@ actions/github-script@v8 this-is-intentionally-incorrect
 actions/reusable@v2 /PcY8RI/utekzCyLUiLOEeL3FpJ96/FJVRbb5LBLmkU=
 actions/setup-go@v5 this-is-intentionally-incorrect
 actions/setup-java@v4 this-is-intentionally-incorrect
+actions/setup-python@v6 this-is-intentionally-incorrect
+-- mismatch/.github/workflows/reusable.yml --
+name: Reusable workflow
+on: [workflow_call]
+
+jobs:
+  example:
+    name: example
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Install Python
+      uses: actions/setup-python@v6
 -- mismatch/.github/workflows/workflow.yml --
 name: Example workflow
 on: [push]
@@ -151,6 +181,9 @@ jobs:
     steps:
     - name: This step uses a local action
       uses: ./.github/actions/hello-world-action
+  local-reusable-workflow:
+    name: example local reusable workflow
+    uses: ./.github/workflows/reusable.yml
   transitive-manifest:
     name: example transitive action
     runs-on: ubuntu-24.04
@@ -177,6 +210,17 @@ version 1
 actions/checkout@v4 +34igsJdK09ZFEkVNQ+ZoyZnIlg48X3bm4ZaGGlX5o8=
 actions/composite@v1 VHsmCNCNfU2qFyTntn14sMoZL1UOOyne/omuQUvzQfA=
 actions/reusable@v2 /PcY8RI/utekzCyLUiLOEeL3FpJ96/FJVRbb5LBLmkU=
+-- missing/.github/workflows/reusable.yml --
+name: Reusable workflow
+on: [workflow_call]
+
+jobs:
+  example:
+    name: example
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Install Python
+      uses: actions/setup-python@v6
 -- missing/.github/workflows/workflow.yml --
 name: Example workflow
 on: [push]
@@ -200,6 +244,9 @@ jobs:
     steps:
     - name: This step uses a local action
       uses: ./.github/actions/hello-world-action
+  local-reusable-workflow:
+    name: example local reusable workflow
+    uses: ./.github/workflows/reusable.yml
   transitive-manifest:
     name: example transitive action
     runs-on: ubuntu-24.04
@@ -254,3 +301,5 @@ jobs:
 name: actions/setup-go@v5
 -- .cache/actions/setup-java/v4/action.yml --
 name: actions/setup-java@v4
+-- .cache/actions/setup-python/v6/action.yml --
+name: actions/setup-python@v6

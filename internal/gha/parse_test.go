@@ -79,6 +79,7 @@ func TestParseUses(t *testing.T) {
 				want: GitHubAction{
 					Owner:   "foo",
 					Project: "bar",
+					Path:    "baz",
 					Ref:     "v2",
 				},
 			},
@@ -110,8 +111,16 @@ func TestParseUses(t *testing.T) {
 					t.Errorf("Incorrect project (got %q, want %q)", got, want)
 				}
 
+				if got, want := got.Path, tt.want.Path; got != want {
+					t.Errorf("Incorrect path (got %q, want %q)", got, want)
+				}
+
 				if got, want := got.Ref, tt.want.Ref; got != want {
 					t.Errorf("Incorrect ref (got %q, want %q)", got, want)
+				}
+
+				if got, want := got.Kind, tt.want.Kind; got != want {
+					t.Errorf("Incorrect kind (got %q, want %q)", got, want)
 				}
 			})
 		}
