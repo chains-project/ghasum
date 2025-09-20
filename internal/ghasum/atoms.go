@@ -187,18 +187,31 @@ func find(cfg *Config) (tree, error) {
 		action := actions[i]
 		parent := parents[i]
 
-		actionDir, err := clone(cfg, &action)
-		if err != nil {
-			return root, err
+		project := &action
+		if action.Kind.IsLocal() {
+			project = parent.value
 		}
 
-		subtree := tree{value: &action}
-		if cfg.Transitive {
-			repo, _ := os.OpenRoot(actionDir)
+		dir := cfg.Path
+		if project != nil {
+			dir, err = clone(cfg, project)
+			if err != nil {
+				return root, err
+			}
+		}
+
+		current := parent
+		if !action.Kind.IsLocal() {
+			current = &tree{value: &action}
+			parent.add(current)
+		}
+
+		if cfg.Transitive || action.Kind.IsLocal() {
+			repo, _ := os.OpenRoot(dir)
 
 			var transitive []gha.GitHubAction
 			switch action.Kind {
-			case gha.Action:
+			case gha.Action, gha.LocalAction:
 				transitive, err = gha.ManifestActions(repo.FS(), action.Path)
 				if err != nil {
 					return root, fmt.Errorf("action manifest parsing failed for %s: %v", action, err)
@@ -212,11 +225,9 @@ func find(cfg *Config) (tree, error) {
 
 			for _, action := range transitive {
 				actions = append(actions, action)
-				parents = append(parents, &subtree)
+				parents = append(parents, current)
 			}
 		}
-
-		parent.add(&subtree)
 	}
 
 	return root, nil

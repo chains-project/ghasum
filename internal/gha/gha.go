@@ -55,6 +55,14 @@ const (
 	// in the `uses:` value of steps.
 	Action
 
+	// LocalAction represent a GitHub Action component local to the parent
+	// project that is an "action".
+	//
+	// A local action is a path that is part of the parent repository that has
+	// an Action manifest, i.e. a file named either action.yml, action.yaml, or
+	// Dockerfile.
+	LocalAction
+
 	// ReusableWorkflow represent a GitHub Actions component that is a "reusable
 	// workflow".
 	//
@@ -177,11 +185,15 @@ func (a GitHubAction) String() string {
 
 func (k ActionKind) String() string {
 	switch k {
-	case Action:
+	case Action, LocalAction:
 		return "action"
 	case ReusableWorkflow:
 		return "reusable workflow"
 	default:
 		panic("unknown action kind " + string(k))
 	}
+}
+
+func (k ActionKind) IsLocal() bool {
+	return k == LocalAction
 }

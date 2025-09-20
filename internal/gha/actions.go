@@ -73,13 +73,17 @@ func actionsInSteps(steps []step, m map[string]GitHubAction) error {
 		}
 
 		action, err := parseUses(uses)
-		if errors.Is(err, ErrLocalAction) || errors.Is(err, ErrDockerUses) {
+		switch {
+		case err == nil:
+			action.Kind = Action
+		case errors.Is(err, ErrLocalAction):
+			action.Kind = LocalAction
+		case errors.Is(err, ErrDockerUses):
 			continue
-		} else if err != nil {
+		default:
 			return err
 		}
 
-		action.Kind = Action
 		m[actionId(action)] = action
 	}
 

@@ -12,6 +12,17 @@ stdout 'Ok'
 ! stderr .
 cmp target/.github/workflows/gha.sum .want/gha-no-transitive.sum
 
+-- target/.github/actions/hello-world-action/action.yml --
+name: Hello world action
+description: Says 'Hello world!'
+
+runs:
+  using: composite
+  steps:
+  - name: Say hello world
+    uses: actions/github-script@v8.0.0
+    with:
+      script: console.log("Hello world!");
 -- target/.github/workflows/workflow.yml --
 name: Example workflow
 on: [push]
@@ -49,6 +60,8 @@ runs:
     uses: actions/setup-go@v5.0.0
   - name: Unique transitive dependency
     uses: actions/setup-node@v4.4.0
+-- .cache/actions/github-script/v8.0.0/action.yml --
+name: actions/github-script@v8.0.0
 -- .cache/actions/reusable/v2/.github/workflows/workflow.yml --
 name: Example reusable workflow
 on: [workflow_dispatch]
@@ -73,6 +86,7 @@ version 1
 
 actions/checkout@main JHipZi1UCvybC3fwi9RFLTK8vpI/gURTga/ColyHI4k=
 actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/github-script@v8.0.0 dogzpuS7aUONFkCn/ICEFTALznP9/Gi8A3rCCqTXDVk=
 actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
 actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
 actions/setup-java@v4.7.1 ZcPr3aVvmk2yL8zkjqDUpH+YLqGwjtenFrjEk3OEZ3k=
@@ -83,6 +97,7 @@ version 1
 
 actions/checkout@main JHipZi1UCvybC3fwi9RFLTK8vpI/gURTga/ColyHI4k=
 actions/composite@v1 a3ht0IImDEBC7NqbohfejBtv7W5GdKiGJgc4OtYkjEs=
+actions/github-script@v8.0.0 dogzpuS7aUONFkCn/ICEFTALznP9/Gi8A3rCCqTXDVk=
 actions/reusable@v2 zCF1tlA0Wi4rFqhOZMt4LgdAyga7EaZrs9VrawN0A4I=
 actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
 golangci/golangci-lint-action@3a91952 QSLF4HoACNFwCWf5OL/NVMGTNTxX+RHrO/NaFzE9zAk=
