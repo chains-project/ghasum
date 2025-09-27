@@ -57,6 +57,10 @@ have to create the local action and then use it in every job in every workflow.
        description: The checksum of the ghasum checksums file
        required: false
        default: 0d9ca91...     # Set the 'checksums-sha512.txt' file's checksum.
+     mode:
+       description: Whether to 'verify' checksums or just 'install' ghasum
+       required: false
+       default: verify
      version:
        description: The version of ghasum to use
        required: false
@@ -65,6 +69,15 @@ have to create the local action and then use it in every job in every workflow.
    runs:
      using: composite
      steps:
+       - name: Validate input 'mode'
+         if: inputs.mode != 'verify' && inputs.mode != 'install'
+         shell: bash
+         env:
+           MODE: ${{ inputs.mode }}
+         run: |
+           echo "mode must be 'verify' or 'install', got: $MODE"
+           exit 1
+
        # Unix
        - name: Initialize ghasum directory
          if: runner.os == 'macOS' || runner.os == 'Linux'
@@ -130,7 +143,7 @@ have to create the local action and then use it in every job in every workflow.
            shasum --check --ignore-missing checksums-sha512.txt
            tar -xf "$ARTIFACT"
        - name: Verify the action checksums
-         if: runner.os == 'macOS'
+         if: runner.os == 'macOS' && inputs.mode == 'verify'
          shell: bash
          env:
            JOB: ${{ github.job }}
@@ -163,7 +176,7 @@ have to create the local action and then use it in every job in every workflow.
            shasum --check --ignore-missing checksums-sha512.txt
            tar -xf "$ARTIFACT"
        - name: Verify the action checksums
-         if: runner.os == 'Linux'
+         if: runner.os == 'Linux' && inputs.mode == 'verify'
          shell: bash
          env:
            JOB: ${{ github.job }}
@@ -216,7 +229,7 @@ have to create the local action and then use it in every job in every workflow.
              }
            }
        - name: Verify the action checksums
-         if: runner.os == 'Windows'
+         if: runner.os == 'Windows' && inputs.mode == 'verify'
          shell: pwsh
          env:
            JOB: ${{ github.job }}
@@ -230,15 +243,15 @@ have to create the local action and then use it in every job in every workflow.
              C:\ghasum\ghasum.exe verify -cache D:\a\_actions -no-evict -offline "${WorkflowPath}:$env:JOB"
            }
 
-       # Cleanup
-       - name: Cleanup (Unix)
+       # Expose
+       - name: Expose ghasum binary
          if: runner.os == 'macOS' || runner.os == 'Linux'
          shell: bash
-         run: rm -rf /tmp/ghasum
-       - name: Cleanup (Windows)
+         run: echo '/tmp/ghasum' >>"$GITHUB_PATH"
+       - name: Expose ghasum.exe binary
          if: runner.os == 'Windows'
          shell: pwsh
-         run: Remove-Item -Recurse -Force -Path C:\ghasum
+         run: echo 'C:\ghasum' >>"$GITHUB_PATH"
    ```
 
    </details>
