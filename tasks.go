@@ -323,6 +323,7 @@ func TaskVet(t *T) error {
 	return t.Exec(
 		"go vet ./...",
 		"go run 4d63.com/gochecknoinits ./...",
+		"go run fillmore-labs.com/zerolint -level=full ./...",
 		"go run github.com/alexkohler/dogsled/cmd/dogsled -set_exit_status ./...",
 		"go run github.com/alexkohler/nakedret/v2/cmd/nakedret -l 0 ./...",
 		"go run github.com/alexkohler/prealloc -set_exit_status ./...",
@@ -338,6 +339,7 @@ func TaskVet(t *T) error {
 		"go run github.com/mdempsky/unconvert ./...",
 		"go run github.com/nishanths/exhaustive/cmd/exhaustive ./...",
 		"go run github.com/polyfloyd/go-errorlint -asserts ./...",
+		"go run github.com/rhysd/actionlint/cmd/actionlint -shellcheck ''",
 		"go run github.com/tomarrell/wrapcheck/v2/cmd/wrapcheck ./...",
 		"go run github.com/ultraware/whitespace/cmd/whitespace ./...",
 		"go run gitlab.com/bosi/decorder/cmd/decorder -disable-dec-num-check ./...",
