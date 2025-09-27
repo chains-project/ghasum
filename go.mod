@@ -13,6 +13,7 @@ require (
 require (
 	4d63.com/gochecknoinits v0.0.0-20210416043744-25bb07f6e4e3 // indirect
 	dario.cat/mergo v1.0.0 // indirect
+	fillmore-labs.com/zerolint v0.0.13 // indirect
 	github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c // indirect
 	github.com/KimMachineGun/automemlimit v0.7.0 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
@@ -21,6 +22,7 @@ require (
 	github.com/alexkohler/nakedret/v2 v2.0.5 // indirect
 	github.com/alexkohler/prealloc v1.0.0 // indirect
 	github.com/alexkohler/unimport v0.0.0-20171106223308-e6f2b2e2d406 // indirect
+	github.com/bmatcuk/doublestar/v4 v4.8.0 // indirect
 	github.com/butuzov/ireturn v0.3.1 // indirect
 	github.com/catenacyber/perfsprint v0.8.1 // indirect
 	github.com/cloudflare/circl v1.6.1 // indirect
@@ -54,8 +56,10 @@ require (
 	github.com/kisielk/errcheck v1.8.0 // indirect
 	github.com/kunwardeep/paralleltest v1.0.10 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
-	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/mattn/go-runewidth v0.0.16 // indirect
+	github.com/mattn/go-shellwords v1.0.12 // indirect
 	github.com/mdempsky/unconvert v0.0.0-20241127004111-db6ad295e1ce // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/nishanths/exhaustive v0.12.0 // indirect
@@ -67,7 +71,9 @@ require (
 	github.com/quasilyte/gogrep v0.5.0 // indirect
 	github.com/quasilyte/regex/syntax v0.0.0-20210819130434-b3f0c404a727 // indirect
 	github.com/quasilyte/stdinfo v0.0.0-20220114132959-f7386bf02567 // indirect
-	github.com/remyoudompheng/go-misc v0.0.0-20190427085024-2d6ac652a50e // indirect
+	github.com/rhysd/actionlint v1.7.7 // indirect
+	github.com/rivo/uniseg v0.4.7 // indirect
+	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
@@ -109,6 +115,7 @@ require (
 
 tool (
 	4d63.com/gochecknoinits
+	fillmore-labs.com/zerolint
 	github.com/alexkohler/dogsled/cmd/dogsled
 	github.com/alexkohler/nakedret/v2/cmd/nakedret
 	github.com/alexkohler/prealloc
@@ -125,7 +132,7 @@ tool (
 	github.com/mdempsky/unconvert
 	github.com/nishanths/exhaustive/cmd/exhaustive
 	github.com/polyfloyd/go-errorlint
-	github.com/remyoudompheng/go-misc/deadcode
+	github.com/rhysd/actionlint/cmd/actionlint
 	github.com/tetafro/godot/cmd/godot
 	github.com/tomarrell/wrapcheck/v2/cmd/wrapcheck
 	github.com/ultraware/whitespace/cmd/whitespace
