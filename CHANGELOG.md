@@ -12,6 +12,10 @@ Versioning].
 
 ## [Unreleased]
 
+- _No changes yet_
+
+## [v0.6.1] - 2025-09-20
+
 ### Bugs
 
 - Cover the actions and workflows used in local actions and reusable workflows.
