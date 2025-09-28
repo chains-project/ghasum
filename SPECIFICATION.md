@@ -27,6 +27,12 @@ will releases the lock on the file.
 If the process fails an attempt should be made to remove the created file (if
 removing fails the error is ignored).
 
+### `ghasum list`
+
+Regardless of the existence of the checksum file, the process will find all
+actions used by the target (see [Collecting Actions]) and report them in a
+hierarchical (i.e., showing transitive dependency relations) to the user.
+
 ### `ghasum update`
 
 If the checksum file does not exist the process shall exit immediately with an
@@ -44,9 +50,9 @@ repository (see [Collecting Actions]) using the same hashing algorithm as was
 used for the existing checksums. New actions also include new versions of a
 previously used actions. Additionally, it should remove any entry which is no
 longer in use. No existing checksum for a used action shall be updated. It shall
-then store them in a sumfile (see [Storing Checksums]) using the same sumfile
-version as before and releases the lock. In short, updating will only add new
-and remove old checksums from an existing sumfile.
+then store the updated set in the checksum file (see [Storing Checksums]) using
+the same sumfile version as before and releases the lock. In short, updating
+will only add new and remove old checksums from an existing sumfile.
 
 With the `-force` flag the process will ignore errors in the sumfile and fix
 those while updating. It will also update existing checksums that are incorrect.
@@ -62,11 +68,6 @@ This process does not verify any of the checksums currently in the sumfile.
 If the checksum file does not exist the process shall exit immediately with an
 error.
 
-If the checksum file exists the process shall obtain a lock on it, if this is
-not possible the process shall exit immediately. Otherwise the file could be
-changed during the verification process resulting in a potential mismatch
-between verification outcome and sumfile content.
-
 If the checksum file exists the process shall read and parse it fully. If this
 fails the process shall exit immediately. Else it shall recompute the checksums
 (see [Computing Checksums]) for all actions in the target (see [Collecting
@@ -74,7 +75,7 @@ Actions]) using the same hashing algorithm as was used for the stored checksums.
 It shall compare the computed checksums against the stored checksums.
 
 If any of the checksums does not match or is missing the process shall exit with
-a non-zero exit code, for usability all values should be compared (and all
+a non-zero exit code. For usability all values should be compared (and all
 mismatches reported) before exiting.
 
 The "target" can be one of a: a repository, a workflow, or a job. If the target
@@ -89,6 +90,9 @@ was not checked against an action used by the repository must be reported as
 redundant and cause the process to exit with a non-zero exit code. If the target
 is not a repository then redundant checksums must be ignored.
 
+The `-offline` flag can be used to verify strictly against the cache without
+fetching any missing repositories.
+
 ## Procedures
 
 ### Collecting Actions
@@ -98,48 +102,31 @@ entries in the target, both at the step- and job-level. For a repository this,
 covers all workflows in the workflows directory, otherwise it covers only the
 target.
 
-For each `uses:` value, excluding the list below, it is added to the set. If the
-`-no-transitive` option is set this constitutes the set of actions. Otherwise,
-transitive actions must be collected too.
+For each `uses:` value it is added to the set. Any Local action or workflow is
+not itself included but must be parsed for actions. If the `-no-transitive`
+option is set this constitutes the set of actions. Otherwise, transitive actions
+must be collected too, recursively.
 
-For step-level `uses:` values, the action manifest of the declared action is
-parsed for (transitive) actions. This concerns the manifest at the path declared
-in the `uses:` value. If multiple actions from the same repository are used,
-each action's manifest must be handled.
+To collect transitive actions for step-level `uses:` values, the action manifest
+of the declared action is parsed for (transitive) actions. This concerns the
+manifest at the path declared in the `uses:` value. If multiple actions from the
+same repository are used, each action's manifest must be handled.
 
-For job-level `uses:` values, the workflow of the declared reusable workflow is
-parsed for (transitive) actions. This concerns only the workflow at the path
-declared in the `uses:` value. If multiple reusable workflow from the same
-repository are used, each workflow must be handled.
+To collect transitive actions for job-level `uses:` values, the workflow of the
+declared reusable workflow is parsed for (transitive) actions. This concerns
+only the workflow at the path declared in the `uses:` value. If multiple
+reusable workflow from the same repository are used, each workflow must be
+handled.
 
-This process is repeated or each transitive `uses:` value.
+Docker Hub Actions, as seen in the example below, are exclueded from the set of
+actions the repository depends on (see [#216]).
 
-The following `uses:` values are to be excluded from the set of actions a
-repository depends on.
-
-- Actions in the same repository as the workflow ("local actions"). Example:
-
-  ```yaml
-  steps:
-  - uses: ./.github/actions/hello-world-action
-  ```
-
-- Reusable workflows in the same repository as the workflow. Example:
-
-  ```yaml
-  jobs:
-    example:
-      uses: ./.github/workflows/reusable.yml
-  ```
-
-- Docker Hub Actions ([#216]). Examples:
-
-  ```yaml
-  steps:
-  - uses: docker://alpine:3.8
-  - uses: docker://ghcr.io/OWNER/IMAGE_NAME
-  - uses: docker://gcr.io/cloud-builders/gradle
-  ```
+```yaml
+steps:
+- uses: docker://alpine:3.8
+- uses: docker://ghcr.io/OWNER/IMAGE_NAME
+- uses: docker://gcr.io/cloud-builders/gradle
+```
 
 [#216]: https://github.com/chains-project/ghasum/issues/216
 
@@ -156,9 +143,13 @@ For this process a local cache may be used. The cache will contain repositories
 to avoid having to fetch them again. The cache does not contain checksums, which
 will always be recomputed.
 
-The user is able to control the usage of the cache using the `-cache <dir>` and
-`-no-cache` flags. Additionally, the `ghasum cache` command can be used to
-manage the cache.
+The user is able to control the usage of the cache using the flags:
+
+- `-cache <dir>` for the location of the cache,
+- `-no-cache` to disable the cache for the current execution, and
+- `-no-evict` to disable eviction of cache entries.
+
+Additionally, the `ghasum cache` command can be used to manage the cache.
 
 ### Storing Checksums
 
