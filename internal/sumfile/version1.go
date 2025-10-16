@@ -80,11 +80,11 @@ func validV1(entries []Entry) error {
 	}
 
 	for _, entry := range entries {
-		if strings.ContainsAny(entry.Checksum, "\n ") {
+		if strings.ContainsAny(entry.Checksum, "\n\r ") {
 			return ErrSyntax
 		}
 
-		if strings.ContainsAny(strings.Join(entry.ID, ""), "\n @") {
+		if strings.ContainsAny(strings.Join(entry.ID, ""), "\n\r @") {
 			return ErrSyntax
 		}
 	}

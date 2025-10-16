@@ -12,7 +12,9 @@ Versioning].
 
 ## [Unreleased]
 
-- _No changes yet_
+### Enhancements
+
+- Reject checksum entries containing carriage return characters.
 
 ## [v0.6.1] - 2025-09-20
 

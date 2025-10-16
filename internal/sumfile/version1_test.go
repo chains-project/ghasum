@@ -266,6 +266,12 @@ b bb
 					Checksum: "Hello\nworld!",
 				},
 			},
+			"checksum with carriage return": {
+				{
+					ID:       []string{"anything"},
+					Checksum: "Hello\rworld!",
+				},
+			},
 			"checksum with space": {
 				{
 					ID:       []string{"anything"},
@@ -275,6 +281,12 @@ b bb
 			"ID part with newline": {
 				{
 					ID:       []string{"Hello\nworld!"},
+					Checksum: "anything",
+				},
+			},
+			"ID part with carriage return": {
+				{
+					ID:       []string{"Hello\rworld!"},
 					Checksum: "anything",
 				},
 			},
