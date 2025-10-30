@@ -16,6 +16,10 @@ Versioning].
 
 - Reject checksum entries containing carriage return characters.
 
+### Security
+
+- Upgrade Go to `v1.25.3`.
+
 ## [v0.6.1] - 2025-09-20
 
 ### Bugs
