@@ -619,22 +619,27 @@ recommended to use commit SHAs instead to avoid failing verification by ghasum.
   without integrating `ghasum`.
 - Protects against git commit SHA hash collisions (more details below).
 
+Some of these limitations are addressed by [immutable releases], however it is
+costly to verify the actions you use consistently use them and relies on GitHub
+enforcing rules rather than cryptography.
+
+[immutable releases]: https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/immutable-releases
 [impostor commits]: https://www.chainguard.dev/unchained/what-the-fork-imposter-commits-in-github-actions-and-ci-cd
 [CVE-2025-30066]: https://github.com/advisories/GHSA-mrrh-fwg8-r2c3
 
 ## Limitations
 
 - Requires manual intervention when an Action is updated.
-- The hashing algorithm used for checksums is not configurable.
-- `ghasum` does not (yet, [#216]) handle Docker-based [unpinnable actions].
+- The hashing algorithm used for checksums is not (yet, [#5]) configurable.
+- Docker-based [unpinnable actions] are not (yet, [#216]) supported.
 - Checksums do not provide protection against code-based [unpinnable actions].
+- Checksums cannot be enforced for the [pre] and [post] scripts of actions.
 
-Some of these limitations may be addressed by Github's Immutable Actions
-initiative, see [github/roadmap#592] for more information.
-
+[#5]: https://github.com/chains-project/ghasum/issues/5
 [#216]: https://github.com/chains-project/ghasum/issues/216
-[github/roadmap#592]: https://github.com/github/roadmap/issues/592
 [unpinnable actions]: https://www.paloaltonetworks.com/blog/prisma-cloud/unpinnable-actions-github-security/
+[pre]: https://docs.github.com/en/actions/reference/workflows-and-actions/metadata-syntax#runspre
+[post]: https://docs.github.com/en/actions/reference/workflows-and-actions/metadata-syntax#runspost
 
 ## Background
 
