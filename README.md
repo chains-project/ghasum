@@ -56,7 +56,8 @@ have to create the local action and then use it in every job in every workflow.
      checksum:
        description: The checksum of the ghasum checksums file
        required: false
-       default: 0d9ca91...     # Set the 'checksums-sha512.txt' file's checksum.
+       # TODO: Set the 'checksums-sha512.txt' file's checksum on the next line.
+       default: sha256:4e70619...
      mode:
        description: Whether to 'verify' checksums or just 'install' ghasum
        required: false
@@ -64,7 +65,8 @@ have to create the local action and then use it in every job in every workflow.
      version:
        description: The version of ghasum to use
        required: false
-       default: vX.Y.Z         # Set the ghasum version.
+       # TODO: Set the ghasum version on the next line.
+       default: vX.Y.Z
 
    runs:
      using: composite
@@ -94,7 +96,7 @@ have to create the local action and then use it in every job in every workflow.
          run: |
            ARTIFACT='checksums-sha512.txt'
            gh release download "$VERSION" --repo chains-project/ghasum --pattern "$ARTIFACT"
-           echo "$CHECKSUM  $ARTIFACT" | shasum -a 256 -c -
+           echo "${CHECKSUM#sha256:}  $ARTIFACT" | shasum -a 256 -c -
 
        # Windows
        - name: Initialize ghasum directory
@@ -112,7 +114,7 @@ have to create the local action and then use it in every job in every workflow.
          run: |
            $ARTIFACT = "checksums-sha512.txt"
            gh release download "$env:VERSION" --repo chains-project/ghasum --pattern "$ARTIFACT"
-           if ((Get-FileHash -Algorithm SHA256 "$ARTIFACT").Hash -ne "$env:CHECKSUM") {
+           if ((Get-FileHash -Algorithm SHA256 "$ARTIFACT").Hash -ne ($env:CHECKSUM -replace '^sha256:', '')) {
              Write-Error 'Checksum mismatch!'
              exit 1
            } else {
