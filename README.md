@@ -245,6 +245,25 @@ have to create the local action and then use it in every job in every workflow.
              C:\ghasum\ghasum.exe verify -cache D:\a\_actions -no-evict -offline "${WorkflowPath}:$env:JOB"
            }
 
+       # Invalidate actions
+       - name: Remove actions
+         if: failure() && runner.os == 'Linux'
+         shell: bash
+         run: rm -rf /home/runner/work/_actions
+       - name: Remove actions
+         if: failure() && runner.os == 'macOS'
+         shell: bash
+         run: rm -rf /Users/runner/work/_actions
+       - name: Remove actions
+         if: failure() && runner.os == 'Windows'
+         shell: pwsh
+         run: |
+           if (Test-Path -Path 'C:\a\_actions') {
+             Remove-Item -Recurse -Force -Path C:\a\_actions
+           } else {
+             Remove-Item -Recurse -Force -Path D:\a\_actions
+           }
+
        # Expose
        - name: Expose ghasum binary
          if: runner.os == 'macOS' || runner.os == 'Linux'
@@ -633,13 +652,12 @@ enforcing rules rather than cryptography.
 - The hashing algorithm used for checksums is not (yet, [#5]) configurable.
 - Docker-based [unpinnable actions] are not (yet, [#216]) supported.
 - Checksums do not provide protection against code-based [unpinnable actions].
-- Checksums cannot be enforced for the [pre] and [post] scripts of actions.
+- Checksums cannot be enforced for the [pre] scripts of actions.
 
 [#5]: https://github.com/chains-project/ghasum/issues/5
 [#216]: https://github.com/chains-project/ghasum/issues/216
 [unpinnable actions]: https://www.paloaltonetworks.com/blog/prisma-cloud/unpinnable-actions-github-security/
 [pre]: https://docs.github.com/en/actions/reference/workflows-and-actions/metadata-syntax#runspre
-[post]: https://docs.github.com/en/actions/reference/workflows-and-actions/metadata-syntax#runspost
 
 ## Background
 
