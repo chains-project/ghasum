@@ -1,4 +1,4 @@
-// Copyright 2024-2025 Eric Cornelissen
+// Copyright 2024-2026 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ func parseUses(uses string) (GitHubAction, error) {
 		return a, ErrInvalidUsesRepo
 	}
 
-	a.Owner = repo[:i]
+	a.Owner = strings.ToLower(repo[:i])
 	project := repo[i+1:]
 
 	// split "project" into "project"[/"path"]
@@ -101,6 +101,6 @@ func parseUses(uses string) (GitHubAction, error) {
 		project = project[:i]
 	}
 
-	a.Project = project
+	a.Project = strings.ToLower(project)
 	return a, nil
 }

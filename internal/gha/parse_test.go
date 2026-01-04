@@ -1,4 +1,4 @@
-// Copyright 2024-2025 Eric Cornelissen
+// Copyright 2024-2026 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -90,6 +90,42 @@ func TestParseUses(t *testing.T) {
 					Project: "another-repo",
 					Path:    ".github/workflows/workflow.yml",
 					Ref:     "v1",
+				},
+			},
+			"uppercase in owner": {
+				uses: "Foo/bar/baz@v42",
+				want: GitHubAction{
+					Owner:   "foo",
+					Project: "bar",
+					Path:    "baz",
+					Ref:     "v42",
+				},
+			},
+			"uppercase in project": {
+				uses: "foo/Bar/baz@v42",
+				want: GitHubAction{
+					Owner:   "foo",
+					Project: "bar",
+					Path:    "baz",
+					Ref:     "v42",
+				},
+			},
+			"uppercase in path": {
+				uses: "foo/bar/Baz@v42",
+				want: GitHubAction{
+					Owner:   "foo",
+					Project: "bar",
+					Path:    "Baz",
+					Ref:     "v42",
+				},
+			},
+			"uppercase in ref": {
+				uses: "foo/bar/baz@V42",
+				want: GitHubAction{
+					Owner:   "foo",
+					Project: "bar",
+					Path:    "baz",
+					Ref:     "V42",
 				},
 			},
 		}
@@ -237,7 +273,10 @@ func TestParseUses(t *testing.T) {
 				return false
 			}
 
-			return action.Owner == owner && action.Project == project && action.Ref == ref
+			return action.Owner == strings.ToLower(owner) &&
+				action.Project == strings.ToLower(project) &&
+				action.Path == path &&
+				action.Ref == ref
 		}
 
 		if err := quick.Check(constructive, nil); err != nil {
