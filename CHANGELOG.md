@@ -14,6 +14,7 @@ Versioning].
 
 ### Enhancements
 
+- Handle mixed case action identifiers.
 - Reject checksum entries containing carriage return characters.
 
 ### Security
