@@ -95,7 +95,7 @@ func TestParseUses(t *testing.T) {
 			"uppercase in owner": {
 				uses: "Foo/bar/baz@v42",
 				want: GitHubAction{
-					Owner:   "foo",
+					Owner:   "Foo",
 					Project: "bar",
 					Path:    "baz",
 					Ref:     "v42",
@@ -105,7 +105,7 @@ func TestParseUses(t *testing.T) {
 				uses: "foo/Bar/baz@v42",
 				want: GitHubAction{
 					Owner:   "foo",
-					Project: "bar",
+					Project: "Bar",
 					Path:    "baz",
 					Ref:     "v42",
 				},
@@ -273,8 +273,8 @@ func TestParseUses(t *testing.T) {
 				return false
 			}
 
-			return action.Owner == strings.ToLower(owner) &&
-				action.Project == strings.ToLower(project) &&
+			return action.Owner == owner &&
+				action.Project == project &&
 				action.Path == path &&
 				action.Ref == ref
 		}

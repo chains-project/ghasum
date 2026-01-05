@@ -87,16 +87,6 @@ jobs:
       run: Echo 'hello world!'
   example-2:
     uses: actions/reusable/.github/workflows/workflow.yml@v2
-  example-3:
-    name: example case insensitivity
-    runs-on: ubuntu-22.04
-    steps:
-    - name: Checkout repository
-      uses: Actions/checkout@main
-    - name: Install Go
-      uses: actions/Setup-Go@v5.0.0
-      with:
-        go-version-file: go.mod
 -- redundant/.github/actions/hello-world-action/action.yml --
 name: Hello world action
 description: Says 'Hello world!'

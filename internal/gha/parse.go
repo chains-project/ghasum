@@ -89,7 +89,7 @@ func parseUses(uses string) (GitHubAction, error) {
 		return a, ErrInvalidUsesRepo
 	}
 
-	a.Owner = strings.ToLower(repo[:i])
+	a.Owner = repo[:i]
 	project := repo[i+1:]
 
 	// split "project" into "project"[/"path"]
@@ -101,6 +101,6 @@ func parseUses(uses string) (GitHubAction, error) {
 		project = project[:i]
 	}
 
-	a.Project = strings.ToLower(project)
+	a.Project = project
 	return a, nil
 }

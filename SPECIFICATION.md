@@ -118,11 +118,9 @@ only the workflow at the path declared in the `uses:` value. If multiple
 reusable workflow from the same repository are used, each workflow must be
 handled.
 
-The resulting is a collection of Action identifiers, `<owner>/<project>@<ref>`,
-of which the `<owner>` and `<project>` are normalized to all lowercase (because
-GitHub Actions is case insensitive in these). That is, if a project uses
-`actions/checkout@v1.2.3` and `Actions/Checkout@v1.2.3` the collection will only
-contain `actions/checkout@v1.2.3`.
+The resulting is a collection of Action identifiers, `<owner>/<project>@<ref>`.
+While GitHub Actions is case-insensitive when resolving `<owner>/<project>`,
+these must NOT be normalized (as that would break on case sensitive OSes).
 
 Docker Hub Actions, as seen in the example below, are excluded from the set of
 actions the repository depends on (see [#216]).
