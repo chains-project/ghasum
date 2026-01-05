@@ -12,6 +12,12 @@ Versioning].
 
 ## [Unreleased]
 
+### Bug
+
+- Revert handling of mixed case action identifiers.
+
+## [v0.6.2] - 2026-01-04
+
 ### Enhancements
 
 - Handle mixed case action identifiers.
