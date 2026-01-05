@@ -132,8 +132,8 @@ github.com/mattn/go-runewidth v0.0.17 h1:78v8ZlW0bP43XfmAfPsdXcoNCelfMHsDmd/pkEN
 github.com/mattn/go-runewidth v0.0.17/go.mod h1:Jdepj2loyihRzMpdS35Xk/zdY8IAYHsh153qUoGf23w=
 github.com/mattn/go-shellwords v1.0.12 h1:M2zGm7EW6UQJvDeQxo4T51eKPurbeFbe8WtebGE2xrk=
 github.com/mattn/go-shellwords v1.0.12/go.mod h1:EZzvwXDESEeg03EKmM+RmDnNOPKG4lLtQsUlTZDWQ8Y=
-github.com/mdempsky/unconvert v0.0.0-20241127004111-db6ad295e1ce h1:LyNUhz6j2oP3kIr9cAayverPUfsz6BkaPouM4EzI44Q=
-github.com/mdempsky/unconvert v0.0.0-20241127004111-db6ad295e1ce/go.mod h1:DuAZxNOBRkxMjbchCclLZxb/18Qb46cU26hBsomVuow=
+github.com/mdempsky/unconvert v0.0.0-20250216222326-4a038b3d31f5 h1:KXBP3ozzczYKdX6aHLYRxr0RVkc4Zt2wZk2hZP5yTqc=
+github.com/mdempsky/unconvert v0.0.0-20250216222326-4a038b3d31f5/go.mod h1:mVCHGHs8r8jnrZ2ammcv8ySbhG2+rEPXegFmdNA51GI=
 github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
 github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
 github.com/nishanths/exhaustive v0.12.0 h1:vIY9sALmw6T/yxiASewa4TQcFsVYZQQRUQJhKRf3Swg=
