@@ -15,8 +15,8 @@ github.com/ProtonMail/go-crypto v1.1.6 h1:ZcV+Ropw6Qn0AX9brlQLAUXfqLBc7Bl+f/DmNx
 github.com/ProtonMail/go-crypto v1.1.6/go.mod h1:rA3QumHc/FZ8pAHreoekgiAbzpNsfQAosU5td4SnOrE=
 github.com/alexkohler/dogsled v0.0.0-20240329141207-62bc1f6ce2d0 h1:5ztCE6sZbygKfeNTcxt0XzIqY1j6+eSWJEhOIpW0DBc=
 github.com/alexkohler/dogsled v0.0.0-20240329141207-62bc1f6ce2d0/go.mod h1:JKZcwNsCuXMHGReMjwEWL8XLJjcgLm7dtLcBZMEZlDo=
-github.com/alexkohler/nakedret/v2 v2.0.5 h1:fP5qLgtwbx9EJE8dGEERT02YwS8En4r9nnZ71RK+EVU=
-github.com/alexkohler/nakedret/v2 v2.0.5/go.mod h1:bF5i0zF2Wo2o4X4USt9ntUWve6JbFv02Ff4vlkmS/VU=
+github.com/alexkohler/nakedret/v2 v2.0.6 h1:ME3Qef1/KIKr3kWX3nti3hhgNxw6aqN5pZmQiFSsuzQ=
+github.com/alexkohler/nakedret/v2 v2.0.6/go.mod h1:l3RKju/IzOMQHmsEvXwkqMDzHHvurNQfAgE1eVmT40Q=
 github.com/alexkohler/prealloc v1.0.0 h1:Hbq0/3fJPQhNkN0dR95AVrr6R7tou91y0uHG5pOcUuw=
 github.com/alexkohler/prealloc v1.0.0/go.mod h1:VetnK3dIgFBBKmg0YnD9F9x6Icjd+9cvfHR56wJVlKE=
 github.com/alexkohler/unimport v0.0.0-20171106223308-e6f2b2e2d406 h1:5qYQDJAjMgBsrql8MGR7d+XNx/r4zH0PWaTq04k9TIA=
