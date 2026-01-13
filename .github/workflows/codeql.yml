@@ -36,9 +36,9 @@ jobs:
         WORKFLOW=$(echo "$WORKFLOW" | cut -d '@' -f 1 | cut -d '/' -f 3-5)
         go run ./cmd/ghasum verify -cache /home/runner/work/_actions -no-evict -offline "$WORKFLOW:$JOB"
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@4e94bd11f71e507f7f87df81788dff88d1dacbfb # v4.31.0
+      uses: github/codeql-action/init@cdefb33c0f6224e58673d9004f47f7cb3e328b89 # v4.31.10
       with:
         config-file: ./.github/codeql.yml
         languages: ${{ matrix.what }}
     - name: Perform CodeQL analysis
-      uses: github/codeql-action/analyze@4e94bd11f71e507f7f87df81788dff88d1dacbfb # v4.31.0
+      uses: github/codeql-action/analyze@cdefb33c0f6224e58673d9004f47f7cb3e328b89 # v4.31.10
