@@ -112,6 +112,8 @@ func TestDecodeV1(t *testing.T) {
 
 		for name, tt := range testCases {
 			t.Run(name, func(t *testing.T) {
+				t.Parallel()
+
 				got, err := decodeV1(tt.content)
 				if err != nil {
 					t.Fatalf("Unexpected error: %+v", err)

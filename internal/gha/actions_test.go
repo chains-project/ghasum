@@ -136,6 +136,8 @@ func TestActionsInManifest(t *testing.T) {
 
 		for name, tt := range testCases {
 			t.Run(name, func(t *testing.T) {
+				t.Parallel()
+
 				if _, err := actionsInManifest(tt.manifest); err == nil {
 					t.Fatal("Unexpected success")
 				}
@@ -441,6 +443,8 @@ func TestActionsInWorkflows(t *testing.T) {
 
 		for name, tt := range testCases {
 			t.Run(name, func(t *testing.T) {
+				t.Parallel()
+
 				if _, err := actionsInWorkflows(tt.in); err == nil {
 					t.Fatal("Unexpected success")
 				}
