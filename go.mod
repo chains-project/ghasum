@@ -23,7 +23,7 @@ require (
 	github.com/alexkohler/prealloc v1.0.2 // indirect
 	github.com/alexkohler/unimport v0.0.0-20171106223308-e6f2b2e2d406 // indirect
 	github.com/bmatcuk/doublestar/v4 v4.9.1 // indirect
-	github.com/butuzov/ireturn v0.3.1 // indirect
+	github.com/butuzov/ireturn v0.4.0 // indirect
 	github.com/catenacyber/perfsprint v0.8.1 // indirect
 	github.com/cloudflare/circl v1.6.1 // indirect
 	github.com/cristalhq/acmd v0.12.0 // indirect
