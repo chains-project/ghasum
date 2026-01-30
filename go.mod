@@ -7,7 +7,7 @@ require (
 	github.com/liamg/memoryfs v1.6.0
 	github.com/rogpeppe/go-internal v1.14.1
 	go.yaml.in/yaml/v3 v3.0.4
-	golang.org/x/mod v0.31.0
+	golang.org/x/mod v0.32.0
 )
 
 require (
@@ -15,7 +15,7 @@ require (
 	dario.cat/mergo v1.0.0 // indirect
 	fillmore-labs.com/zerolint v0.0.14 // indirect
 	github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c // indirect
-	github.com/KimMachineGun/automemlimit v0.7.0 // indirect
+	github.com/KimMachineGun/automemlimit v0.7.5 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/ProtonMail/go-crypto v1.1.6 // indirect
 	github.com/alexkohler/dogsled v0.0.0-20240329141207-62bc1f6ce2d0 // indirect
@@ -28,7 +28,7 @@ require (
 	github.com/cloudflare/circl v1.6.1 // indirect
 	github.com/cristalhq/acmd v0.12.0 // indirect
 	github.com/cyphar/filepath-securejoin v0.4.1 // indirect
-	github.com/dkorunic/betteralign v0.6.5 // indirect
+	github.com/dkorunic/betteralign v0.8.3 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/fatih/color v1.18.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
@@ -47,7 +47,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
 	github.com/google/capslock v0.2.7 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/google/renameio/v2 v2.0.0 // indirect
+	github.com/google/renameio/v2 v2.0.2 // indirect
 	github.com/gordonklaus/ineffassign v0.1.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
@@ -93,15 +93,15 @@ require (
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.yaml.in/yaml/v4 v4.0.0-rc.3 // indirect
-	golang.org/x/crypto v0.45.0 // indirect
+	golang.org/x/crypto v0.46.0 // indirect
 	golang.org/x/exp v0.0.0-20240808152545-0cdaa3abc0fa // indirect
 	golang.org/x/exp/typeparams v0.0.0-20240213143201-ec583247a57a // indirect
-	golang.org/x/net v0.47.0 // indirect
+	golang.org/x/net v0.48.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
 	golang.org/x/sys v0.39.0 // indirect
-	golang.org/x/telemetry v0.0.0-20251111182119-bc8e575c7b54 // indirect
-	golang.org/x/text v0.31.0 // indirect
-	golang.org/x/tools v0.39.0 // indirect
+	golang.org/x/telemetry v0.0.0-20251203150158-8fff8a5912fc // indirect
+	golang.org/x/text v0.32.0 // indirect
+	golang.org/x/tools v0.40.0 // indirect
 	golang.org/x/tools/go/expect v0.1.1-deprecated // indirect
 	golang.org/x/tools/go/packages/packagestest v0.1.1-deprecated // indirect
 	golang.org/x/vuln v1.1.4 // indirect
