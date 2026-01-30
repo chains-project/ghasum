@@ -12,6 +12,12 @@ Versioning].
 
 ## [Unreleased]
 
+### Security
+
+- Upgrade Go to `v1.25.6`.
+
+## [v0.6.3] - 2026-01-07
+
 ### Bug
 
 - Revert handling of mixed case action identifiers.
