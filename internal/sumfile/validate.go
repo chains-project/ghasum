@@ -1,4 +1,4 @@
-// Copyright 2024 Eric Cornelissen
+// Copyright 2024-2026 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,10 @@
 // limitations under the License.
 
 package sumfile
+
+import (
+	"strings"
+)
 
 func hasMissing(entries []Entry) bool {
 	for _, entry := range entries {
@@ -33,11 +37,12 @@ func hasMissing(entries []Entry) bool {
 func hasDuplicates(entries []Entry) bool {
 	seen := make(map[string]any, 0)
 	for _, entry := range entries {
-		key := ""
+		var tmp strings.Builder
 		for _, part := range entry.ID {
-			key += part
+			tmp.WriteString(part)
 		}
 
+		key := tmp.String()
 		if _, ok := seen[key]; ok {
 			return true
 		}
