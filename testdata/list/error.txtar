@@ -32,6 +32,13 @@ stderr 'an unexpected error occurred'
 stderr 'could not parse workflow'
 stderr 'reusable workflow parsing failed for actions/reusable/.github/workflows/workflow.yml@v2'
 
+# Uses action without manifest
+! exec ghasum init -cache .cache/ non-action-repository/
+! stdout 'Ok'
+stderr 'an unexpected error occurred'
+stderr 'could not find a manifest'
+stderr 'action manifest parsing failed for non-action/repository@v1.2.3'
+
 # Directory not found
 ! exec ghasum list -offline directory-not-found/
 ! stdout 'Ok'
@@ -90,7 +97,17 @@ jobs:
   - name: Checkout repository
     uses: actions/checkout@v4
 -- no-actions/.keep --
-This file exists to create a repo that does not use Github Actions.
+This file exists to create a repo that does not use GitHub Actions.
+-- non-action-repository/.github/workflows/example.yml --
+name: Uses a non-action repository as action
+on: [push]
+
+jobs:
+  example:
+    name: example
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: non-action/repository@v1.2.3
 -- .cache/actions/composite/v1/action.yml --
 name: actions/composite@v1
 runs:
@@ -110,3 +127,5 @@ jobs:
     uses: actions/setup-java@v4.7.1
 -- .cache/actions/setup-java/v4.7.1/action.yml --
 name: actions/setup-java@v4.7.1
+-- .cache/non-action/repository/v1.2.3/.keep --
+This file exists to have a repo that is not a GitHub Action.
