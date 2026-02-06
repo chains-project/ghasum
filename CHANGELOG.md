@@ -14,7 +14,7 @@ Versioning].
 
 ### Security
 
-- Upgrade Go to `v1.25.6`.
+- Upgrade Go to `v1.25.7`.
 
 ## [v0.6.3] - 2026-01-07
 
