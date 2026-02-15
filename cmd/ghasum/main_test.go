@@ -66,7 +66,6 @@ func TestCommands(t *testing.T) {
 	t.Parallel()
 
 	for name, fn := range commands {
-		name, fn := name, fn
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -81,7 +80,6 @@ func TestHelpers(t *testing.T) {
 	t.Parallel()
 
 	for name, fn := range helpers {
-		name, fn := name, fn
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
