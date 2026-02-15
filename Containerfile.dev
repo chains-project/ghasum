@@ -1,6 +1,6 @@
 # MIT No Attribution
 #
-# Copyright (c) 2025 Eric Cornelissen
+# Copyright (c) 2025-2026 Eric Cornelissen
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -18,7 +18,7 @@
 # SOFTWARE.
 
 ARG GO_VERSION=invalid
-FROM docker.io/golang:${GO_VERSION}-alpine3.22
+FROM docker.io/golang:${GO_VERSION}-alpine3.23
 
 RUN apk add --no-cache \
 	bash git perl-utils zip \
