@@ -41,8 +41,8 @@ github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSs
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/dkorunic/betteralign v0.9.0 h1:7gUd+fLOvB4oaoIwIiJoHZgBKXUfG+3yVAzvOEFu/Fw=
-github.com/dkorunic/betteralign v0.9.0/go.mod h1:ARi72iBa7Kf4nSX8IcFyOsfqa/QfMiT7ovQN28jLUwM=
+github.com/dkorunic/betteralign v0.9.1 h1:6xaeBQshpfsORsT2Kx3CLkGFtv+8DMUqFsAHlGgPjso=
+github.com/dkorunic/betteralign v0.9.1/go.mod h1:T16FH5ipRg0fubyx7CxxjevAi7hPIagZt+uNUbRW1nY=
 github.com/elazarl/goproxy v1.7.2 h1:Y2o6urb7Eule09PjlhQRGNsqRfPmYI3KKQLFpCAV3+o=
 github.com/elazarl/goproxy v1.7.2/go.mod h1:82vkLNir0ALaW14Rc399OTTjyNREgmdL2cVoIbS6XaE=
 github.com/emirpasic/gods v1.18.1 h1:FXtiHYKDGKCW2KzwZKx0iC0PQmdlorYgdFG9jPXJ1Bc=
