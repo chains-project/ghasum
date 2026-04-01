@@ -15,6 +15,7 @@ Versioning].
 ### Security
 
 - Upgrade Go to `v1.26.1`.
+- Upgrade go-git from to 5.17.1.
 
 ## [v0.6.3] - 2026-01-07
 
