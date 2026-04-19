@@ -101,7 +101,6 @@ func TaskBuildAll(t *T) error {
 		{os: osMac, arch: archArm64},
 		{os: osWindows, arch: arch386},
 		{os: osWindows, arch: archAmd64},
-		{os: osWindows, arch: archArm},
 		{os: osWindows, arch: archArm64},
 	}
 
