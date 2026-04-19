@@ -3,7 +3,7 @@ module github.com/chains-project/ghasum
 go 1.26.2
 
 require (
-	github.com/go-git/go-git/v5 v5.17.2
+	github.com/go-git/go-git/v5 v5.18.0
 	github.com/liamg/memoryfs v1.6.0
 	github.com/rogpeppe/go-internal v1.14.1
 	go.yaml.in/yaml/v3 v3.0.4
