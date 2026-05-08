@@ -1,6 +1,6 @@
 module github.com/chains-project/ghasum
 
-go 1.26.2
+go 1.26.3
 
 require (
 	github.com/go-git/go-git/v5 v5.18.0
