@@ -5,7 +5,7 @@ go 1.26.3
 require (
 	github.com/go-git/go-git/v5 v5.19.1
 	github.com/liamg/memoryfs v1.6.0
-	github.com/rogpeppe/go-internal v1.14.1
+	github.com/rogpeppe/go-internal v1.15.0
 	go.yaml.in/yaml/v3 v3.0.4
 	golang.org/x/mod v0.36.0
 )
