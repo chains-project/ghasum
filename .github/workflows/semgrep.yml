@@ -14,7 +14,7 @@ jobs:
     permissions:
       security-events: write # To upload SARIF results
     container:
-      image: semgrep/semgrep:1.163.0
+      image: semgrep/semgrep:1.164.0
     steps:
     - name: Checkout repository
       uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
