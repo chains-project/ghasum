@@ -321,6 +321,7 @@ func TaskVet(t *T) error {
 	t.Log("Vetting...")
 	return t.Exec(
 		"go vet ./...",
+		"go fix -diff ./...",
 		"go run 4d63.com/gochecknoinits ./...",
 		"go run fillmore-labs.com/zerolint -level=full ./...",
 		"go run github.com/alexkohler/dogsled/cmd/dogsled -set_exit_status ./...",
