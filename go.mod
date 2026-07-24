@@ -29,7 +29,7 @@ require (
 	github.com/cloudflare/circl v1.6.3 // indirect
 	github.com/cristalhq/acmd v0.12.0 // indirect
 	github.com/cyphar/filepath-securejoin v0.6.1 // indirect
-	github.com/dkorunic/betteralign v0.14.0 // indirect
+	github.com/dkorunic/betteralign v0.14.3 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/fatih/color v1.19.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
@@ -90,7 +90,6 @@ require (
 	github.com/ultraware/whitespace v0.2.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	gitlab.com/bosi/decorder v0.4.2 // indirect
-	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.yaml.in/yaml/v4 v4.0.0-rc.3 // indirect
 	golang.org/x/crypto v0.54.0 // indirect
