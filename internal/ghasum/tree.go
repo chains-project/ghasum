@@ -1,4 +1,4 @@
-// Copyright 2025 Eric Cornelissen
+// Copyright 2025-2026 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,12 @@ type tree struct {
 }
 
 func (t *tree) add(c *tree) {
+	for _, child := range t.children {
+		if child.value.String() == c.value.String() {
+			return
+		}
+	}
+
 	t.children = append(t.children, c)
 }
 

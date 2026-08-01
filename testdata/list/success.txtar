@@ -36,6 +36,21 @@ actions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=
 actions/setup-java@v4.7.1 ZcPr3aVvmk2yL8zkjqDUpH+YLqGwjtenFrjEk3OEZ3k=
 actions/setup-node@v4.4.0 Gdoys4h+gIN02lzrWZW0uxjBQ8Rk5YSE6+q1SOrw/+o=
 golangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=
+-- target/.github/workflows/reusable.yml --
+name: Example reusable workflow
+on: [workflow_call]
+
+jobs:
+  example:
+    name: Reusable example
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@main
+    - name: Install Go
+      uses: actions/setup-go@v7.0.0
+      with:
+        go-version-file: go.mod
 -- target/.github/workflows/workflow.yml --
 name: Example workflow
 on: [push]
@@ -63,6 +78,8 @@ jobs:
       run: Echo 'hello world!'
   example-2:
     uses: actions/reusable/.github/workflows/workflow.yml@v2
+  example-3:
+    uses: ./.github/workflows/reusable.yml
 -- .cache/actions/checkout/main/action.yml --
 name: actions/checkout@main
 -- .cache/actions/composite/v1/action.yml --
@@ -88,6 +105,8 @@ jobs:
       uses: actions/setup-java@v4.7.1
 -- .cache/actions/setup-go/v5.0.0/action.yml --
 name: actions/setup-go@v5.0.0
+-- .cache/actions/setup-go/v7.0.0/action.yml --
+name: actions/setup-go@v7.0.0
 -- .cache/actions/setup-java/v4.7.1/action.yml --
 name: actions/setup-java@v4.7.1
 -- .cache/actions/setup-node/v4.4.0/action.yml --
@@ -103,6 +122,7 @@ actions/github-script@v8.0.0 (action)
 actions/reusable/.github/workflows/workflow.yml@v2 (reusable workflow)
   actions/setup-java@v4.7.1 (action)
 actions/setup-go@v5.0.0 (action)
+actions/setup-go@v7.0.0 (action)
 golangci/golangci-lint-action@3a91952 (action)
 -- .want/no-transitive.txt --
 actions/checkout@main (action)
@@ -110,4 +130,5 @@ actions/composite@v1 (action)
 actions/github-script@v8.0.0 (action)
 actions/reusable/.github/workflows/workflow.yml@v2 (reusable workflow)
 actions/setup-go@v5.0.0 (action)
+actions/setup-go@v7.0.0 (action)
 golangci/golangci-lint-action@3a91952 (action)
