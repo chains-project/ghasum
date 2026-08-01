@@ -70,6 +70,9 @@ func parseUses(uses string) (GitHubAction, error) {
 	case strings.HasPrefix(uses, "./"):
 		a.Path = uses
 		return a, ErrLocalAction
+	case strings.HasPrefix(uses, "$/"):
+		a.Path = strings.Replace(uses, "$", ".", 1)
+		return a, ErrLocalAction
 	case strings.HasPrefix(uses, "docker://"):
 		return a, ErrDockerUses
 	}

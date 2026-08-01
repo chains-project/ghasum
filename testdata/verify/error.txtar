@@ -52,11 +52,18 @@ stderr 'could not parse manifest'
 stderr 'action manifest parsing failed for actions/composite@v1'
 
 # Invalid local action manifest
-! exec ghasum init -cache .cache/ invalid-local-manifest/
+! exec ghasum verify -cache .cache/ invalid-local-manifest/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'could not parse manifest'
 stderr 'action manifest parsing failed for //./.github/actions/hello-world-action'
+
+# Invalid local action manifest
+! exec ghasum verify -cache .cache/ invalid-self-manifest/
+! stdout 'Ok'
+stderr 'an unexpected error occurred'
+stderr 'could not parse manifest'
+stderr 'action manifest parsing failed for //./.github/actions/goodbye-world-action'
 
 # Invalid reusable workflow
 ! exec ghasum verify -offline -cache .cache/ invalid-reusable-workflow/
@@ -66,7 +73,7 @@ stderr 'could not parse workflow'
 stderr 'reusable workflow parsing failed for actions/reusable/.github/workflows/workflow.yml@v2'
 
 # Uses action without manifest
-! exec ghasum init -cache .cache/ non-action-repository/
+! exec ghasum verify -cache .cache/ non-action-repository/
 ! stdout 'Ok'
 stderr 'an unexpected error occurred'
 stderr 'could not find a manifest'
@@ -122,6 +129,10 @@ runs:
   uses: actions/github-script@v8.0.0
   with:
     script: console.log("Hello world!");
+-- invalid-local-manifest/.github/workflows/gha.sum --
+version 1
+
+actions/github-script@v8.0.0 dogzpuS7aUONFkCn/ICEFTALznP9/Gi8A3rCCqTXDVk=
 -- invalid-local-manifest/.github/workflows/workflow.yml --
 name: Example workflow
 on: [push]
@@ -149,6 +160,32 @@ jobs:
     steps:
     - name: This step uses transitive actions
       uses: actions/composite@v1
+-- invalid-self-manifest/.github/actions/goodbye-world-action/action.yaml --
+name: Goodbye world action
+description: Says 'Goodbye cruel world!'
+
+runs:
+  using: composite
+  steps:
+- name: Say goodbye world
+  uses: actions/github-script@v8.1.0
+  with:
+    script: console.log("Goodbye cruel world!");
+-- invalid-self-manifest/.github/workflows/gha.sum --
+version 1
+
+actions/github-script@v8.1.0 iRF7OEq52WSeJaSgUqB0798OrmIk/qwRwNMF1cjdtV8=
+-- invalid-self-manifest/.github/workflows/workflow.yml --
+name: Example workflow
+on: [push]
+
+jobs:
+  example:
+    name: example
+    runs-on: ubuntu-24.04
+    steps:
+    - name: This step uses a local action
+      uses: $/.github/actions/goodbye-world-action
 -- invalid-reusable-workflow/.github/workflows/gha.sum --
 version 1
 
@@ -188,6 +225,8 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - uses: non-action/repository@v1.2.3
+-- non-action-repository/.github/workflows/gha.sum --
+version 1
 -- not-cached/.github/workflows/gha.sum --
 version 1
 
