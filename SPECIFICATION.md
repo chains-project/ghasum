@@ -65,6 +65,8 @@ This process does not verify any of the checksums currently in the sumfile.
 
 ### `ghasum verify`
 
+If the `-ci` flag is present, the next subsection applies.
+
 If the checksum file does not exist the process shall exit immediately with an
 error.
 
@@ -92,6 +94,25 @@ is not a repository then redundant checksums must be ignored.
 
 The `-offline` flag can be used to verify strictly against the cache without
 fetching any missing repositories.
+
+### `ghasum verify -ci`
+
+If the `GHASUM` environment variable is missing or empty the process shall exit
+immediately with an error.
+
+If the `GHASUM` environment variable contains text it shall read and parsed,
+fully, as a checksum file. If this fails the process shall exit immediately.
+Else it shall recompute the checksums (see [Computing Checksums]) for all
+actions in the cache using the same hashing algorithm as was used for the stored
+checksums. It shall compare the computed checksums against the stored checksums.
+
+If any of the checksums does not match or is missing the process shall exit with
+a non-zero exit code. For usability all values should be compared (and all
+mismatches reported) before exiting.
+
+Redundant checksums in `GHASUM` should not be reported. This follows from the
+fact that these are stored on a workflow basis and verification occurs on a job
+basis (a workflow may be using more actions in aggregate than individual jobs).
 
 ## Procedures
 

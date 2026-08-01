@@ -1,4 +1,4 @@
-// Copyright 2023-2025 Eric Cornelissen
+// Copyright 2023-2026 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ const (
 
 const (
 	flagNameCache        = "cache"
+	flagNameCi           = "ci"
 	flagNameForce        = "force"
 	flagNameNoCache      = "no-cache"
 	flagNameNoEvict      = "no-evict"

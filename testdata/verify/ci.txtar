@@ -1,0 +1,45 @@
+# Checksums absent
+! exec ghasum verify -ci -offline -cache .cache/
+! stdout 'Ok'
+stderr .
+
+# Checksums malformed
+env GHASUM='intentionally invalid value'
+! exec ghasum verify -ci -offline -cache .cache/
+! stdout 'Ok'
+stderr .
+
+# Checksums match exactly
+env GHASUM='version 1\n\nactions/checkout@main JHipZi1UCvybC3fwi9RFLTK8vpI/gURTga/ColyHI4k=\nactions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=\ngolangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I='
+exec ghasum verify -ci -offline -cache .cache/
+stdout 'Ok \(verified 3 actions\)'
+! stderr .
+
+# Checksum mismatch
+env GHASUM='version 1\n\nactions/checkout@main this-is-intentionally-incorrect\nactions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=\ngolangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I='
+! exec ghasum verify -ci -offline -cache .cache/
+stdout '1 problem\(s\) occurred during validation:'
+stdout 'checksum mismatch for "actions/checkout@main"'
+! stdout 'Ok'
+! stderr .
+
+# Checksum missing
+env GHASUM='version 1\n\nactions/checkout@main JHipZi1UCvybC3fwi9RFLTK8vpI/gURTga/ColyHI4k=\ngolangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I='
+! exec ghasum verify -ci -offline -cache .cache/
+stdout '1 problem\(s\) occurred during validation:'
+stdout 'no checksum found for "actions/setup-go@v5.0.0"'
+! stdout 'Ok'
+! stderr .
+
+# Checksums redundant
+env GHASUM='version 1\n\nactions/checkout@main JHipZi1UCvybC3fwi9RFLTK8vpI/gURTga/ColyHI4k=\nactions/setup-go@v5.0.0 NoW6+RttcHeApXsFxN2DfY/2Oc7t0g9mgq22uJ3rAbg=\ngolangci/golangci-lint-action@3a91952 Whvj26yZchrz2jiVS3IZrwZ2DXX71qu4gynanpV3G4I=\nfoo/bar@hello world'
+exec ghasum verify -ci -offline -cache .cache/
+stdout 'Ok \(verified 3 actions\)'
+! stderr .
+
+-- .cache/actions/checkout/main/action.yml --
+name: actions/checkout@main
+-- .cache/actions/setup-go/v5.0.0/action.yml --
+name: actions/setup-go@v5.0.0
+-- .cache/golangci/golangci-lint-action/3a91952/action.yml --
+name: golangci/golangci-lint-action@3a91952

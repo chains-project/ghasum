@@ -1,4 +1,4 @@
-// Copyright 2024 Eric Cornelissen
+// Copyright 2024-2026 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,4 +56,8 @@ var (
 	// ErrSumfileWrite is the error used when the ghasum checksum file could not
 	// be written to.
 	ErrSumfileWrite = errors.New("could not write to the checksum file")
+
+	// ErrSumsEnv is the error used when ghasum is running in CI mode but could
+	// not find the checksums in the environment.
+	ErrSumsEnv = errors.New("checksums missing from environment")
 )

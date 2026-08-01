@@ -1,4 +1,4 @@
-// Copyright 2024-2025 Eric Cornelissen
+// Copyright 2024-2026 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ func cmdVerify(argv []string) error {
 	var (
 		flags            = flag.NewFlagSet(cmdNameVerify, flag.ContinueOnError)
 		flagCache        = flags.String(flagNameCache, "", "")
+		flagCi           = flags.Bool(flagNameCi, false, "")
 		flagNoCache      = flags.Bool(flagNameNoCache, false, "")
 		flagNoEvict      = flags.Bool(flagNameNoEvict, false, "")
 		flagNoTransitive = flags.Bool(flagNameNoTransitive, false, "")
@@ -95,7 +96,13 @@ func cmdVerify(argv []string) error {
 		Transitive: !(*flagNoTransitive),
 	}
 
-	report, err := ghasum.Verify(&cfg)
+	var report ghasum.VerifyReport
+	if *flagCi {
+		report, err = ghasum.VerifyCi(&cfg)
+	} else {
+		report, err = ghasum.Verify(&cfg)
+	}
+
 	if err != nil {
 		return errors.Join(errUnexpected, err)
 	}
@@ -157,6 +164,9 @@ The available flags are:
         The location of the cache directory. This is where ghasum stores and
         looks up repositories it needs.
         Defaults to a directory named .ghasum in the user's home directory.
+    -ci
+        Verifies the contents of the cache against the GHASUM environment
+        variable, intended for CI verification.
     -no-cache
         Disable the use of the cache. Makes the -cache flag ineffective.
     -no-evict

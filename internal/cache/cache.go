@@ -1,4 +1,4 @@
-// Copyright 2024-2025 Eric Cornelissen
+// Copyright 2024-2026 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ func (c *Cache) Cleanup() {
 // Clear the contents of the cache, removing everything.
 func (c *Cache) Clear() error {
 	if err := os.RemoveAll(c.path); err != nil {
-		return fmt.Errorf("could not clear %q: %v", c.path, err)
+		return errors.Join(ErrClear, err)
 	}
 
 	return nil
@@ -82,14 +82,24 @@ func (c *Cache) Evict() (uint, error) {
 	if errors.Is(err, fs.ErrNotExist) {
 		return 0, nil
 	} else if err != nil {
-		return 0, fmt.Errorf("could not open cache directory: %v", err)
+		return 0, errors.Join(ErrOpen, err)
 	}
 
 	if err := fs.WalkDir(fsys.FS(), ".", walk); err != nil {
-		return 0, fmt.Errorf("cache eviction failed: %v", err)
+		return 0, errors.Join(ErrEvict, err)
 	}
 
 	return count, nil
+}
+
+// FS returns an read-only file system view of the cache.
+func (c *Cache) FS() (fs.ReadDirFS, error) {
+	fsys, err := os.OpenRoot(c.path)
+	if err != nil {
+		return nil, errors.Join(ErrOpen, err)
+	}
+
+	return fsys.FS().(fs.ReadDirFS), nil
 }
 
 // Init the cache.
@@ -97,13 +107,13 @@ func (c *Cache) Init() error {
 	if c.ephemeral {
 		location, err := os.MkdirTemp(os.TempDir(), "ghasum-clone-*")
 		if err != nil {
-			return fmt.Errorf("could not create temporary cache: %v", err)
+			return errors.Join(ErrCreate, err)
 		}
 
 		c.path = location
 	} else {
 		if err := os.MkdirAll(c.path, 0o700); err != nil {
-			return fmt.Errorf("could not create cache at %q: %v", c.path, err)
+			return errors.Join(ErrCreate, err)
 		}
 	}
 

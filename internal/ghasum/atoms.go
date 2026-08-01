@@ -1,4 +1,4 @@
-// Copyright 2024-2025 Eric Cornelissen
+// Copyright 2024-2026 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import (
 	"maps"
 	"os"
 	"path"
+	"path/filepath"
 	"slices"
 	"strings"
 
@@ -32,6 +33,41 @@ import (
 )
 
 var ghasumPath = path.Join(gha.WorkflowsPath, "gha.sum")
+
+func cached(cfg *Config) (tree, error) {
+	actions := tree{}
+
+	fsys, err := cfg.Cache.FS()
+	if err != nil {
+		return actions, fmt.Errorf("could not access cache: %v", err)
+	}
+
+	entries, _ := fsys.ReadDir(".")
+	for _, owner := range entries {
+		owner := owner.Name()
+		entries, _ := fsys.ReadDir(owner)
+		for _, project := range entries {
+			project := project.Name()
+			entries, _ := fsys.ReadDir(filepath.Join(owner, project))
+			for _, ref := range entries {
+				if !ref.IsDir() {
+					continue
+				}
+
+				ref := ref.Name()
+				actions.children = append(actions.children, &tree{
+					value: &gha.GitHubAction{
+						Owner:   owner,
+						Project: project,
+						Ref:     ref,
+					},
+				})
+			}
+		}
+	}
+
+	return actions, nil
+}
 
 func clear(file *os.File) error {
 	if _, err := file.Seek(0, 0); err != nil {
@@ -233,7 +269,7 @@ func find(cfg *Config) (tree, error) {
 	return root, nil
 }
 
-func compute(cfg *Config, actions tree, algo checksum.Algo) ([]sumfile.Entry, error) {
+func compute(cfg *Config, actions tree) ([]sumfile.Entry, error) {
 	if err := cfg.Cache.Init(); err != nil {
 		return nil, fmt.Errorf("could not initialize cache: %v", err)
 	} else {
@@ -250,7 +286,7 @@ func compute(cfg *Config, actions tree, algo checksum.Algo) ([]sumfile.Entry, er
 
 		id := fmt.Sprintf("%s%s%s", action.Owner, action.Project, action.Ref)
 		if _, ok := entries[id]; !ok {
-			checksum, err := checksum.Compute(actionDir, algo)
+			checksum, err := checksum.Compute(actionDir, checksum.BestAlgo)
 			if err != nil {
 				return nil, fmt.Errorf("could not compute checksum for %q: %v", action, err)
 			}

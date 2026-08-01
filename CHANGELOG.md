@@ -12,9 +12,17 @@ Versioning].
 
 ## [Unreleased]
 
+### Enhancements
+
+- Support verifying against the cache.
+
+### Bug
+
+- Fix repeated entries in `ghasum list` output.
+
 ### Security
 
-- Upgrade Go to `v1.26.4`.
+- Upgrade Go to `v1.26.5`.
 - Upgrade go-git to `v5.19.1`.
 
 ## [v0.6.3] - 2026-01-07

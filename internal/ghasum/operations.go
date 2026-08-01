@@ -1,4 +1,4 @@
-// Copyright 2024-2025 Eric Cornelissen
+// Copyright 2024-2026 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,10 +18,11 @@ import (
 	"errors"
 	"io"
 	"io/fs"
+	"os"
 	"slices"
+	"strings"
 
 	"github.com/chains-project/ghasum/internal/cache"
-	"github.com/chains-project/ghasum/internal/checksum"
 	"github.com/chains-project/ghasum/internal/sumfile"
 )
 
@@ -89,7 +90,7 @@ func Initialize(cfg *Config) error {
 		return err
 	}
 
-	checksums, err := compute(cfg, actions, checksum.BestAlgo)
+	checksums, err := compute(cfg, actions)
 	if err != nil {
 		return err
 	}
@@ -147,7 +148,7 @@ func Update(cfg *Config, force bool) (UpdateReport, error) {
 		return report, err
 	}
 
-	checksums, err := compute(cfg, actions, checksum.BestAlgo)
+	checksums, err := compute(cfg, actions)
 	if err != nil {
 		return report, err
 	}
@@ -194,7 +195,8 @@ func Update(cfg *Config, force bool) (UpdateReport, error) {
 // for the repository specified in the given configuration.
 //
 // Verification report checksums that do not match and checksums that are
-// missing. It does not report checksums that are not used.
+// missing. It report checksums that are not used only if both cfg.Workflow and
+// cfg.Job are empty.
 func Verify(cfg *Config) (VerifyReport, error) {
 	var report VerifyReport
 
@@ -213,13 +215,46 @@ func Verify(cfg *Config) (VerifyReport, error) {
 		return report, err
 	}
 
-	fresh, err := compute(cfg, actions, checksum.Sha256)
+	fresh, err := compute(cfg, actions)
 	if err != nil {
 		return report, err
 	}
 
 	reportRedundant := cfg.Workflow == "" && cfg.Job == ""
 	report.Problems = compare(fresh, stored, reportRedundant)
+	report.Total = len(fresh)
+
+	return report, nil
+}
+
+// VerifyCi will compare the checksums stored in the GHASUM environment variable
+// against recomputed checksums for the current contents of the cache. Otherwise
+// identicaly to [Verify].
+func VerifyCi(cfg *Config) (VerifyReport, error) {
+	var report VerifyReport
+
+	raw := os.Getenv("GHASUM")
+	raw = strings.ReplaceAll(raw, "\\n", "\n") + "\n"
+	if raw == "" {
+		return report, ErrSumsEnv
+	}
+
+	stored, err := decode([]byte(raw))
+	if err != nil {
+		return report, err
+	}
+
+	actions, err := cached(cfg)
+	if err != nil {
+		return report, err
+	}
+
+	fresh, err := compute(cfg, actions)
+	if err != nil {
+		return report, err
+	}
+
+	report.Problems = compare(fresh, stored, false)
 	report.Total = len(fresh)
 
 	return report, nil
