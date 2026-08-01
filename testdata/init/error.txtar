@@ -31,6 +31,13 @@ stderr 'an unexpected error occurred'
 stderr 'could not parse manifest'
 stderr 'action manifest parsing failed for //./.github/actions/hello-world-action'
 
+# Invalid local action manifest, self-repository syntax
+! exec ghasum init -cache .cache/ invalid-self-manifest/
+! stdout 'Ok'
+stderr 'an unexpected error occurred'
+stderr 'could not parse manifest'
+stderr 'action manifest parsing failed for //./.github/actions/goodbye-world-action'
+
 # Invalid reusable workflow
 ! exec ghasum init -cache .cache/ invalid-reusable-workflow/
 ! stdout 'Ok'
@@ -109,6 +116,28 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/composite@v1
+-- invalid-self-manifest/.github/actions/goodbye-world-action/action.yaml --
+name: Goodbye world action
+description: Says 'Goodbye cruel world!'
+
+runs:
+  using: composite
+  steps:
+- name: Say goodbye world
+  uses: actions/github-script@v8.1.0
+  with:
+    script: console.log("Goodbye cruel world!");
+-- invalid-self-manifest/.github/workflows/workflow.yml --
+name: Example workflow
+on: [push]
+
+jobs:
+  example:
+    name: example
+    runs-on: ubuntu-24.04
+    steps:
+    - name: This step uses a local action
+      uses: $/.github/actions/goodbye-world-action
 -- invalid-reusable-workflow/.github/workflows/workflow.yml --
 name: Example workflow
 on: [push]

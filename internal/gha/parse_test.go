@@ -83,7 +83,7 @@ func TestParseUses(t *testing.T) {
 					Ref:     "v2",
 				},
 			},
-			"reusable workflow": {
+			"external reusable workflow": {
 				uses: "octo-org/another-repo/.github/workflows/workflow.yml@v1",
 				want: GitHubAction{
 					Owner:   "octo-org",
@@ -175,8 +175,16 @@ func TestParseUses(t *testing.T) {
 				uses: "./.github/actions/hello-world-action",
 				want: ErrLocalAction,
 			},
+			"an action in the same repository as the workflow, self-repository syntax": {
+				uses: "$/.github/actions/goodbye-world-action",
+				want: ErrLocalAction,
+			},
 			"a reusable workflow in the same repository as the workflow": {
 				uses: "./.github/workflow/reusable.yml",
+				want: ErrLocalAction,
+			},
+			"a reusable workflow in the same repository as the workflow, self-repository syntax": {
+				uses: "$/.github/workflow/reusable.yml",
 				want: ErrLocalAction,
 			},
 			"a Docker Hub action": {
