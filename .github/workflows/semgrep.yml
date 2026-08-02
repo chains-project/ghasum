@@ -24,13 +24,6 @@ jobs:
       uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
       with:
         go-version-file: go.mod
-    - name: Verify action checksums
-      env:
-        JOB: ${{ github.job }}
-        WORKFLOW: ${{ github.workflow_ref }}
-      run: |
-        WORKFLOW=$(echo "$WORKFLOW" | cut -d '@' -f 1 | cut -d '/' -f 3-5)
-        go run ./cmd/ghasum verify -cache /__w/_actions -no-evict -offline "$WORKFLOW:$JOB"
     - name: Perform Semgrep analysis
       run: semgrep --sarif --output semgrep.sarif
     - name: Upload Semgrep report to GitHub

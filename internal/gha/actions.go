@@ -1,4 +1,4 @@
-// Copyright 2024-2025 Eric Cornelissen
+// Copyright 2024-2026 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -147,13 +147,13 @@ func workflowInRepo(repo fs.FS, path string) ([]byte, error) {
 }
 
 func manifestInRepo(repo fs.FS, dir string) ([]byte, error) {
-	manifest := path.Join(dir, "action.yml")
+	manifest := path.Join(dir, ManifestYml)
 	if file, err := repo.Open(manifest); err == nil {
 		data, _ := io.ReadAll(file)
 		return data, nil
 	}
 
-	manifest = path.Join(dir, "action.yaml")
+	manifest = path.Join(dir, ManifestYaml)
 	if file, err := repo.Open(manifest); err == nil {
 		data, _ := io.ReadAll(file)
 		return data, nil

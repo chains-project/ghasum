@@ -29,7 +29,6 @@ jobs:
       uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
       with:
         go-version-file: go.mod
-    # NOTE: skip "Verify action checksums" because they might not be up-to-date
     - name: Update gha.sum
       run: go run ./cmd/ghasum update -force
     - name: Commit gha.sum

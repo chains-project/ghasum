@@ -1,4 +1,4 @@
-// Copyright 2024 Eric Cornelissen
+// Copyright 2024-2026 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,6 +17,10 @@ package ghasum
 import "errors"
 
 var (
+	// ErrActionCreate is the error used when the ghasum local action could not
+	// be created.
+	ErrActionCreate = errors.New("could not create a local action")
+
 	// ErrInitialized is the error used when ghasum is not expected to be
 	// initialized but is.
 	ErrInitialized = errors.New("ghasum is already initialized")

@@ -14,6 +14,12 @@ Versioning].
 
 ### Enhancements
 
+- Generate a local action for integration purposes on initialization.
+
+## [v0.6.4] - 2026-08-01
+
+### Enhancements
+
 - Support self-repository syntax.
 
 ### Bug
