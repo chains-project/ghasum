@@ -1,6 +1,6 @@
 // MIT No Attribution
 //
-// Copyright (c) 2025 Eric Cornelissen
+// Copyright (c) 2026 Eric Cornelissen
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -339,7 +339,7 @@ func TaskVet(t *T) error {
 		"go run github.com/mdempsky/unconvert ./...",
 		"go run github.com/nishanths/exhaustive/cmd/exhaustive ./...",
 		"go run github.com/polyfloyd/go-errorlint -asserts ./...",
-		"go run github.com/rhysd/actionlint/cmd/actionlint -shellcheck ''",
+		"go run github.com/rhysd/actionlint/cmd/actionlint -config-file .github/actionlint.yml -shellcheck ''",
 		"go run github.com/tomarrell/wrapcheck/v2/cmd/wrapcheck ./...",
 		"go run github.com/ultraware/whitespace/cmd/whitespace ./...",
 		"go run gitlab.com/bosi/decorder/cmd/decorder -disable-dec-num-check ./...",

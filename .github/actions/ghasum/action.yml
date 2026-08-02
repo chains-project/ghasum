@@ -1,0 +1,29 @@
+name: ghasum
+description: Verify checksums of actions
+
+inputs:
+  checksum:
+    description: The checksum of the ghasum checksums file.
+    required: false
+    default: sha256:881d0ea994c0add2e369a7562479396fb516d6d35626c6652dc491bb2ed4a11f
+  mode:
+    description: Whether to 'verify' checksums or just 'install' ghasum.
+    required: false
+    default: verify
+  token:
+    description: The GitHub token to use.
+    default: ${{ github.token }}
+    required: false
+  version:
+    description: The version of ghasum to use.
+    required: false
+    default: v0.6.4
+  workflow:
+    description: The workflow to verify.
+    required: false
+    default: ${{ job.workflow_ref }}
+
+runs:
+  using: node24
+  main: main.js
+  pre: pre.js

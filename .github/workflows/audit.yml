@@ -21,6 +21,8 @@ jobs:
     name: Capabilities
     runs-on: ubuntu-24.04
     steps:
+    - name: Verify action checksums
+      uses: $/.github/actions/ghasum
     - name: Checkout repository
       uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       with:
@@ -29,19 +31,14 @@ jobs:
       uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
       with:
         go-version-file: go.mod
-    - name: Verify action checksums
-      env:
-        JOB: ${{ github.job }}
-        WORKFLOW: ${{ github.workflow_ref }}
-      run: |
-        WORKFLOW=$(echo "$WORKFLOW" | cut -d '@' -f 1 | cut -d '/' -f 3-5)
-        go run ./cmd/ghasum verify -cache /home/runner/work/_actions -no-evict -offline "$WORKFLOW:$JOB"
     - name: Audit
       run: go run tasks.go audit-capabilities
   vulnerabilities:
     name: Vulnerabilities
     runs-on: ubuntu-24.04
     steps:
+    - name: Verify action checksums
+      uses: $/.github/actions/ghasum
     - name: Checkout repository
       uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       with:
@@ -50,12 +47,5 @@ jobs:
       uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
       with:
         go-version-file: go.mod
-    - name: Verify action checksums
-      env:
-        JOB: ${{ github.job }}
-        WORKFLOW: ${{ github.workflow_ref }}
-      run: |
-        WORKFLOW=$(echo "$WORKFLOW" | cut -d '@' -f 1 | cut -d '/' -f 3-5)
-        go run ./cmd/ghasum verify -cache /home/runner/work/_actions -no-evict -offline "$WORKFLOW:$JOB"
     - name: Audit
       run: go run tasks.go audit-vulnerabilities

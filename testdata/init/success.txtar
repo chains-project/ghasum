@@ -4,6 +4,11 @@ stdout 'Ok'
 ! stderr .
 cmp target/.github/workflows/gha.sum .want/gha.sum
 
+exists target/.github/actions/ghasum/action.yml
+exists target/.github/actions/ghasum/pre.js
+exists target/.github/actions/ghasum/main.js
+
+rm target/.github/actions/ghasum
 rm target/.github/workflows/gha.sum
 
 # Without transitive actions

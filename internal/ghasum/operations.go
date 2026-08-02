@@ -1,4 +1,4 @@
-// Copyright 2024-2025 Eric Cornelissen
+// Copyright 2024-2026 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import (
 	"io/fs"
 	"slices"
 
+	"github.com/chains-project/ghasum/internal/action"
 	"github.com/chains-project/ghasum/internal/cache"
 	"github.com/chains-project/ghasum/internal/checksum"
 	"github.com/chains-project/ghasum/internal/sumfile"
@@ -99,12 +100,19 @@ func Initialize(cfg *Config) error {
 		return err
 	}
 
-	if err := write(file, content); err != nil {
+	err = write(file, content)
+	if err != nil {
 		return err
 	}
 
-	if err := unlock(cfg.Path); err != nil {
+	err = unlock(cfg.Path)
+	if err != nil {
 		return err
+	}
+
+	err = action.Create(cfg.Path)
+	if err != nil {
+		return errors.Join(ErrActionCreate, err)
 	}
 
 	return nil

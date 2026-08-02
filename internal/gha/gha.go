@@ -1,4 +1,4 @@
-// Copyright 2024-2025 Eric Cornelissen
+// Copyright 2024-2026 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ const (
 )
 
 // WorkflowsPath is the relative path to the GitHub Actions workflow directory.
-var WorkflowsPath = path.Join(".github", "workflows")
+var WorkflowsPath = path.Join(GitHubDir, "workflows")
 
 // RepoActions extracts the GitHub Actions used in the repository at the given
 // file system hierarchy.

@@ -1,4 +1,4 @@
-// Copyright 2024-2025 Eric Cornelissen
+// Copyright 2024-2026 Eric Cornelissen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -76,8 +76,11 @@ func cmdInit(argv []string) error {
 	fmt.Println(`Ok
 
 Next:
-1. Track .github/workflows/gha.sum with git.
-2. Integrate ghasum into the project's workflows.`)
+1. Track .github/workflows/gha.sum and .github/actions/ghasum with git.
+2. Integrate ghasum into the project's workflows by starting each job with:
+
+      - name: Verify action checksums
+        uses: $/.github/actions/ghasum`)
 	return nil
 }
 
