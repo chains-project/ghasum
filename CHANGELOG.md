@@ -16,6 +16,10 @@ Versioning].
 
 - Generate a local action for integration purposes on initialization.
 
+### Security
+
+- Upgrade go-git to `v5.19.2`.
+
 ## [v0.6.4] - 2026-08-01
 
 ### Enhancements
