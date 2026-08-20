@@ -109,7 +109,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	honnef.co/go/tools v0.7.0 // indirect
-	mvdan.cc/unparam v0.0.0-20260808223834-a64391f2ca86 // indirect
+	mvdan.cc/unparam v0.0.0-20260818115549-3f964bcb5673 // indirect
 )
 
 tool (
