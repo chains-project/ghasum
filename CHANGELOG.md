@@ -20,6 +20,7 @@ Versioning].
 
 - Upgrade Go to `v1.26.6`.
 - Upgrade go-git to `v5.19.2`.
+- Upgrade `golang.org/x/crypto` to `v0.56.0`.
 
 ## [v0.6.4] - 2026-08-01
 
