@@ -7,7 +7,7 @@ require (
 	github.com/liamg/memoryfs v1.6.0
 	github.com/rogpeppe/go-internal v1.16.0
 	go.yaml.in/yaml/v3 v3.0.4
-	golang.org/x/mod v0.40.0
+	golang.org/x/mod v0.41.0
 )
 
 require (
