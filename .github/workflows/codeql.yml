@@ -10,7 +10,7 @@ permissions: read-all
 jobs:
   codeql:
     name: ${{ matrix.what }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       security-events: write # To upload CodeQL results
     strategy:
