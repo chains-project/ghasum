@@ -63,7 +63,7 @@ require (
 	github.com/mattn/go-shellwords v1.0.12 // indirect
 	github.com/mdempsky/unconvert v0.0.0-20241127004111-db6ad295e1ce // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/nishanths/exhaustive v0.12.0 // indirect
+	github.com/nishanths/exhaustive v0.14.0 // indirect
 	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.1 // indirect
 	github.com/pjbgf/sha1cd v0.7.0 // indirect

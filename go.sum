@@ -138,8 +138,8 @@ github.com/mdempsky/unconvert v0.0.0-20241127004111-db6ad295e1ce h1:LyNUhz6j2oP3
 github.com/mdempsky/unconvert v0.0.0-20241127004111-db6ad295e1ce/go.mod h1:DuAZxNOBRkxMjbchCclLZxb/18Qb46cU26hBsomVuow=
 github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
 github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
-github.com/nishanths/exhaustive v0.12.0 h1:vIY9sALmw6T/yxiASewa4TQcFsVYZQQRUQJhKRf3Swg=
-github.com/nishanths/exhaustive v0.12.0/go.mod h1:mEZ95wPIZW+x8kC4TgC+9YCUgiST7ecevsVDTgc2obs=
+github.com/nishanths/exhaustive v0.14.0 h1:wqwHW3EPNu/mD0ZpkQVNPbupXKkH4XhMpXjFZ+kn/So=
+github.com/nishanths/exhaustive v0.14.0/go.mod h1:yt2T8QaQ/5OlVZsG+WV9uexQanVPI8MStaHR/JYg1hM=
 github.com/onsi/gomega v1.34.1 h1:EUMJIKUjM8sKjYbtxQI9A4z2o+rruxnzNvpknOXie6k=
 github.com/onsi/gomega v1.34.1/go.mod h1:kU1QgUvBDLXBJq618Xvm2LUX6rSAfRaFRTcdOeDLwwY=
 github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58 h1:onHthvaw9LFnH4t2DcNVpwGmV9E1BkGknEliJkfwQj0=
