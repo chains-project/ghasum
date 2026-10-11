@@ -18,7 +18,7 @@ Versioning].
 
 ### Security
 
-- Upgrade Go to `v1.26.6`.
+- Upgrade Go to `v1.27.2`.
 - Upgrade go-git to `v5.19.2`.
 - Upgrade `golang.org/x/crypto` to `v0.56.0`.
 
