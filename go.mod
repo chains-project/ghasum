@@ -15,7 +15,7 @@ require (
 	dario.cat/mergo v1.0.0 // indirect
 	fillmore-labs.com/zerolint v0.0.15 // indirect
 	github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c // indirect
-	github.com/KimMachineGun/automemlimit v0.7.5 // indirect
+	github.com/KimMachineGun/automemlimit v1.0.0 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/ProtonMail/go-crypto v1.1.6 // indirect
 	github.com/alexkohler/dogsled v0.0.0-20240329141207-62bc1f6ce2d0 // indirect
@@ -29,7 +29,7 @@ require (
 	github.com/cloudflare/circl v1.6.3 // indirect
 	github.com/cristalhq/acmd v0.12.0 // indirect
 	github.com/cyphar/filepath-securejoin v0.6.1 // indirect
-	github.com/dkorunic/betteralign v0.15.0 // indirect
+	github.com/dkorunic/betteralign v0.15.3 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/fatih/color v1.19.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
