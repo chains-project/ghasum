@@ -61,7 +61,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.21 // indirect
 	github.com/mattn/go-shellwords v1.0.12 // indirect
-	github.com/mdempsky/unconvert v0.0.0-20241127004111-db6ad295e1ce // indirect
+	github.com/mdempsky/unconvert v0.0.0-20261020133855-975dd2843474 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/nishanths/exhaustive v0.14.0 // indirect
 	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58 // indirect
