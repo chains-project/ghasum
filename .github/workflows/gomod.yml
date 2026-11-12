@@ -1,0 +1,34 @@
+name: Gomod
+on:
+  push:
+    tags:
+    - v[0-9]+.[0-9]+.[0-9]+
+
+permissions: read-all
+
+jobs:
+  index:
+    name: Index ${{ github.ref_name }}
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+      with:
+        persist-credentials: false
+    - name: Install Go
+      uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
+      with:
+        go-version-file: go.mod
+    - name: Verify action checksums
+      env:
+        JOB: ${{ github.job }}
+        WORKFLOW: ${{ github.workflow_ref }}
+      run: |
+        WORKFLOW=$(echo "$WORKFLOW" | cut -d '@' -f 1 | cut -d '/' -f 3-5)
+        go run ./cmd/ghasum verify -cache /home/runner/work/_actions -no-evict -offline "$WORKFLOW:$JOB"
+    - name: Verify action checksums
+      env:
+        REPOSITORY: ${{ github.repository }}
+        VERSION: ${{ github.ref_name }}
+      run: |
+        go get "github.com/${REPOSITORY}@${VERSION}"
