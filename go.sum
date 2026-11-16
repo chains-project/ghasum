@@ -138,8 +138,8 @@ github.com/mdempsky/unconvert v0.0.0-20241127004111-db6ad295e1ce h1:LyNUhz6j2oP3
 github.com/mdempsky/unconvert v0.0.0-20241127004111-db6ad295e1ce/go.mod h1:DuAZxNOBRkxMjbchCclLZxb/18Qb46cU26hBsomVuow=
 github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
 github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
-github.com/nishanths/exhaustive v0.14.0 h1:wqwHW3EPNu/mD0ZpkQVNPbupXKkH4XhMpXjFZ+kn/So=
-github.com/nishanths/exhaustive v0.14.0/go.mod h1:yt2T8QaQ/5OlVZsG+WV9uexQanVPI8MStaHR/JYg1hM=
+github.com/nishanths/exhaustive v0.17.1 h1:zlwR7GV/UqKrm3AJdeXqldUTSsbyfdqS8f/m0oMYLD0=
+github.com/nishanths/exhaustive v0.17.1/go.mod h1:/nBwAMRn2QmCjWQ3PiJ939yRSwvWLKSa21L2C6Tp84E=
 github.com/onsi/gomega v1.34.1 h1:EUMJIKUjM8sKjYbtxQI9A4z2o+rruxnzNvpknOXie6k=
 github.com/onsi/gomega v1.34.1/go.mod h1:kU1QgUvBDLXBJq618Xvm2LUX6rSAfRaFRTcdOeDLwwY=
 github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58 h1:onHthvaw9LFnH4t2DcNVpwGmV9E1BkGknEliJkfwQj0=
@@ -280,3 +280,5 @@ honnef.co/go/tools v0.8.1 h1:+JKf3xJ1ni4CwrhVg4/pqsfPGP6vNAXcKbMXJodYx3w=
 honnef.co/go/tools v0.8.1/go.mod h1:XA+OnlRA9EDh/ukGvXMNSZNKGwFQJ+5dER0ioUkOxks=
 mvdan.cc/unparam v0.0.0-20261011093844-7a2c2c0b7aa6 h1:BPYbCqDxFpG6SoLzbiU5hVn8kHW89plTWGddjT3OD7I=
 mvdan.cc/unparam v0.0.0-20261011093844-7a2c2c0b7aa6/go.mod h1:BEImwwhtsPZ0eyZhBtvrirFOvbQ7HmEnmfdFl3tz9M0=
+rsc.io/script v0.0.2 h1:eYoG7A3GFC3z1pRx3A2+s/vZ9LA8cxojHyCvslnj4RI=
+rsc.io/script v0.0.2/go.mod h1:cKBjCtFBBeZ0cbYFRXkRoxP+xGqhArPa9t3VWhtXfzU=
